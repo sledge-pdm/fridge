@@ -9,7 +9,7 @@ export interface ConfigStore {
 
 const [configStore, setConfigStore] = createStore<ConfigStore>({
   lineHeight: 1.5,
-  fontSize: 16,
+  fontSize: 12,
   theme: 'light',
 });
 

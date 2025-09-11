@@ -59,6 +59,7 @@ export default function Editor() {
             height: '100%',
             width: '100%',
             padding: '16px',
+            overflow: 'auto', // scroll entire editor (title + text)
           }}
         >
           <input

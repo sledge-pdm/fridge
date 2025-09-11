@@ -1,0 +1,87 @@
+/* Wrapper */
+.editor-textarea-wrapper {
+  position: relative;
+  width: 100%;
+  font-family: var(--editor-font-family, monospace);
+  line-height: var(--editor-line-height, 1.4);
+  font-size: var(--editor-font-size, 12px);
+}
+
+/* Hidden text layer (real input) */
+.editor-textarea {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  background: none;
+  border: none;
+  box-sizing: border-box;
+  padding: 24px 16px;
+  scroll-padding: 24px 16px;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: var(--editor-fg, #fff); /* 実際の文字を表示 */
+  caret-color: var(--editor-fg, #fff);
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  /* selection coloring */
+}
+
+/* テキスト選択時の色 (Firefox用 ::-moz-selection も) */
+.editor-textarea::selection {
+  background: var(--editor-selection-bg, rgba(128, 128, 255, 0.35));
+  color: var(--editor-selection-fg, #000);
+}
+.editor-textarea::-moz-selection {
+  background: var(--editor-selection-bg, rgba(128, 128, 255, 0.35));
+  color: var(--editor-selection-fg, #000);
+}
+
+/* Overlay display layer */
+.editor-overlay {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 24px 16px;
+  pointer-events: none;
+  overflow: visible;
+  color: transparent; /* 文字は不可視。改行マーカーのみ可視 */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  user-select: none;
+}
+
+/* 選択中に overlay 側を少しフェードして視覚的衝突を軽減 */
+.editor-textarea:focus-visible + .editor-overlay,
+.editor-textarea:focus + .editor-overlay {
+  transition: opacity 80ms linear;
+}
+/* is-selecting クラスは保持するが現在は非依存 */
+
+.editor-overlay .nl {
+  display: inline-block;
+  position: relative;
+  width: 0; /* does not consume layout width */
+  height: 1em;
+  overflow: visible;
+  pointer-events: none;
+  vertical-align: baseline;
+}
+
+.editor-overlay .nl::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 6px;
+  height: 1em;
+  transform: translateX(2px);
+  background: url('/icons/br.png') left center / 6px 6px no-repeat;
+  opacity: 0.35;
+}
