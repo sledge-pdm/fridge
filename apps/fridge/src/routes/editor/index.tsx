@@ -2,6 +2,7 @@ import { flexCol, flexRow } from '@sledge/core';
 import { pageRoot, PM12, vars, ZFB09, ZFB31 } from '@sledge/theme';
 import DocumentsList from '~/components/DocumentsList';
 import EditorTextArea from '~/components/EditorTextArea';
+import ThemeDropdown from '~/components/ThemeDropdown';
 import { showChooseFileDialog } from '~/io/choose';
 import { saveToFile } from '~/io/save';
 import { newDocument, openDocument } from '~/models/Document';
@@ -22,6 +23,7 @@ export default function Editor() {
         >
           FRIDGE.
         </p>
+        <ThemeDropdown />
         <div class={flexRow} style={{ gap: '8px' }}>
           <button
             onClick={() => {

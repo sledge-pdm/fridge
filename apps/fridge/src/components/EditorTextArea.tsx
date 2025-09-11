@@ -1,5 +1,5 @@
 import { PM12, vars } from '@sledge/theme';
-import { Component, createEffect, createMemo, createSignal, onMount } from 'solid-js';
+import { Component, createEffect, createMemo, createSignal } from 'solid-js';
 import { configStore } from '~/stores/ConfigStore';
 import { editorStore } from '~/stores/EditorStore';
 import '../styles/editor_text_area.css';
@@ -48,29 +48,8 @@ const EditorTextArea: Component<Props> = (props) => {
       .join('\n');
   });
 
-  // Auto-resize so outer container (title + editor) handles scrolling
-  const resize = () => {
-    if (!textAreaRef || !overlayRef) return;
-    // 先にoverlay更新後に高さを測る (wrap変化対応)
-    overlayRef.style.height = 'auto';
-    textAreaRef.style.height = 'auto';
-    const h = Math.max(textAreaRef.scrollHeight, overlayRef.scrollHeight);
-    overlayRef.style.height = h + 'px';
-    textAreaRef.style.height = h + 'px';
-  };
-  createEffect(() => {
-    // trigger on value change
-    value();
-    queueMicrotask(resize);
-  });
-
-  // リサイズ (ウィンドウやサイドバー幅変更) を監視
-  onMount(() => {
-    if (!wrapperRef) return;
-    const ro = new ResizeObserver(() => resize());
-    ro.observe(wrapperRef);
-    return () => ro.disconnect();
-  });
+  // 高さは親コンテナスクロール + テキスト折返しに任せるため resize ロジック不要
+  createEffect(() => value());
 
   return (
     <div
@@ -94,7 +73,6 @@ const EditorTextArea: Component<Props> = (props) => {
           const v = (e.target as HTMLTextAreaElement).value;
           setValue(v);
           props.onInput?.(v);
-          resize();
         }}
       />
       <pre ref={(el) => (overlayRef = el)} class='editor-overlay' innerHTML={formattedValue()} />

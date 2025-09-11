@@ -2,6 +2,7 @@
 .editor-textarea-wrapper {
   position: relative;
   width: 100%;
+  height: 100%;
   font-family: var(--editor-font-family, monospace);
   line-height: var(--editor-line-height, 1.4);
   font-size: var(--editor-font-size, 12px);
@@ -9,9 +10,9 @@
 
 /* Hidden text layer (real input) */
 .editor-textarea {
-  position: absolute;
   inset: 0;
   width: 100%;
+  height: 100%;
   background: none;
   border: none;
   box-sizing: border-box;
@@ -27,7 +28,7 @@
   overflow: hidden;
   white-space: pre-wrap;
   word-wrap: break-word;
-  /* selection coloring */
+  field-sizing: content;
 }
 
 /* テキスト選択時の色 (Firefox用 ::-moz-selection も) */
@@ -82,6 +83,15 @@
   width: 6px;
   height: 1em;
   transform: translateX(2px);
-  background: url('/icons/br.png') left center / 6px 6px no-repeat;
-  opacity: 0.35;
+  background: url('/icons/br.png') left center / 6px 7px no-repeat;
+  opacity: 0.45;
 }
+
+/*
+br.svg
+
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="6" height="7" viewBox="0 0 6 7" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 1 7 L 2 7 L 2 6 L 6 6 L 6 0 L 5 0 L 5 5 L 2 5 L 2 4 L 1 4 L 1 5 L 0 5 L 0 6 L 1 6 L 1 7 Z" fill="black" />
+</svg>
+*/

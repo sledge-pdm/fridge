@@ -44,6 +44,7 @@ const DocumentItem: Component<{ index: number; doc: FridgeDocument }> = (props) 
         style={{
           'font-family': PM10,
           'font-size': '10px',
+          'font-weight': isSelected() ? 'bold' : 'normal',
           color: isSelected() ? vars.color.active : 'inherit',
         }}
       >

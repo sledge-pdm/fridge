@@ -13,4 +13,8 @@ const [configStore, setConfigStore] = createStore<ConfigStore>({
   theme: 'light',
 });
 
+export function setTheme(theme: Theme) {
+  setConfigStore('theme', theme);
+}
+
 export { configStore };
