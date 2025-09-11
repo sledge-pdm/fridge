@@ -63,7 +63,7 @@ export default function TitleBar() {
                 </div>
               </Show>
             </div>
-            <div style={{ 'pointer-events': 'all' }} data-tauri-drag-region-exclude>
+            <div style={{ 'pointer-events': 'all', 'margin-right': '8px' }} data-tauri-drag-region-exclude>
               <ThemeDropdown />
             </div>
             <div class={titleBarControls} data-tauri-drag-region-exclude>

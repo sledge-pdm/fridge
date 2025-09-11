@@ -7,6 +7,8 @@ import { overwrite, saveToFile } from '~/io/save';
 import { newDocument, openDocument } from '~/models/Document';
 import { addDocument, getCurrentDocument, removeDocument, updateCurrentDocument } from '~/stores/EditorStore';
 
+import '~/styles/editor.css';
+
 export default function Editor() {
   return (
     <div class={pageRoot} style={{ overflow: 'hidden', 'box-sizing': 'border-box' }}>
@@ -75,11 +77,12 @@ export default function Editor() {
 
         <DocumentsList />
       </div>
-      <div class={flexCol} style={{ height: '100%', 'flex-grow': 1, overflow: 'hidden' }}>
-        <div class={flexCol} style={{ height: '100%', 'flex-grow': 1, overflow: 'auto', padding: '16px' }}>
+      <div class={flexCol} style={{ position: 'relative', 'flex-grow': 1, overflow: 'hidden', 'min-height': '0' }}>
+        {/* ここで全体がスクロールしてほしい */}
+        <div class='input_scroll'>
           <input
             style={{
-              padding: '24px 16px 0px 16px',
+              padding: '40px 24px 0px 32px',
               'font-size': '24px',
               'font-family': `${ZFB09},${PM12}`,
               border: 'none',
@@ -91,7 +94,7 @@ export default function Editor() {
             onInput={(e) => {
               const title = (e.target as HTMLInputElement).value;
               if (!title.trim()) return;
-              updateCurrentDocument({ title });
+              updateCurrentDocument({ title, associatedFilePath: undefined });
             }}
             value={getCurrentDocument()?.title}
           />
@@ -105,10 +108,15 @@ export default function Editor() {
         <div
           class={flexRow}
           style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
             height: '24px',
             'align-items': 'center',
             padding: '0 12px',
             'border-top': `1px solid ${vars.color.border}`,
+            background: vars.color.background,
           }}
         >
           <p>{getCurrentDocument()?.associatedFilePath || ''}</p>

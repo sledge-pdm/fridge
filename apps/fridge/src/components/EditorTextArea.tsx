@@ -1,5 +1,5 @@
-import { PM12, vars } from '@sledge/theme';
-import { Component, createEffect, createMemo, createSignal } from 'solid-js';
+import { PM10, PM12, vars } from '@sledge/theme';
+import { Component, createEffect, createMemo, createSignal, onMount } from 'solid-js';
 import { configStore } from '~/stores/ConfigStore';
 import { editorStore } from '~/stores/EditorStore';
 import '../styles/editor_text_area.css';
@@ -30,6 +30,36 @@ const EditorTextArea: Component<Props> = (props) => {
     }
   });
 
+  // Auto-resize so outer container (title + editor) handles scrolling
+  let lastHeight = 0;
+  let resizing = false;
+  const resize = () => {
+    if (!textAreaRef || !overlayRef) return;
+    // 一時的に auto にして実サイズ計測
+    overlayRef.style.height = 'auto';
+    textAreaRef.style.height = 'auto';
+    const h = Math.max(textAreaRef.scrollHeight, overlayRef.scrollHeight);
+    overlayRef.style.height = h + 'px';
+    textAreaRef.style.height = h + 'px';
+  };
+
+  createEffect(() => {
+    // trigger on value change (次フレームで resize)
+    value();
+    requestAnimationFrame(resize);
+  });
+
+  // リサイズ (ウィンドウやサイドバー幅変更) を監視
+  onMount(() => {
+    if (!wrapperRef) return;
+    const ro = new ResizeObserver(() => {
+      // レイアウト確定後に 1 フレーム遅らせて計測
+      requestAnimationFrame(resize);
+    });
+    ro.observe(wrapperRef);
+    return () => ro.disconnect();
+  });
+
   // Escape utility for overlay HTML
   const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -42,8 +72,11 @@ const EditorTextArea: Component<Props> = (props) => {
     return parts
       .map((line, i) => {
         const showMarker = i < parts.length - 1;
+        const hsLine = escapeHtml(line).replaceAll(' ', `<span class=\"hs\">.</span>`);
+        const fsLine = hsLine.replaceAll('　', `<span class=\"fs\">・</span>`);
         // 幅0の span を挿入し CSS の ::after で視覚表示。これにより折り返し計算へ影響しない。
-        return escapeHtml(line) + (showMarker ? `<span class=\"nl\"></span>` : '');
+        const markerLine = fsLine + (showMarker ? `<span class=\"nl\"></span>` : '');
+        return markerLine;
       })
       .join('\n');
   });
