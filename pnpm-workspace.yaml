@@ -1,0 +1,9 @@
+packages:
+  - apps/*
+  - packages/*
+  - packages/hello-wasm/pkg
+
+ignoredBuiltDependencies:
+  - '@swc/core'
+  - 'esbuild'
+  - 'msgpackr-extract'
