@@ -6,7 +6,7 @@ import ThemeDropdown from '~/components/ThemeDropdown';
 import { showChooseFileDialog } from '~/io/choose';
 import { saveToFile } from '~/io/save';
 import { newDocument, openDocument } from '~/models/Document';
-import { addDocument, getCurrentDocument, updateCurrentDocument } from '~/stores/EditorStore';
+import { addDocument, getCurrentDocument, removeDocument, updateCurrentDocument } from '~/stores/EditorStore';
 
 export default function Editor() {
   return (
@@ -24,13 +24,21 @@ export default function Editor() {
           FRIDGE.
         </p>
         <ThemeDropdown />
-        <div class={flexRow} style={{ gap: '8px' }}>
+        <div class={flexRow} style={{ gap: '8px', 'flex-wrap': 'wrap' }}>
           <button
             onClick={() => {
               addDocument(newDocument());
             }}
           >
             + add.
+          </button>
+          <button
+            onClick={() => {
+              const currentId = getCurrentDocument()?.id;
+              if (currentId) removeDocument(currentId);
+            }}
+          >
+            - remove.
           </button>
           <button
             onClick={async () => {

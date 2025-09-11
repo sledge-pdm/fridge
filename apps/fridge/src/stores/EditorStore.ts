@@ -34,6 +34,14 @@ export function addDocument(doc: FridgeDocument, setCurrent: boolean = true) {
   requestBackupSave();
 }
 
+export function removeDocument(id: string) {
+  setEditorStore('documents', (docs) => docs.filter((doc) => doc.id !== id));
+  if (editorStore.currentDocumentId === id) {
+    setEditorStore('currentDocumentId', null);
+  }
+  requestBackupSave();
+}
+
 export function updateCurrentDocument(updates: Partial<FridgeDocument>) {
   if (!editorStore.currentDocumentId) return;
   updateDocument(editorStore.currentDocumentId, updates);
