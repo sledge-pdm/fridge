@@ -85,9 +85,9 @@ jobs:
           releaseDraft: false # Don't care because it's a dev build
           prerelease: true
           projectPath: './apps/sledge'
-          includeUpdaterJson: true
-          updaterJsonPreferNsis: true
-          updaterJsonKeepUniversal: true
+          # includeUpdaterJson: true
+          # updaterJsonPreferNsis: true
+          # updaterJsonKeepUniversal: true
           args: ${{ matrix.args }}
 
       - name: Upload dev artifacts

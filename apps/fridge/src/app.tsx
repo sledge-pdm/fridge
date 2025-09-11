@@ -9,6 +9,8 @@ import { listen } from '@tauri-apps/api/event';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { createEffect, onCleanup, onMount } from 'solid-js';
+import { newDocument } from '~/models/Document';
+import { addDocument } from '~/stores/EditorStore';
 import { reportCriticalError, zoomForIntegerize } from '~/utils/WindowUtils';
 
 export default function App() {
@@ -69,6 +71,8 @@ export default function App() {
     });
 
     // await checkForUpdates();
+
+    addDocument(newDocument());
   });
 
   createEffect(() => applyThemeToHtml());
@@ -80,9 +84,9 @@ export default function App() {
           <title>Sledge</title>
           <div
             class={[flexCol, h100].join(' ')}
-            onContextMenu={(e) => {
-              e.preventDefault();
-            }}
+            // onContextMenu={(e) => {
+            //   e.preventDefault();
+            // }}
           >
             {/* <TitleBar /> */}
             <main>{props.children}</main>

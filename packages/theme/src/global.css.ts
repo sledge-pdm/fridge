@@ -22,6 +22,14 @@ export const k8x12 = fontFace({ src: 'url("/fonts/k8x12/k8x12.ttf")', sizeAdjust
 export const k8x12L = fontFace({ src: 'url("/fonts/k8x12/k8x12L.ttf")', sizeAdjust: '75%', fontDisplay: 'swap' });
 export const k8x12S = fontFace({ src: 'url("/fonts/k8x12/k8x12S.ttf")', sizeAdjust: '75%', fontDisplay: 'swap' });
 export const k12x8 = fontFace({ src: 'url("/fonts/k12x8/k12x8.ttf")', fontDisplay: 'swap' });
+export const PM10 = fontFace([
+  { src: 'url("/fonts/PixelMPlus/PixelMplus10-Regular.ttf")', fontDisplay: 'swap', fontWeight: 'normal' },
+  { src: 'url("/fonts/PixelMPlus/PixelMplus10-Bold.ttf")', fontDisplay: 'swap', fontWeight: 'bold' },
+]);
+export const PM12 = fontFace([
+  { src: 'url("/fonts/PixelMPlus/PixelMplus12-Regular.ttf")', fontDisplay: 'swap', fontWeight: 'normal' },
+  { src: 'url("/fonts/PixelMPlus/PixelMplus12-Bold.ttf")', fontDisplay: 'swap', fontWeight: 'bold' },
+]);
 
 /**
  * ---------------------------------------------------------------------------

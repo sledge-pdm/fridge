@@ -94,7 +94,7 @@ pub async fn open_window(
     match kind {
         SledgeWindowKind::Editor => {
             builder = builder
-                .title("sledge.")
+                .title("fridge.")
                 .inner_size(1200.0, 750.0)
                 .resizable(true)
                 .accept_first_mouse(true)
