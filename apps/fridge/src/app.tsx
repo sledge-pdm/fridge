@@ -1,7 +1,7 @@
 // @refresh reload
 import { MetaProvider } from '@solidjs/meta';
 import { Route, Router } from '@solidjs/router';
-import Editor from './routes/editor/index';
+import Editor from './routes/editor';
 
 import { flexCol, h100 } from '@sledge/core';
 import { getTheme } from '@sledge/theme';
@@ -9,6 +9,7 @@ import { listen } from '@tauri-apps/api/event';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { createEffect, onCleanup, onMount } from 'solid-js';
+import TitleBar from '~/components/title_bar/TitleBar';
 import { newDocument } from '~/models/Document';
 import { configStore } from '~/stores/ConfigStore';
 import { addDocument, useRestoreEditorStore } from '~/stores/EditorStore';
@@ -102,7 +103,7 @@ export default function App() {
             //   e.preventDefault();
             // }}
           >
-            {/* <TitleBar /> */}
+            <TitleBar />
             <main>{props.children}</main>
             {/* <DebugViewer /> */}
           </div>

@@ -1,5 +1,5 @@
 import { flexCol, flexRow } from '@sledge/core';
-import { PM10, vars } from '@sledge/theme';
+import { PM10, PM12, vars } from '@sledge/theme';
 import { Component, For } from 'solid-js';
 import { FridgeDocument } from '~/models/Document';
 import { editorStore, setCurrentDocument } from '~/stores/EditorStore';
@@ -42,8 +42,8 @@ const DocumentItem: Component<{ index: number; doc: FridgeDocument }> = (props) 
       </p>
       <p
         style={{
-          'font-family': PM10,
-          'font-size': '10px',
+          'font-family': PM12,
+          'font-size': '12px',
           'font-weight': isSelected() ? 'bold' : 'normal',
           color: isSelected() ? vars.color.active : 'inherit',
         }}

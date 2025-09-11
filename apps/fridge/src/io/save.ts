@@ -1,7 +1,14 @@
 import * as path from '@tauri-apps/api/path';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
+import { FridgeDocument } from '~/models/Document';
 import { join } from '~/utils/FileUtils';
+
+export async function overwrite(document: FridgeDocument) {
+  if (!document.associatedFilePath) return null;
+
+  await writeTextFile(document.associatedFilePath, document.content);
+}
 
 export async function saveToFile(data: string, filename: string): Promise<string | null> {
   const filePath = await save({

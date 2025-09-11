@@ -104,15 +104,15 @@ pub async fn open_window(
         }
     }
 
-    // #[cfg(target_os = "windows")]
-    // {
-    //     builder = builder.decorations(false);
-    // }
+    #[cfg(target_os = "windows")]
+    {
+        builder = builder.decorations(false);
+    }
 
-    // #[cfg(target_os = "macos")]
-    // {
-    //     builder = builder.title_bar_style(TitleBarStyle::Transparent);
-    // }
+    #[cfg(target_os = "macos")]
+    {
+        builder = builder.title_bar_style(TitleBarStyle::Transparent);
+    }
 
     // 4. ウィンドウ生成（非表示で）
     #[allow(unused_variables)]
