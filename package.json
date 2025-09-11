@@ -7,7 +7,7 @@
     "test": "vitest run",
     "test:ui": "vitest",
     "prettier": "prettier --write . --config .prettierrc",
-    "cargo:format": "cd packages/wasm && cargo fmt && cd ../../apps/fridge/src-tauri && cargo fmt",
+    "cargo:format": "cd apps/fridge/src-tauri && cargo fmt",
     "format": "pnpm prettier && pnpm cargo:format"
   },
   "dependencies": {

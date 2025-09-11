@@ -1,5 +1,6 @@
 import { PM12, vars } from '@sledge/theme';
 import { Component, createEffect } from 'solid-js';
+import { configStore } from '~/stores/ConfigStore';
 import { editorStore } from '~/stores/EditorStore';
 
 interface Props {
@@ -36,6 +37,8 @@ const EditorTextArea: Component<Props> = (props) => {
         outline: 'none',
         resize: 'none',
         overflow: 'visible',
+
+        'line-height': `${configStore.lineHeight}`,
       }}
       wrap='soft'
       placeholder='Start as you mean to go on...'

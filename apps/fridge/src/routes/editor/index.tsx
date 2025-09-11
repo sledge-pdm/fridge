@@ -12,7 +12,7 @@ export default function Editor() {
     <div class={pageRoot}>
       <div
         class={flexCol}
-        style={{ height: '100vh', width: '270px', gap: '16px', padding: '40px 32px', 'border-right': `1px solid ${vars.color.border}` }}
+        style={{ height: '100vh', width: '270px', gap: '16px', padding: '36px 32px', 'border-right': `1px solid ${vars.color.border}` }}
       >
         <p
           style={{

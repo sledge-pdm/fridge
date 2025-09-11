@@ -10,10 +10,14 @@ import { getCurrentWebview } from '@tauri-apps/api/webview';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { createEffect, onCleanup, onMount } from 'solid-js';
 import { newDocument } from '~/models/Document';
-import { addDocument } from '~/stores/EditorStore';
+import { configStore } from '~/stores/ConfigStore';
+import { addDocument, useRestoreEditorStore } from '~/stores/EditorStore';
+import { flushBackup } from '~/utils/AutoBackup';
 import { reportCriticalError, zoomForIntegerize } from '~/utils/WindowUtils';
 
 export default function App() {
+  // 自動復元を起動時に実行
+  useRestoreEditorStore();
   // グローバルエラーハンドラーを設定
   const handleGlobalError = (event: ErrorEvent) => {
     console.error('Global error caught:', event.error);
@@ -43,7 +47,7 @@ export default function App() {
   let prevThemeClass: string | undefined;
 
   const applyThemeToHtml = () => {
-    let cls = getTheme('dark');
+    let cls = getTheme(configStore.theme);
     const html = document.documentElement;
     if (prevThemeClass && html.classList.contains(prevThemeClass)) {
       html.classList.remove(prevThemeClass);
@@ -73,6 +77,16 @@ export default function App() {
     // await checkForUpdates();
 
     addDocument(newDocument());
+  });
+
+  // ウィンドウ終了要求時にバックアップをフラッシュ
+  onMount(async () => {
+    const unlisten = await listen('tauri://close-requested', async () => {
+      await flushBackup();
+    });
+    onCleanup(() => {
+      unlisten();
+    });
   });
 
   createEffect(() => applyThemeToHtml());

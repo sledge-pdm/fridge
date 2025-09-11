@@ -15,7 +15,7 @@
       "~/*": ["./src/*"],
       "@sledge/ui": ["../../packages/ui"],
       "@sledge/theme": ["../../packages/theme"],
-      "@sledge/core": ["../../packages/core"],
+      "@sledge/core": ["../../packages/core"]
     },
     "types": ["vite/client"],
     "rootDirs": ["src"]

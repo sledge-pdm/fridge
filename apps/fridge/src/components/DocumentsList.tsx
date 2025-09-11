@@ -1,5 +1,5 @@
 import { flexCol, flexRow } from '@sledge/core';
-import { vars } from '@sledge/theme';
+import { PM10, vars } from '@sledge/theme';
 import { Component, For } from 'solid-js';
 import { FridgeDocument } from '~/models/Document';
 import { editorStore, setCurrentDocument } from '~/stores/EditorStore';
@@ -17,19 +17,38 @@ const DocumentsList: Component = () => {
 };
 
 const DocumentItem: Component<{ index: number; doc: FridgeDocument }> = (props) => {
+  const isSelected = () => editorStore.currentDocumentId === props.doc.id;
+
   return (
     <div
       class={flexRow}
       style={{
         gap: '4px',
-        padding: '4px 0',
         'align-items': 'center',
+        padding: '4px 0',
+        cursor: isSelected() ? 'auto' : 'pointer',
       }}
+      onClick={() => setCurrentDocument(props.doc.id)}
     >
-      <p style={{ width: '20px', color: editorStore.currentDocumentId === props.doc.id ? vars.color.active : 'inherit' }}>{props.index}.</p>
-      <a onClick={() => setCurrentDocument(props.doc.id)}>
+      <p
+        style={{
+          'font-family': PM10,
+          'font-size': '10px',
+          width: '20px',
+          color: isSelected() ? vars.color.active : 'inherit',
+        }}
+      >
+        {props.index}.
+      </p>
+      <p
+        style={{
+          'font-family': PM10,
+          'font-size': '10px',
+          color: isSelected() ? vars.color.active : 'inherit',
+        }}
+      >
         {props.doc.title} ({props.doc.content.length})
-      </a>
+      </p>
     </div>
   );
 };
