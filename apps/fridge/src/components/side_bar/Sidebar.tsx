@@ -58,6 +58,10 @@ const resultList = css`
   margin-top: 12px;
   gap: 4px;
 `;
+const noResultText = css`
+  color: var(--color-muted);
+  padding: 8px 12px;
+`;
 const resultItem = css`
   padding: 4px 6px;
   width: 100%;
@@ -128,7 +132,7 @@ const Sidebar: Component = () => {
           <Show when={getCurrentDocument()?.searchResult?.query}>
             <p class={resultLabel}>search result of "{getCurrentDocument()?.searchResult?.query?.toString()}"</p>
           </Show>
-          <For each={getCurrentDocument()?.searchResult?.founds ?? []} fallback={<p>no result</p>}>
+          <For each={getCurrentDocument()?.searchResult?.founds} fallback={<p class={noResultText}>no result</p>}>
             {(item, i) => {
               // not concerning query length itself (might be too long e.g. "...XXXXXtoomuchlongquerytoshowinthesidebarXXXXX...")
               // there shouldn't be too much calculation here, so just put overflow:hidden and text-overflow: ellipsis, to make it

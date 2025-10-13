@@ -40,21 +40,10 @@ export function addDocument(doc: FridgeDocument, setCurrent: boolean = true) {
 }
 
 export function removeDocument(id: string) {
-  const index = editorStore.documents.findIndex((doc) => doc.id === id);
-  setEditorStore((store) => {
-    store.documents = [...store.documents.filter((doc) => doc.id !== id)];
-
-    if (editorStore.documents.length > 0 && editorStore.documents[index - 1]) {
-      store.currentDocumentId = store.documents[index - 1].id;
-    } else if (editorStore.documents.length > 0) {
-      store.currentDocumentId = store.documents[0].id;
-    } else {
-      store.currentDocumentId = null;
-    }
-
-    return store;
-  });
-  // requestBackupSave();
+  setEditorStore('documents', (docs) => docs.filter((doc) => doc.id !== id));
+  if (editorStore.currentDocumentId === id) {
+    setEditorStore('currentDocumentId', null);
+  }
 }
 
 export function updateCurrentDocument(updates: Partial<FridgeDocument>) {
