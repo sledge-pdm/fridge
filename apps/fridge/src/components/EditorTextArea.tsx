@@ -1,8 +1,8 @@
-import { PM10, PM12, vars } from '@sledge/theme';
 import { Component, createEffect, createMemo, createSignal, onMount } from 'solid-js';
 import { configStore } from '~/stores/ConfigStore';
 import { editorStore } from '~/stores/EditorStore';
 import '../styles/editor_text_area.css';
+import { fonts } from '@sledge/theme';
 
 interface Props {
   onInput?: (value: string) => void;
@@ -91,10 +91,10 @@ const EditorTextArea: Component<Props> = (props) => {
       style={{
         '--editor-line-height': `${configStore.lineHeight}`,
         '--editor-font-size': `${configStore.fontSize}px`,
-        '--editor-fg': vars.color.onBackground,
-        '--editor-font-family': `${PM12}`,
-        '--editor-selection-bg': vars.color.active,
-        '--editor-selection-fg': vars.color.button.textOnAccent,
+        '--editor-fg': 'var(--color-on-background)',
+        '--editor-font-family': `${fonts.PM12}`,
+        '--editor-selection-bg': 'var(--color-active)',
+        '--editor-selection-fg': 'var(--color-button-text-on-accent)',
       }}
     >
       <textarea

@@ -6,11 +6,15 @@ import { requestBackupSave, restoreBackup } from '~/utils/AutoBackup';
 export interface EditorStore {
   currentDocumentId: string | null;
   documents: FridgeDocument[];
+
+  sidebar: boolean;
 }
 
 const [editorStore, setEditorStore] = createStore<EditorStore>({
   currentDocumentId: null,
   documents: [],
+
+  sidebar: false,
 });
 
 // ストア状態を外部からまとめて適用（復元時など）
@@ -64,6 +68,10 @@ export function useRestoreEditorStore() {
       // 復元不要/失敗は静かに無視
     }
   });
+}
+
+export function setSideBarOpen(open: boolean) {
+  setEditorStore('sidebar', open);
 }
 
 export { editorStore };

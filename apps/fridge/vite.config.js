@@ -1,17 +1,13 @@
-import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import path from 'path';
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
+import { ecsstatic } from '@acab/ecsstatic/vite';
+
 
 const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig({
-  plugins: [
-    vanillaExtractPlugin({
-      devStyleRuntime: 'vanilla-extract',
-    }),
-    solidPlugin(),
-  ],
+  plugins: [solidPlugin(), ecsstatic()],
   build: {
     outDir: 'dist',
     // Tauri uses Chromium on Windows and WebKit on macOS and Linux
@@ -67,9 +63,6 @@ export default defineConfig({
       '@solid-primitives/raf',
       // WASMモジュールはpre-bundlingから除外
       '@sledge/wasm',
-      // VanillaExtractのランタイムをpre-bundlingから除外（処理速度向上）
-      '@vanilla-extract/css',
-      '@vanilla-extract/dynamic',
     ],
   },
   resolve: {

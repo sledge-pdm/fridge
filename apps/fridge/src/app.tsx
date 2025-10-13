@@ -3,16 +3,18 @@ import { MetaProvider } from '@solidjs/meta';
 import { Route, Router } from '@solidjs/router';
 import Editor from './routes/editor';
 
-import { flexCol, h100 } from '@sledge/core';
-import { getTheme } from '@sledge/theme';
+import { applyTheme } from '@sledge/theme';
+import '@sledge/theme/src/global.css';
 import { listen } from '@tauri-apps/api/event';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { createEffect, onCleanup, onMount } from 'solid-js';
+import MenuBar from '~/components/title_bar/MenuBar';
 import TitleBar from '~/components/title_bar/TitleBar';
 import { newDocument } from '~/models/Document';
 import { configStore } from '~/stores/ConfigStore';
 import { addDocument, useRestoreEditorStore } from '~/stores/EditorStore';
+import { flexCol } from '~/styles/styles';
 import { flushBackup } from '~/utils/AutoBackup';
 import { reportCriticalError, zoomForIntegerize } from '~/utils/WindowUtils';
 
@@ -47,14 +49,12 @@ export default function App() {
   // テーマクラスを html 要素に付与して、Portal や body 直下にもトークンが届くようにする
   let prevThemeClass: string | undefined;
 
-  const applyThemeToHtml = () => {
-    let cls = getTheme(configStore.theme);
-    const html = document.documentElement;
-    if (prevThemeClass && html.classList.contains(prevThemeClass)) {
-      html.classList.remove(prevThemeClass);
+  const applyThemeToHtml = (osTheme?: 'dark' | 'light') => {
+    if (osTheme && configStore.theme === 'os') {
+      applyTheme(osTheme);
+    } else {
+      applyTheme(configStore.theme);
     }
-    html.classList.add(cls);
-    prevThemeClass = cls;
   };
 
   listen('tauri://theme-changed', (e) => {
@@ -96,14 +96,10 @@ export default function App() {
     <Router
       root={(props) => (
         <MetaProvider>
-          <title>Sledge</title>
-          <div
-            class={[flexCol, h100].join(' ')}
-            // onContextMenu={(e) => {
-            //   e.preventDefault();
-            // }}
-          >
+          <title>Fridge</title>
+          <div class={flexCol} style={{ height: '100%' }}>
             <TitleBar />
+            <MenuBar />
             <main>{props.children}</main>
             {/* <DebugViewer /> */}
           </div>

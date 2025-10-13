@@ -1,8 +1,8 @@
-import { flexCol, flexRow } from '@sledge/core';
-import { PM10, PM12, vars } from '@sledge/theme';
+import { fonts } from '@sledge/theme';
 import { Component, For } from 'solid-js';
 import { FridgeDocument } from '~/models/Document';
 import { editorStore, setCurrentDocument } from '~/stores/EditorStore';
+import { flexCol, flexRow } from '~/styles/styles';
 
 const DocumentsList: Component = () => {
   return (
@@ -32,20 +32,20 @@ const DocumentItem: Component<{ index: number; doc: FridgeDocument }> = (props) 
     >
       <p
         style={{
-          'font-family': PM10,
+          'font-family': fonts.PM10,
           'font-size': '10px',
           width: '20px',
-          color: isSelected() ? vars.color.active : 'inherit',
+          color: isSelected() ? 'var(--color-active)' : 'inherit',
         }}
       >
         {props.index}.
       </p>
       <p
         style={{
-          'font-family': PM12,
+          'font-family': fonts.PM12,
           'font-size': '12px',
           'font-weight': isSelected() ? 'bold' : 'normal',
-          color: isSelected() ? vars.color.active : 'inherit',
+          color: isSelected() ? 'var(--color-active)' : 'inherit',
         }}
       >
         {props.doc.title} ({props.doc.content.length})
