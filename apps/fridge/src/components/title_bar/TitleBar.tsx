@@ -51,7 +51,7 @@ export default function TitleBar() {
                   gap: '12px',
                 }}
               >
-                <p class={titleBarTitle}>{getCurrentDocument()?.title}</p>
+                <p class={titleBarTitle}>{getCurrentDocument()?.title ?? 'fridge.'}</p>
                 <p class={titleBarTitleSub}>{getCurrentDocument()?.associatedFilePath ?? ''}</p>
               </div>
             </Show>

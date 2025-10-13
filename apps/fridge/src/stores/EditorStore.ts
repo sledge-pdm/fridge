@@ -1,5 +1,6 @@
 import { createMemo, onMount } from 'solid-js';
 import { createStore } from 'solid-js/store';
+import { SearchResult } from '~/features/search/Search';
 import { FridgeDocument } from '~/models/Document';
 import { requestBackupSave, restoreBackup } from '~/utils/AutoBackup';
 
@@ -39,11 +40,21 @@ export function addDocument(doc: FridgeDocument, setCurrent: boolean = true) {
 }
 
 export function removeDocument(id: string) {
-  setEditorStore('documents', (docs) => docs.filter((doc) => doc.id !== id));
-  if (editorStore.currentDocumentId === id) {
-    setEditorStore('currentDocumentId', null);
-  }
-  requestBackupSave();
+  const index = editorStore.documents.findIndex((doc) => doc.id === id);
+  setEditorStore((store) => {
+    store.documents = [...store.documents.filter((doc) => doc.id !== id)];
+
+    if (editorStore.documents.length > 0 && editorStore.documents[index - 1]) {
+      store.currentDocumentId = store.documents[index - 1].id;
+    } else if (editorStore.documents.length > 0) {
+      store.currentDocumentId = store.documents[0].id;
+    } else {
+      store.currentDocumentId = null;
+    }
+
+    return store;
+  });
+  // requestBackupSave();
 }
 
 export function updateCurrentDocument(updates: Partial<FridgeDocument>) {
@@ -72,6 +83,26 @@ export function useRestoreEditorStore() {
 
 export function setSideBarOpen(open: boolean) {
   setEditorStore('sidebar', open);
+}
+
+/**
+ * 指定されたドキュメントの検索結果を更新
+ */
+export function updateDocumentSearchResult(documentId: string, searchResult: SearchResult) {
+  const documentIndex = editorStore.documents.findIndex((doc) => doc.id === documentId);
+  if (documentIndex !== -1) {
+    setEditorStore('documents', documentIndex, 'searchResult', searchResult);
+  }
+}
+
+/**
+ * 指定されたドキュメントの検索結果をクリア
+ */
+export function clearDocumentSearchResult(documentId: string) {
+  const documentIndex = editorStore.documents.findIndex((doc) => doc.id === documentId);
+  if (documentIndex !== -1) {
+    setEditorStore('documents', documentIndex, 'searchResult', { query: undefined, founds: [], count: 0 });
+  }
 }
 
 export { editorStore };

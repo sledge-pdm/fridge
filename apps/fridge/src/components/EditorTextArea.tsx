@@ -1,8 +1,10 @@
-import { Component, createEffect, createMemo, createSignal, onMount } from 'solid-js';
-import { configStore } from '~/stores/ConfigStore';
-import { editorStore } from '~/stores/EditorStore';
-import '../styles/editor_text_area.css';
 import { fonts } from '@sledge/theme';
+import { Component, createEffect, createMemo, createSignal, onMount } from 'solid-js';
+import { SpanMarkup } from '~/features/markup/SpanMarkup';
+import { SearchResult } from '~/features/search/Search';
+import { configStore } from '~/stores/ConfigStore';
+import { editorStore, getCurrentDocument } from '~/stores/EditorStore';
+import '../styles/editor_text_area.css';
 
 interface Props {
   onInput?: (value: string) => void;
@@ -16,6 +18,14 @@ const EditorTextArea: Component<Props> = (props) => {
 
   // Internal value signal mirroring current doc
   const [value, setValue] = createSignal(props.defaultValue || '');
+
+  // SpanMarkup instance for overlay rendering
+  const spanMarkup = new SpanMarkup({
+    showHalfSpace: true,
+    showFullSpace: true,
+    showNewline: true,
+    highlightSearch: true,
+  });
 
   // Sync from store when document changes
   createEffect(() => {
@@ -60,25 +70,23 @@ const EditorTextArea: Component<Props> = (props) => {
     return () => ro.disconnect();
   });
 
-  // Escape utility for overlay HTML
-  const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
-  // Produce HTML with newline markers (explicit newlines only)
+  // Generate formatted HTML using SpanMarkup
   const formattedValue = createMemo(() => {
     const val = value();
-    if (val.length === 0) return '\u200B'; // zero-width space to keep height
-    // const endsWithNewline = val.endsWith('\n');
-    const parts = val.split('\n');
-    return parts
-      .map((line, i) => {
-        const showMarker = i < parts.length - 1;
-        const hsLine = escapeHtml(line).replaceAll(' ', `<span class=\"hs\">.</span>`);
-        const fsLine = hsLine.replaceAll('　', `<span class=\"fs\">・</span>`);
-        // 幅0の span を挿入し CSS の ::after で視覚表示。これにより折り返し計算へ影響しない。
-        const markerLine = fsLine + (showMarker ? `<span class=\"nl\"></span>` : '');
-        return markerLine;
-      })
-      .join('\n');
+    // Create memo that tracks both content and search results
+    const currentDoc = getCurrentDocument();
+    const searchResult: SearchResult = currentDoc?.searchResult ?? {
+      query: undefined,
+      founds: [],
+      count: 0,
+    };
+
+    console.log('val: ', val);
+    console.log('founds: ', searchResult.founds.join(', '));
+    // Use SpanMarkup to generate HTML with search highlighting
+    const htmlRes = spanMarkup.toHTML(val, searchResult.founds);
+    console.log('html markup: ', htmlRes);
+    return htmlRes;
   });
 
   // 高さは親コンテナスクロール + テキスト折返しに任せるため resize ロジック不要

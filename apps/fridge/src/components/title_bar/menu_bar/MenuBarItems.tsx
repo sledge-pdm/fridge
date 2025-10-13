@@ -19,16 +19,16 @@ const MenuBarItems: Component = () => {
           },
           {
             label: 'open file.',
-            onSelect: () => {
-              const currentId = getCurrentDocument()?.id;
-              if (currentId) removeDocument(currentId);
+            onSelect: async () => {
+              const path = await showChooseFileDialog();
+              if (path) openDocument(path);
             },
           },
           {
             label: 'close document.',
-            onSelect: async () => {
-              const path = await showChooseFileDialog();
-              if (path) openDocument(path);
+            onSelect: () => {
+              const currentId = getCurrentDocument()?.id;
+              if (currentId) removeDocument(currentId);
             },
           },
           {
@@ -46,7 +46,7 @@ const MenuBarItems: Component = () => {
           },
         ]}
       >
-        FILES
+        FILES.
       </MenuItem>
     </div>
   );
@@ -77,8 +77,8 @@ const menuItemText = css`
   font-family: ZFB11;
   font-size: 8px;
   width: 100%;
-  padding-left: 8px;
-  padding-right: 8px;
+  padding-left: 12px;
+  padding-right: 12px;
 `;
 
 interface ItemProps {

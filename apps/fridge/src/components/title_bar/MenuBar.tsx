@@ -9,8 +9,9 @@ const root = css`
   flex-direction: row;
   border-bottom: 1px solid var(--color-border);
   pointer-events: all;
-  padding: 0px 16px 0 20px;
+  padding: 0px 8px 0 20px;
   align-items: center;
+  height: 28px;
 `;
 const spacer = css`
   flex-grow: 1;
@@ -28,6 +29,9 @@ export default function MenuBar() {
     <div class={root}>
       <div
         class={sideBarIconContainer}
+        style={{
+          opacity: editorStore.sidebar ? 1 : 0.5,
+        }}
         onClick={() => {
           setSideBarOpen(!editorStore.sidebar);
         }}
