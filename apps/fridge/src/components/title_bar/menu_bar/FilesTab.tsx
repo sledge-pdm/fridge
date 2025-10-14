@@ -12,6 +12,13 @@ const tabRoot = css`
   width: 100%;
   height: 100%;
   overflow-x: auto;
+  touch-action: auto;
+  &::-webkit-scrollbar {
+    height: 0px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-on-background);
+  }
 `;
 
 const FilesTab: Component = () => {
@@ -51,6 +58,7 @@ const tabItemSelected = css`
 const label = css`
   color: var(--color-on-background);
   opacity: 0.5;
+  white-space: nowrap;
 `;
 const labelSelected = css`
   color: var(--color-active);

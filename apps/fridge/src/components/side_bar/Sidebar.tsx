@@ -2,6 +2,7 @@ import { css } from '@acab/ecsstatic';
 import { clsx } from '@sledge/core';
 import { fonts } from '@sledge/theme';
 import { Component, createSignal, For, onMount, Show } from 'solid-js';
+import ThemeDropdown from '~/components/ThemeDropdown';
 import { searchDocument } from '~/features/search/Search';
 import { clearDocumentSearchResult, getCurrentDocument, updateDocumentSearchResult } from '~/stores/EditorStore';
 
@@ -39,8 +40,13 @@ const scrollContainer = css`
     background-color: #888;
   }
 `;
-
+const themeToggleContainer = css`
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+`;
 const searchLabel = css`
+  margin-top: 8px;
   margin-bottom: 8px;
   margin-left: 2px;
   color: var(--color-muted);
@@ -104,6 +110,10 @@ const Sidebar: Component = () => {
   return (
     <div class={root}>
       <div class={scrollContainer}>
+        <div class={themeToggleContainer}>
+          <ThemeDropdown />
+        </div>
+
         <p class={searchLabel}>search document.</p>
         <input
           ref={(ref) => (searchInputRef = ref)}

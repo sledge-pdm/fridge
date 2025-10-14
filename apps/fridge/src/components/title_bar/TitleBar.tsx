@@ -1,7 +1,6 @@
 import { Icon } from '@sledge/ui';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { createSignal, onMount, Show } from 'solid-js';
-import ThemeDropdown from '~/components/ThemeDropdown';
 import { getCurrentDocument } from '~/stores/EditorStore';
 import { flexRow } from '~/styles/styles';
 import {
@@ -48,16 +47,14 @@ export default function TitleBar() {
                 class={flexRow}
                 style={{
                   'align-items': 'baseline',
-                  gap: '12px',
+                  gap: ' 2px 12px',
+                  'flex-wrap': 'wrap',
                 }}
               >
                 <p class={titleBarTitle}>{getCurrentDocument()?.title ?? 'fridge.'}</p>
                 <p class={titleBarTitleSub}>{getCurrentDocument()?.associatedFilePath ?? ''}</p>
               </div>
             </Show>
-          </div>
-          <div style={{ 'pointer-events': 'all', 'margin-right': '8px' }} data-tauri-drag-region-exclude>
-            <ThemeDropdown />
           </div>
           <div class={titleBarControls} data-tauri-drag-region-exclude>
             <Show when={isMinimizable()}>

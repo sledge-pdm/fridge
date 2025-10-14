@@ -1,5 +1,6 @@
 import { css } from '@acab/ecsstatic';
 import { Icon } from '@sledge/ui';
+import ThemeDropdown from '~/components/ThemeDropdown';
 import FilesTab from '~/components/title_bar/menu_bar/FilesTab';
 import MenuBarItems from '~/components/title_bar/menu_bar/MenuBarItems';
 import { editorStore, setSideBarOpen } from '~/stores/EditorStore';

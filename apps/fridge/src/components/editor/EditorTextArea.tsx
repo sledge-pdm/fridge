@@ -4,7 +4,7 @@ import { SpanMarkup } from '~/features/markup/SpanMarkup';
 import { SearchResult } from '~/features/search/Search';
 import { configStore } from '~/stores/ConfigStore';
 import { editorStore, getCurrentDocument } from '~/stores/EditorStore';
-import '../styles/editor_text_area.css';
+import '~/styles/editor_text_area.css';
 
 interface Props {
   onInput?: (value: string) => void;
