@@ -1,5 +1,3 @@
-import { SearchResult } from '~/features/search/Search';
-
 export interface FridgeDocument {
   id: string;
   title: string;
@@ -7,6 +5,4 @@ export interface FridgeDocument {
 
   // file association
   associatedFilePath?: string;
-  // search result
-  searchResult?: SearchResult;
 }

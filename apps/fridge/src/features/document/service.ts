@@ -20,7 +20,6 @@ export async function openDocument(path: string): Promise<FridgeDocument> {
     title,
     content,
     associatedFilePath: path,
-    searchResult: undefined,
   };
 
   addDocument(doc);
@@ -43,17 +42,17 @@ export function newDocument(id?: string, title: string = '', content: string = '
 }
 
 export function updateDocumentSearchResult(documentId: string, searchResult: SearchResult) {
-  //   const documentIndex = editorStore.documents.findIndex((doc) => doc.id === documentId);
-  //   if (documentIndex !== -1) {
-  //     setEditorStore('documents', documentIndex, 'searchResult', searchResult);
-  //   }
+  setEditorStore('searchStates', (states) => {
+    states.set(documentId, searchResult);
+    return new Map(states);
+  });
 }
 
 export function clearDocumentSearchResult(documentId: string) {
-  //   const documentIndex = editorStore.documents.findIndex((doc) => doc.id === documentId);
-  //   if (documentIndex !== -1) {
-  //     setEditorStore('documents', documentIndex, 'searchResult', { query: undefined, founds: [], count: 0 });
-  //   }
+  setEditorStore('searchStates', (states) => {
+    states.delete(documentId);
+    return new Map(states);
+  });
 }
 
 export function fromIndex(index: number): FridgeDocument | undefined {

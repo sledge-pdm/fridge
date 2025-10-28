@@ -1,6 +1,7 @@
 import { css } from '@acab/ecsstatic';
+import { clsx } from '@sledge/core';
 import { fonts } from '@sledge/theme';
-import { Component, createSignal, onMount } from 'solid-js';
+import { Component, createEffect, createMemo, createSignal, For, onMount, Show } from 'solid-js';
 import ThemeDropdown from '~/components/ThemeDropdown';
 import { clearDocumentSearchResult, fromId, updateDocumentSearchResult } from '~/features/document/service';
 import { searchDocument } from '~/features/search/Search';
@@ -105,7 +106,27 @@ const Sidebar: Component = () => {
     searchInputRef.focus();
   });
 
+  const activeDoc = createMemo(() => fromId(editorStore.activeDocId));
   const [lastQuery, setLastQuery] = createSignal<string | undefined>(undefined);
+
+  createEffect(() => {
+    const activeId = editorStore.activeDocId;
+    const searchStates = editorStore.searchStates;
+    if (!activeId) return;
+    const active = fromId(activeId);
+    if (!active) return;
+    // load saved state if available
+    const state = searchStates.get(active.id);
+
+    if (state) {
+      const query = state.query?.toString();
+      setLastQuery(state.query?.toString());
+      if (query) searchInputRef.value = query;
+    } else {
+      setLastQuery(undefined);
+      searchInputRef.value = '';
+    }
+  });
 
   return (
     <div class={root}>
@@ -139,10 +160,10 @@ const Sidebar: Component = () => {
         />
 
         <div class={resultList}>
-          {/* <Show when={activeDoc()?.searchResult?.query}>
-            <p class={resultLabel}>search result of "{activeDoc()?.searchResult?.query?.toString()}"</p>
+          <Show when={editorStore.searchStates.get(activeDoc()?.id || '')?.query}>
+            <p class={resultLabel}>search result of "{editorStore.searchStates.get(activeDoc()?.id || '')?.query?.toString()}"</p>
           </Show>
-          <For each={activeDoc()?.searchResult?.founds} fallback={<p class={noResultText}>no result</p>}>
+          <For each={editorStore.searchStates.get(activeDoc()?.id || '')?.founds} fallback={<p class={noResultText}>no result</p>}>
             {(item, i) => {
               // not concerning query length itself (might be too long e.g. "...XXXXXtoomuchlongquerytoshowinthesidebarXXXXX...")
               // there shouldn't be too much calculation here, so just put overflow:hidden and text-overflow: ellipsis, to make it
@@ -163,7 +184,7 @@ const Sidebar: Component = () => {
                 </div>
               );
             }}
-          </For> */}
+          </For>
         </div>
       </div>
 

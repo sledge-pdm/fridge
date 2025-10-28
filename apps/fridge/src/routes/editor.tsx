@@ -65,6 +65,7 @@ export default function Editor() {
             />
 
             <EditorTextArea
+              docId={() => activeDoc()?.id}
               content={() => activeDoc()?.content ?? ''}
               onInput={(value) => {
                 if (editorStore.activeDocId) update(editorStore.activeDocId, { content: value });

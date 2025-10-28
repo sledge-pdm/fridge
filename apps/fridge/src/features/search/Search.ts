@@ -1,4 +1,4 @@
-import { FridgeDocument } from '~/models/Document';
+import { FridgeDocument } from '~/features/document/model';
 
 export interface FoundSpan {
   start: number;
@@ -11,7 +11,7 @@ export interface SearchResult {
   count: number;
 }
 
-export function searchDocument(docList: FridgeDocument, query: string | RegExp): SearchResult {
+export function searchDocument(doc: FridgeDocument, query: string | RegExp): SearchResult {
   const queryRegexp: RegExp = typeof query === 'string' ? new RegExp(query, 'g') : query;
 
   let founds: FoundSpan[] = [];

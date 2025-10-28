@@ -1,11 +1,14 @@
 import { fonts } from '@sledge/theme';
 import { Accessor, Component, createEffect, createMemo, onMount } from 'solid-js';
 import { SpanMarkup } from '~/features/markup/SpanMarkup';
+import { SearchResult } from '~/features/search/Search';
 import { configStore } from '~/stores/ConfigStore';
+import { editorStore } from '~/stores/EditorStore';
 import '~/styles/editor_text_area.css';
 
 interface Props {
   onInput?: (value: string) => void;
+  docId: Accessor<string | undefined>;
   content: Accessor<string>;
 }
 
@@ -61,16 +64,15 @@ const EditorTextArea: Component<Props> = (props) => {
 
   // Generate formatted HTML using SpanMarkup
   const formattedValue = createMemo(() => {
-    console.log(`formatting: ${props.content()}...`);
+    // FIXME: Note that this will load other document's result...
+    const searchResult: SearchResult = editorStore.searchStates.get(props.docId() ?? '') ?? {
+      query: undefined,
+      founds: [],
+      count: 0,
+    };
 
-    // Create memo that tracks both content and search results
-    // const searchResult: SearchResult = ?.searchResult ?? {
-    //   query: undefined,
-    //   founds: [],
-    //   count: 0,
-    // };
     // Use SpanMarkup to generate HTML with search highlighting
-    const htmlRes = spanMarkup.toHTML(props.content(), []);
+    const htmlRes = spanMarkup.toHTML(props.content(), searchResult.founds);
     return htmlRes;
   });
 
