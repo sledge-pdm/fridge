@@ -23,7 +23,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
 }
 
 // 検索テスト実行
-export function runSearchTest(doc: FridgeDocument, query: string) {
+export function runSearchTest(docList: FridgeDocument, query: string) {
   console.log(`=== Testing search for: "${query}" ===`);
   const result = searchDocument(doc, query);
   console.log('Search result:', result);
@@ -35,7 +35,7 @@ export function runSearchTest(doc: FridgeDocument, query: string) {
 }
 
 // 複数クエリテスト
-export function runMultipleSearchTests(doc: FridgeDocument) {
+export function runMultipleSearchTests(docList: FridgeDocument) {
   const queries = ['Hello', 'test', 'the', 'space', 'fox'];
 
   queries.forEach((query) => {

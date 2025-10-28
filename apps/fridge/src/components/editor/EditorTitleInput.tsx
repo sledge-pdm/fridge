@@ -1,8 +1,13 @@
 import { fonts } from '@sledge/theme';
 import { Component } from 'solid-js';
-import { getCurrentDocument, updateCurrentDocument } from '~/stores/EditorStore';
+import { documentsManager } from '~/features/document/DocumentsManager';
+import { FridgeDocument } from '~/features/document/model';
 
-const EditorTitleInput: Component = () => {
+interface Props {
+  doc: FridgeDocument;
+}
+
+const EditorTitleInput: Component<Props> = (props) => {
   return (
     <input
       style={{
@@ -18,9 +23,9 @@ const EditorTitleInput: Component = () => {
       onInput={(e) => {
         const title = (e.target as HTMLInputElement).value;
         if (!title.trim()) return;
-        updateCurrentDocument({ title, associatedFilePath: undefined });
+        documentsManager.updateActive({ title, associatedFilePath: undefined });
       }}
-      value={getCurrentDocument()?.title}
+      value={props.doc.title}
     />
   );
 };

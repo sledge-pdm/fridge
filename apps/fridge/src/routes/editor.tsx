@@ -1,17 +1,18 @@
-import { css } from '@acab/ecsstatic';
-import { createMemo, createSignal, onMount, Show } from 'solid-js';
+import { Show } from 'solid-js';
 import EditorBottomBar from '~/components/editor/EditorBottomBar';
 import EditorStartContent from '~/components/editor/EditorStartContent';
 import EditorTextArea from '~/components/editor/EditorTextArea';
 import EditorTitleInput from '~/components/editor/EditorTitleInput';
 import Sidebar from '~/components/side_bar/Sidebar';
-import { editorStore, getCurrentDocument, updateCurrentDocument } from '~/stores/EditorStore';
+import { documentsManager } from '~/features/document/DocumentsManager';
+import { useActiveDoc } from '~/features/document/useDocuments';
+import { editorStore } from '~/stores/EditorStore';
 
 import '~/styles/editor.css';
 import { flexCol, pageRoot } from '~/styles/styles';
 
-
 export default function Editor() {
+  const { activeDoc } = useActiveDoc();
 
   return (
     <div class={pageRoot} style={{ overflow: 'hidden', 'box-sizing': 'border-box' }}>
@@ -22,12 +23,13 @@ export default function Editor() {
       </Show>
 
       <div class={flexCol} style={{ position: 'relative', 'flex-grow': 1, overflow: 'hidden', 'min-height': '0' }}>
-        <Show when={editorStore.currentDocumentId && getCurrentDocument()} fallback={<EditorStartContent />}>
+        <Show when={activeDoc()} fallback={<EditorStartContent />}>
           <div class='input_scroll'>
-            <EditorTitleInput />
+            <EditorTitleInput doc={activeDoc()!} />
             <EditorTextArea
+              defaultValue={activeDoc()!.content}
               onInput={(value) => {
-                updateCurrentDocument({ content: value });
+                documentsManager.updateActive({ content: value });
               }}
             />
           </div>

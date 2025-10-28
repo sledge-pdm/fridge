@@ -11,16 +11,17 @@ import { getCurrentWindow } from '@tauri-apps/api/window';
 import { createEffect, onCleanup, onMount } from 'solid-js';
 import MenuBar from '~/components/title_bar/MenuBar';
 import TitleBar from '~/components/title_bar/TitleBar';
-import { newDocument } from '~/models/Document';
+import { documentsManager } from '~/features/document/DocumentsManager';
+import { newDocument } from '~/features/document/service';
+import { loadEditorState } from '~/features/io/editor_state/load';
 import { configStore } from '~/stores/ConfigStore';
-import { addDocument, useRestoreEditorStore } from '~/stores/EditorStore';
 import { flexCol } from '~/styles/styles';
-import { flushBackup } from '~/utils/AutoBackup';
 import { reportCriticalError, zoomForIntegerize } from '~/utils/WindowUtils';
 
 export default function App() {
   // 自動復元を起動時に実行
-  useRestoreEditorStore();
+  loadEditorState();
+
   // グローバルエラーハンドラーを設定
   const handleGlobalError = (event: ErrorEvent) => {
     console.error('Global error caught:', event.error);
@@ -77,14 +78,11 @@ export default function App() {
 
     // await checkForUpdates();
 
-    addDocument(newDocument());
+    documentsManager.addDocument(newDocument());
   });
 
-  // ウィンドウ終了要求時にバックアップをフラッシュ
   onMount(async () => {
-    const unlisten = await listen('tauri://close-requested', async () => {
-      await flushBackup();
-    });
+    const unlisten = await listen('tauri://close-requested', async () => {});
     onCleanup(() => {
       unlisten();
     });

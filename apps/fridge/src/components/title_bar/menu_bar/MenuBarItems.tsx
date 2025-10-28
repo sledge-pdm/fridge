@@ -1,23 +1,28 @@
 import { css } from '@acab/ecsstatic';
 import { MenuList, MenuListOption } from '@sledge/ui';
 import { Component, createSignal, Show } from 'solid-js';
-import { showChooseFileDialog } from '~/io/choose';
-import { overwrite, saveToFile } from '~/io/save';
-import { newDocument, openDocument } from '~/models/Document';
-import { addDocument, getCurrentDocument, removeDocument, updateCurrentDocument } from '~/stores/EditorStore';
+import { documentsManager } from '~/features/document/DocumentsManager';
+import { newDocument, openDocument } from '~/features/document/service';
+import { useActiveDoc } from '~/features/document/useDocuments';
+import { showChooseFileDialog } from '~/features/io/choose';
+import { overwrite, saveToFile } from '~/features/io/save';
 
 const MenuBarItems: Component = () => {
+  const { activeDoc } = useActiveDoc();
+
   return (
     <div>
       <MenuItem
         menu={[
           {
+            type: 'item',
             label: 'new document.',
             onSelect: () => {
-              addDocument(newDocument());
+              documentsManager.addDocument(newDocument());
             },
           },
           {
+            type: 'item',
             label: 'open file.',
             onSelect: async () => {
               const path = await showChooseFileDialog();
@@ -25,22 +30,24 @@ const MenuBarItems: Component = () => {
             },
           },
           {
+            type: 'item',
             label: 'close document.',
             onSelect: () => {
-              const currentId = getCurrentDocument()?.id;
-              if (currentId) removeDocument(currentId);
+              const currentId = activeDoc()?.id;
+              if (currentId) documentsManager.removeDocument(currentId);
             },
           },
           {
+            type: 'item',
             label: 'save document.',
             onSelect: async () => {
-              const current = getCurrentDocument();
+              const current = activeDoc();
               if (!current) return;
               if (current.associatedFilePath) {
                 overwrite(current);
               } else {
-                const path = await saveToFile(getCurrentDocument()?.content || '', `${getCurrentDocument()?.title || 'untitled'}.txt`);
-                if (path) updateCurrentDocument({ associatedFilePath: path });
+                const path = await saveToFile(current?.content || '', `${current?.title || 'untitled'}.txt`);
+                if (path) documentsManager.updateActive({ associatedFilePath: path });
               }
             },
           },

@@ -1,8 +1,9 @@
 import { css } from '@acab/ecsstatic';
 import { Component, createMemo, createSignal, onMount } from 'solid-js';
-import { showChooseFileDialog } from '~/io/choose';
-import { newDocument, openDocument } from '~/models/Document';
-import { addDocument, editorStore, getCurrentDocument } from '~/stores/EditorStore';
+import { documentsManager } from '~/features/document/DocumentsManager';
+import { newDocument, openDocument } from '~/features/document/service';
+import { useActiveDoc, useDocuments } from '~/features/document/useDocuments';
+import { showChooseFileDialog } from '~/features/io/choose';
 
 const nothingContainer = css`
   display: flex;
@@ -25,6 +26,8 @@ const nothingText = css`
 `;
 
 const EditorStartContent: Component = () => {
+  const { activeDoc } = useActiveDoc();
+
   const [timeType, setTimeType] = createSignal<'morning' | 'day' | 'night'>();
 
   onMount(() => {
@@ -54,13 +57,13 @@ const EditorStartContent: Component = () => {
       <a
         class={nothingText}
         onClick={() => {
-          addDocument(newDocument());
+          documentsManager.addDocument(newDocument());
         }}
       >
-        {editorStore.currentDocumentId}
+        {activeDoc()?.id}
         &gt; new document.
       </a>
-      {JSON.stringify(getCurrentDocument() ?? 'undefined')}
+      {JSON.stringify(activeDoc() ?? 'undefined')}
       <a
         class={nothingText}
         onClick={async () => {

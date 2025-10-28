@@ -1,9 +1,10 @@
 import { Component } from 'solid-js';
-import ThemeDropdown from '~/components/ThemeDropdown';
-import { getCurrentDocument } from '~/stores/EditorStore';
+import { useActiveDoc } from '~/features/document/useDocuments';
 import { flexRow } from '~/styles/styles';
 
 const EditorBottomBar: Component = () => {
+  const { activeDoc } = useActiveDoc();
+
   return (
     <div
       class={flexRow}
@@ -19,8 +20,8 @@ const EditorBottomBar: Component = () => {
         background: 'var(--color-background)',
       }}
     >
-      <p style={{ 'margin-right': 'auto' }}>{getCurrentDocument()?.associatedFilePath || ''}</p>
-      <p>{getCurrentDocument()?.content.length} letters.</p>
+      <p style={{ 'margin-right': 'auto' }}>{activeDoc()?.associatedFilePath || ''}</p>
+      <p>{activeDoc()?.content?.length} letters.</p>
     </div>
   );
 };

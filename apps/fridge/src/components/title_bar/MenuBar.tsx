@@ -1,9 +1,8 @@
 import { css } from '@acab/ecsstatic';
 import { Icon } from '@sledge/ui';
-import ThemeDropdown from '~/components/ThemeDropdown';
 import FilesTab from '~/components/title_bar/menu_bar/FilesTab';
 import MenuBarItems from '~/components/title_bar/menu_bar/MenuBarItems';
-import { editorStore, setSideBarOpen } from '~/stores/EditorStore';
+import { editorStore, setEditorStore } from '~/stores/EditorStore';
 
 const root = css`
   display: flex;
@@ -34,7 +33,7 @@ export default function MenuBar() {
           opacity: editorStore.sidebar ? 1 : 0.5,
         }}
         onClick={() => {
-          setSideBarOpen(!editorStore.sidebar);
+          setEditorStore('sidebar', !editorStore.sidebar);
         }}
       >
         <Icon

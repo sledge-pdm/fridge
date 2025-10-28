@@ -18,5 +18,8 @@
     "stylelint-config-standard": "^39.0.0",
     "stylelint-order": "^7.0.0",
     "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "mitt": "^3.0.1"
   }
 }

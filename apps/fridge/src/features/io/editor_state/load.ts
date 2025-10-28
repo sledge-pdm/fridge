@@ -1,0 +1,23 @@
+import { appCacheDir, join } from '@tauri-apps/api/path';
+import { exists, readTextFile } from '@tauri-apps/plugin-fs';
+import { documentsManager } from '~/features/document/DocumentsManager';
+import { EDITOR_STATE_FILENAME, SavedEditorState } from '~/features/io/editor_state/model';
+
+export async function loadEditorState(): Promise<{
+  restored: boolean;
+  reason?: string;
+}> {
+  try {
+    const path = await join(await appCacheDir(), EDITOR_STATE_FILENAME);
+    if (!(await exists(path))) return { restored: false, reason: 'no-file' };
+
+    const txt = await readTextFile(path);
+    const state = JSON.parse(txt) as SavedEditorState;
+
+    documentsManager.replaceDocuments(state.documents, state.activeId);
+    return { restored: true };
+  } catch (e) {
+    console.error('failed to load editor state', e);
+    return { restored: false, reason: 'exception: ' + e };
+  }
+}

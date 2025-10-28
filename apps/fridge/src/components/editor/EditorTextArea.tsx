@@ -1,9 +1,9 @@
 import { fonts } from '@sledge/theme';
 import { Component, createEffect, createMemo, createSignal, onMount } from 'solid-js';
+import { useActiveDoc } from '~/features/document/useDocuments';
 import { SpanMarkup } from '~/features/markup/SpanMarkup';
 import { SearchResult } from '~/features/search/Search';
 import { configStore } from '~/stores/ConfigStore';
-import { editorStore, getCurrentDocument } from '~/stores/EditorStore';
 import '~/styles/editor_text_area.css';
 
 interface Props {
@@ -15,6 +15,8 @@ const EditorTextArea: Component<Props> = (props) => {
   let textAreaRef: HTMLTextAreaElement | undefined;
   let overlayRef: HTMLPreElement | undefined;
   let wrapperRef: HTMLDivElement | undefined;
+
+  const { activeDoc } = useActiveDoc();
 
   // Internal value signal mirroring current doc
   const [value, setValue] = createSignal(props.defaultValue || '');
@@ -29,9 +31,7 @@ const EditorTextArea: Component<Props> = (props) => {
 
   // Sync from store when document changes
   createEffect(() => {
-    const currentDocumentId = editorStore.currentDocumentId;
-    const doc = editorStore.documents.find((d) => d.id === currentDocumentId);
-    const content = doc?.content || '';
+    const content = activeDoc()?.content || '';
     setValue(content);
     if (textAreaRef) {
       textAreaRef.value = content;
@@ -54,16 +54,13 @@ const EditorTextArea: Component<Props> = (props) => {
   };
 
   createEffect(() => {
-    // trigger on value change (次フレームで resize)
     value();
     requestAnimationFrame(resize);
   });
 
-  // リサイズ (ウィンドウやサイドバー幅変更) を監視
   onMount(() => {
     if (!wrapperRef) return;
     const ro = new ResizeObserver(() => {
-      // レイアウト確定後に 1 フレーム遅らせて計測
       requestAnimationFrame(resize);
     });
     ro.observe(wrapperRef);
@@ -72,20 +69,17 @@ const EditorTextArea: Component<Props> = (props) => {
 
   // Generate formatted HTML using SpanMarkup
   const formattedValue = createMemo(() => {
+    console.log(`formatting: ${activeDoc()}...`);
+
     const val = value();
     // Create memo that tracks both content and search results
-    const currentDoc = getCurrentDocument();
-    const searchResult: SearchResult = currentDoc?.searchResult ?? {
+    const searchResult: SearchResult = activeDoc()?.searchResult ?? {
       query: undefined,
       founds: [],
       count: 0,
     };
-
-    console.log('val: ', val);
-    console.log('founds: ', searchResult.founds.join(', '));
     // Use SpanMarkup to generate HTML with search highlighting
     const htmlRes = spanMarkup.toHTML(val, searchResult.founds);
-    console.log('html markup: ', htmlRes);
     return htmlRes;
   });
 

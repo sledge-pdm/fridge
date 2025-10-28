@@ -1,7 +1,7 @@
 import { Icon } from '@sledge/ui';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { createSignal, onMount, Show } from 'solid-js';
-import { getCurrentDocument } from '~/stores/EditorStore';
+import { useActiveDoc } from '~/features/document/useDocuments';
 import { flexRow } from '~/styles/styles';
 import {
   titleBarControlButtonContainer,
@@ -16,6 +16,8 @@ import {
 import '~/styles/title_bar/title_bar_region.css';
 
 export default function TitleBar() {
+  const { activeDoc } = useActiveDoc();
+
   const [isMaximizable, setIsMaximizable] = createSignal(false);
   const [isMinimizable, setIsMinimizable] = createSignal(false);
   const [isClosable, setIsClosable] = createSignal(false);
@@ -51,8 +53,8 @@ export default function TitleBar() {
                   'flex-wrap': 'wrap',
                 }}
               >
-                <p class={titleBarTitle}>{getCurrentDocument()?.title ?? 'fridge.'}</p>
-                <p class={titleBarTitleSub}>{getCurrentDocument()?.associatedFilePath ?? ''}</p>
+                <p class={titleBarTitle}>{activeDoc()?.title ?? 'fridge.'}</p>
+                <p class={titleBarTitleSub}>{activeDoc()?.associatedFilePath ?? ''}</p>
               </div>
             </Show>
           </div>

@@ -3,8 +3,9 @@ import { clsx } from '@sledge/core';
 import { fonts } from '@sledge/theme';
 import { Component, createSignal, For, onMount, Show } from 'solid-js';
 import ThemeDropdown from '~/components/ThemeDropdown';
+import { clearDocumentSearchResult, updateDocumentSearchResult } from '~/features/document/service';
+import { useActiveDoc } from '~/features/document/useDocuments';
 import { searchDocument } from '~/features/search/Search';
-import { clearDocumentSearchResult, getCurrentDocument, updateDocumentSearchResult } from '~/stores/EditorStore';
 
 const root = css`
   display: flex;
@@ -99,6 +100,8 @@ const foundText = css`
 `;
 
 const Sidebar: Component = () => {
+  const { activeDoc } = useActiveDoc();
+
   let searchInputRef: HTMLInputElement;
 
   onMount(() => {
@@ -120,7 +123,7 @@ const Sidebar: Component = () => {
           class={searchInput}
           placeholder='search...'
           onInput={(e) => {
-            const doc = getCurrentDocument();
+            const doc = activeDoc();
             const query = e.currentTarget.value.trim();
 
             if (doc) {
@@ -139,10 +142,10 @@ const Sidebar: Component = () => {
         />
 
         <div class={resultList}>
-          <Show when={getCurrentDocument()?.searchResult?.query}>
-            <p class={resultLabel}>search result of "{getCurrentDocument()?.searchResult?.query?.toString()}"</p>
+          <Show when={activeDoc()?.searchResult?.query}>
+            <p class={resultLabel}>search result of "{activeDoc()?.searchResult?.query?.toString()}"</p>
           </Show>
-          <For each={getCurrentDocument()?.searchResult?.founds} fallback={<p class={noResultText}>no result</p>}>
+          <For each={activeDoc()?.searchResult?.founds} fallback={<p class={noResultText}>no result</p>}>
             {(item, i) => {
               // not concerning query length itself (might be too long e.g. "...XXXXXtoomuchlongquerytoshowinthesidebarXXXXX...")
               // there shouldn't be too much calculation here, so just put overflow:hidden and text-overflow: ellipsis, to make it
@@ -156,9 +159,9 @@ const Sidebar: Component = () => {
                   </p>
                   <p class={resultText}>
                     ...
-                    {getCurrentDocument()?.content.slice(item.start - margin, item.start)}
-                    <span class={clsx(resultText, foundText)}>{getCurrentDocument()?.content.slice(item.start, item.end)}</span>
-                    {getCurrentDocument()?.content.slice(item.end, item.end + margin)}...
+                    {activeDoc()?.content.slice(item.start - margin, item.start)}
+                    <span class={clsx(resultText, foundText)}>{activeDoc()?.content.slice(item.start, item.end)}</span>
+                    {activeDoc()?.content.slice(item.end, item.end + margin)}...
                   </p>
                 </div>
               );
