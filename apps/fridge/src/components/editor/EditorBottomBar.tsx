@@ -1,7 +1,15 @@
+import { css } from '@acab/ecsstatic';
 import { Component, createMemo } from 'solid-js';
+import ThemeDropdown from '~/components/ThemeDropdown';
 import { fromId } from '~/features/document/service';
 import { editorStore } from '~/stores/EditorStore';
 import { flexRow } from '~/styles/styles';
+
+const themeToggleContainer = css`
+  display: flex;
+  flex-direction: column;
+  margin-right: 8px;
+`;
 
 const EditorBottomBar: Component = () => {
   const activeDoc = createMemo(() => fromId(editorStore.activeDocId));
@@ -22,6 +30,9 @@ const EditorBottomBar: Component = () => {
       }}
     >
       <p style={{ 'margin-right': 'auto' }}>{activeDoc()?.associatedFilePath || ''}</p>
+      <div class={themeToggleContainer}>
+        <ThemeDropdown noBackground />
+      </div>
       <p>{activeDoc()?.content?.length} letters.</p>
     </div>
   );

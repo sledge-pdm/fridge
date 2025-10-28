@@ -30,7 +30,7 @@ export default function MenuBar() {
       <div
         class={sideBarIconContainer}
         style={{
-          opacity: editorStore.sidebar ? 1 : 0.5,
+          opacity: editorStore.sidebar ? 1 : 0.75,
         }}
         onClick={() => {
           setEditorStore('sidebar', !editorStore.sidebar);

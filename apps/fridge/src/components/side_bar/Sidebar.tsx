@@ -2,7 +2,6 @@ import { css } from '@acab/ecsstatic';
 import { clsx } from '@sledge/core';
 import { fonts } from '@sledge/theme';
 import { Component, createEffect, createMemo, createSignal, For, onMount, Show } from 'solid-js';
-import ThemeDropdown from '~/components/ThemeDropdown';
 import { clearDocumentSearchResult, fromId, updateDocumentSearchResult } from '~/features/document/service';
 import { searchDocument } from '~/features/search/Search';
 import { editorStore } from '~/stores/EditorStore';
@@ -21,8 +20,8 @@ const scrollContainer = css`
   flex-direction: column;
   box-sizing: border-box;
   height: 100%;
-  min-width: 300px;
-  width: 300px;
+  min-width: 280px;
+  width: 280px;
   padding: 28px 24px;
   overflow-x: hidden;
   overflow-y: auto;
@@ -40,11 +39,6 @@ const scrollContainer = css`
   &::-webkit-scrollbar-thumb {
     background-color: #888;
   }
-`;
-const themeToggleContainer = css`
-  display: flex;
-  flex-direction: column;
-  margin-left: auto;
 `;
 const searchLabel = css`
   margin-top: 8px;
@@ -67,7 +61,8 @@ const resultList = css`
 `;
 const noResultText = css`
   color: var(--color-muted);
-  padding: 8px 12px;
+  margin-top: 12px;
+  margin-left: 6px;
 `;
 const resultItem = css`
   padding: 4px 6px;
@@ -131,15 +126,12 @@ const Sidebar: Component = () => {
   return (
     <div class={root}>
       <div class={scrollContainer}>
-        <div class={themeToggleContainer}>
-          <ThemeDropdown />
-        </div>
-
         <p class={searchLabel}>search document.</p>
         <input
           ref={(ref) => (searchInputRef = ref)}
           class={searchInput}
           placeholder='search...'
+          autocomplete='off'
           onInput={(e) => {
             const doc = fromId(editorStore.activeDocId);
             const query = e.currentTarget.value.trim();

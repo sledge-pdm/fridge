@@ -95,13 +95,17 @@ export function removeDocument(id: string): number | undefined {
     return [...docs.filter((doc) => doc.id !== id)];
   });
 
-  saveEditorState();
-
-  const nextIndex = removingIndex - 1;
-  if (0 <= nextIndex && nextIndex < editorStore.documents.length) {
+  const nextIndex = Math.min(removingIndex + 1, editorStore.documents.length - 1);
+  if (0 <= nextIndex) {
     const nextDoc = fromIndex(nextIndex);
     setEditorStore('activeDocId', nextDoc?.id);
   }
+
+  if (editorStore.documents.length === 0) {
+    setEditorStore('activeDocId', undefined);
+  }
+
+  saveEditorState();
 }
 
 export function replaceDocument(id: string, doc: FridgeDocument) {

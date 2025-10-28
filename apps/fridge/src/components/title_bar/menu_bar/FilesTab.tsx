@@ -34,8 +34,8 @@ const divider = css`
   flex-direction: row;
   width: 1px;
   height: 50%;
-  background-color: var(--color-border-secondary);
-  opacity: 0.25;
+  background-color: var(--color-on-background);
+  opacity: 0.15;
 `;
 
 const FilesTab: Component = () => {
@@ -81,7 +81,8 @@ const tabItem = css`
   box-sizing: border-box;
   cursor: pointer;
   &:hover {
-    background-color: var(--color-button-hover);
+    max-width: initial;
+    background-color: var(--color-surface);
   }
 
   &:hover > #remove_container {
@@ -95,7 +96,7 @@ const tabItemSelected = css`
 `;
 const label = css`
   color: var(--color-on-background);
-  opacity: 0.5;
+  opacity: 0.75;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -137,7 +138,17 @@ const TabItem: Component<ItemProps> = (props) => {
   });
 
   return (
-    <div class={clsx(tabItem, isActive() && tabItemSelected)} onClick={() => setEditorStore('activeDocId', doc()?.id)}>
+    <div
+      class={clsx(tabItem, isActive() && tabItemSelected)}
+      onPointerDown={(e) => {
+        if (e.button === 1) {
+          const id = doc()?.id;
+          if (id) removeDocument(id);
+        } else {
+          setEditorStore('activeDocId', doc()?.id);
+        }
+      }}
+    >
       <p class={clsx(label, isActive() && labelSelected)}>{doc()?.title}</p>
       <div
         id='remove_container'

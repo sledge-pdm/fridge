@@ -6,7 +6,7 @@ import { editorStore } from '~/stores/EditorStore';
 
 const nothingContainer = css`
   display: flex;
-  padding: 36px;
+  padding: 48px;
   flex-direction: column;
   flex: 1 1 0;
   min-height: 0;
@@ -14,12 +14,12 @@ const nothingContainer = css`
   box-sizing: border-box;
 `;
 const nothingTitle = css`
-  font-size: 48px;
+  font-size: 42px;
   font-family: ZFB31;
   margin-bottom: 16px;
 `;
 const nothingText = css`
-  font-size: 8px;
+  font-size: 16px;
   margin-bottom: 12px;
   font-family: ZFB08;
 `;
@@ -62,7 +62,6 @@ const EditorStartContent: Component = () => {
         {activeDoc()?.id}
         &gt; new document.
       </a>
-      {JSON.stringify(activeDoc() ?? 'undefined')}
       <a
         class={nothingText}
         onClick={async () => {

@@ -86,7 +86,7 @@
   font-family: var(--editor-font-family, monospace);
   line-height: var(--editor-line-height, 1.4);
   font-size: var(--editor-font-size, 12px);
-  opacity: 0.4;
+  opacity: 0.25;
 }
 
 .editor-overlay .fs {
@@ -96,7 +96,7 @@
   font-family: var(--editor-font-family, monospace);
   line-height: var(--editor-line-height, 1.4);
   font-size: var(--editor-font-size, 12px);
-  opacity: 0.3;
+  opacity: 0.25;
 }
 
 .editor-overlay .sr {
@@ -106,7 +106,7 @@
   font-family: var(--editor-font-family, monospace);
   line-height: var(--editor-line-height, 1.4);
   font-size: var(--editor-font-size, 12px);
-  opacity: 0.3;
+  opacity: 0.25;
 }
 
 /* 検索ハイライト */
