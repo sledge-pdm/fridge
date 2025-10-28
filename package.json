@@ -8,7 +8,8 @@
     "test:ui": "vitest",
     "prettier": "prettier --write . --config .prettierrc",
     "cargo:format": "cd apps/fridge/src-tauri && cargo fmt",
-    "format": "pnpm prettier && pnpm cargo:format"
+    "format": "pnpm prettier && pnpm cargo:format",
+    "tsc": "pnpm -r exec tsc --noEmit --skipLibCheck"
   },
   "devDependencies": {
     "dotenv": "^17.2.1",
