@@ -1,7 +1,6 @@
 import { css } from '@acab/ecsstatic';
 import { Icon } from '@sledge/ui';
-import FilesTab from '~/components/title_bar/menu_bar/FilesTab';
-import MenuBarItems from '~/components/title_bar/menu_bar/MenuBarItems';
+import FilesTab from '~/components/title_bar/FilesTab';
 import { editorStore, setEditorStore } from '~/stores/EditorStore';
 
 const root = css`
@@ -44,8 +43,6 @@ export default function MenuBar() {
       </div>
 
       <FilesTab />
-      <div class={spacer} />
-      <MenuBarItems />
     </div>
   );
 }
