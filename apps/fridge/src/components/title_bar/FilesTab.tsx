@@ -74,6 +74,8 @@ const FilesTab: Component = () => {
         <Show when={addMenuShown()}>
           <MenuList
             align='left'
+            closeByOutsideClick={true}
+            onClose={() => setAddMenuShown(false)}
             style={{ 'margin-top': '6px', width: '120px' }}
             options={[
               {
