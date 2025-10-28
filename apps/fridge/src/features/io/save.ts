@@ -1,7 +1,7 @@
 import * as path from '@tauri-apps/api/path';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
-import { FridgeDocument } from '~/models/Document';
+import { FridgeDocument } from '~/features/document/model';
 import { join } from '~/utils/FileUtils';
 
 export async function overwrite(document: FridgeDocument) {

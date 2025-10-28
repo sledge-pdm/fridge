@@ -1,5 +1,5 @@
-import { documentsManager } from '~/features/document/DocumentsManager';
 import { FridgeDocument } from '~/features/document/model';
+import { editorStore } from '~/stores/EditorStore';
 
 export const EDITOR_STATE_FILENAME = 'editor_state.json';
 
@@ -9,5 +9,5 @@ export interface SavedEditorState {
 }
 
 export function getCurrentEditorState(): SavedEditorState {
-  return { documents: documentsManager.getDocs(), activeId: documentsManager.getActiveId() };
+  return { documents: editorStore.documents, activeId: editorStore.activeDocId };
 }

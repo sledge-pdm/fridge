@@ -1,7 +1,8 @@
 import { Icon } from '@sledge/ui';
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { createSignal, onMount, Show } from 'solid-js';
-import { useActiveDoc } from '~/features/document/useDocuments';
+import { createMemo, createSignal, onMount, Show } from 'solid-js';
+import { fromId } from '~/features/document/service';
+import { editorStore } from '~/stores/EditorStore';
 import { flexRow } from '~/styles/styles';
 import {
   titleBarControlButtonContainer,
@@ -16,7 +17,7 @@ import {
 import '~/styles/title_bar/title_bar_region.css';
 
 export default function TitleBar() {
-  const { activeDoc } = useActiveDoc();
+  const activeDoc = createMemo(() => fromId(editorStore.activeDocId));
 
   const [isMaximizable, setIsMaximizable] = createSignal(false);
   const [isMinimizable, setIsMinimizable] = createSignal(false);

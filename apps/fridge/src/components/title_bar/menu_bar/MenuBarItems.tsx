@@ -1,15 +1,13 @@
 import { css } from '@acab/ecsstatic';
 import { MenuList, MenuListOption } from '@sledge/ui';
 import { Component, createSignal, Show } from 'solid-js';
-import { documentsManager } from '~/features/document/DocumentsManager';
-import { newDocument, openDocument } from '~/features/document/service';
-import { useActiveDoc } from '~/features/document/useDocuments';
+
+import { addDocument, fromId, newDocument, openDocument, removeDocument, update } from '~/features/document/service';
 import { showChooseFileDialog } from '~/features/io/choose';
 import { overwrite, saveToFile } from '~/features/io/save';
+import { editorStore, setEditorStore } from '~/stores/EditorStore';
 
 const MenuBarItems: Component = () => {
-  const { activeDoc } = useActiveDoc();
-
   return (
     <div>
       <MenuItem
@@ -18,7 +16,9 @@ const MenuBarItems: Component = () => {
             type: 'item',
             label: 'new document.',
             onSelect: () => {
-              documentsManager.addDocument(newDocument());
+              const newDoc = newDocument();
+              addDocument(newDoc);
+              setEditorStore('activeDocId', newDoc.id);
             },
           },
           {
@@ -33,21 +33,23 @@ const MenuBarItems: Component = () => {
             type: 'item',
             label: 'close document.',
             onSelect: () => {
-              const currentId = activeDoc()?.id;
-              if (currentId) documentsManager.removeDocument(currentId);
+              const currentId = fromId(editorStore.activeDocId)?.id;
+              if (currentId) {
+                removeDocument(currentId);
+              }
             },
           },
           {
             type: 'item',
             label: 'save document.',
             onSelect: async () => {
-              const current = activeDoc();
+              const current = fromId(editorStore.activeDocId);
               if (!current) return;
               if (current.associatedFilePath) {
                 overwrite(current);
               } else {
                 const path = await saveToFile(current?.content || '', `${current?.title || 'untitled'}.txt`);
-                if (path) documentsManager.updateActive({ associatedFilePath: path });
+                if (editorStore.activeDocId && path) update(editorStore.activeDocId, { associatedFilePath: path });
               }
             },
           },
@@ -100,7 +102,14 @@ const MenuItem: Component<ItemProps> = (props) => {
         <p class={menuItemText}>{props.children}</p>
       </div>
       <Show when={props.menu && show()}>
-        <MenuList align='right' options={props.menu!} onClose={() => setShow(false)} />
+        <MenuList
+          align='right'
+          options={props.menu!}
+          onClose={() => setShow(false)}
+          style={{
+            width: '120px',
+          }}
+        />
       </Show>
     </div>
   );

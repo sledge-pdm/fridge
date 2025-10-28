@@ -10,18 +10,6 @@ vi.mock('~/utils/EventBus', () => ({
   },
 }));
 
-// Mock bottom bar text function but keep other exports (e.g., DebugLogger)
-vi.mock('~/controllers/log/LogController', () => ({
-  setBottomBarText: vi.fn(),
-  DebugLogger: class {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    constructor(_label: string, _enabled: boolean) {}
-    debugLog() {}
-    debugWarn() {}
-    debugError() {}
-  },
-}));
-
 // Solid stores: we can import the real stores as they use solid-js/store (no DOM),
 // but to avoid side effects on global state between tests, we reset important flags per test if needed.
 
@@ -36,11 +24,4 @@ vi.mock('@sledge/theme', () => ({
     { label: 'light', value: 'light' },
     { label: 'dark', value: 'dark' },
   ],
-}));
-
-// Mock WebGLRenderer consumer modules that import GLSL to avoid Vite parsing GLSL files in node tests
-vi.mock('~/controllers/webgl/WebGLRenderer', () => ({
-  WebGLRenderer: class {
-    constructor() {}
-  },
 }));

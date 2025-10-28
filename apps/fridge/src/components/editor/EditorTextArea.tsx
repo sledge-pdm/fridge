@@ -1,25 +1,18 @@
 import { fonts } from '@sledge/theme';
-import { Component, createEffect, createMemo, createSignal, onMount } from 'solid-js';
-import { useActiveDoc } from '~/features/document/useDocuments';
+import { Accessor, Component, createEffect, createMemo, onMount } from 'solid-js';
 import { SpanMarkup } from '~/features/markup/SpanMarkup';
-import { SearchResult } from '~/features/search/Search';
 import { configStore } from '~/stores/ConfigStore';
 import '~/styles/editor_text_area.css';
 
 interface Props {
   onInput?: (value: string) => void;
-  defaultValue?: string;
+  content: Accessor<string>;
 }
 
 const EditorTextArea: Component<Props> = (props) => {
   let textAreaRef: HTMLTextAreaElement | undefined;
   let overlayRef: HTMLPreElement | undefined;
   let wrapperRef: HTMLDivElement | undefined;
-
-  const { activeDoc } = useActiveDoc();
-
-  // Internal value signal mirroring current doc
-  const [value, setValue] = createSignal(props.defaultValue || '');
 
   // SpanMarkup instance for overlay rendering
   const spanMarkup = new SpanMarkup({
@@ -31,8 +24,7 @@ const EditorTextArea: Component<Props> = (props) => {
 
   // Sync from store when document changes
   createEffect(() => {
-    const content = activeDoc()?.content || '';
-    setValue(content);
+    const content = props.content();
     if (textAreaRef) {
       textAreaRef.value = content;
       // Keep focus for seamless switch
@@ -54,7 +46,7 @@ const EditorTextArea: Component<Props> = (props) => {
   };
 
   createEffect(() => {
-    value();
+    props.content();
     requestAnimationFrame(resize);
   });
 
@@ -69,22 +61,18 @@ const EditorTextArea: Component<Props> = (props) => {
 
   // Generate formatted HTML using SpanMarkup
   const formattedValue = createMemo(() => {
-    console.log(`formatting: ${activeDoc()}...`);
+    console.log(`formatting: ${props.content()}...`);
 
-    const val = value();
     // Create memo that tracks both content and search results
-    const searchResult: SearchResult = activeDoc()?.searchResult ?? {
-      query: undefined,
-      founds: [],
-      count: 0,
-    };
+    // const searchResult: SearchResult = ?.searchResult ?? {
+    //   query: undefined,
+    //   founds: [],
+    //   count: 0,
+    // };
     // Use SpanMarkup to generate HTML with search highlighting
-    const htmlRes = spanMarkup.toHTML(val, searchResult.founds);
+    const htmlRes = spanMarkup.toHTML(props.content(), []);
     return htmlRes;
   });
-
-  // 高さは親コンテナスクロール + テキスト折返しに任せるため resize ロジック不要
-  createEffect(() => value());
 
   return (
     <div
@@ -106,7 +94,6 @@ const EditorTextArea: Component<Props> = (props) => {
         placeholder='Start as you mean to go on...'
         onInput={(e) => {
           const v = (e.target as HTMLTextAreaElement).value;
-          setValue(v);
           props.onInput?.(v);
         }}
       />

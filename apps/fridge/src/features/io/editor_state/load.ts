@@ -1,6 +1,6 @@
 import { appCacheDir, join } from '@tauri-apps/api/path';
 import { exists, readTextFile } from '@tauri-apps/plugin-fs';
-import { documentsManager } from '~/features/document/DocumentsManager';
+import { replaceDocuments } from '~/features/document/service';
 import { EDITOR_STATE_FILENAME, SavedEditorState } from '~/features/io/editor_state/model';
 
 export async function loadEditorState(): Promise<{
@@ -14,7 +14,7 @@ export async function loadEditorState(): Promise<{
     const txt = await readTextFile(path);
     const state = JSON.parse(txt) as SavedEditorState;
 
-    documentsManager.replaceDocuments(state.documents, state.activeId);
+    replaceDocuments(state.documents, state.activeId);
     return { restored: true };
   } catch (e) {
     console.error('failed to load editor state', e);

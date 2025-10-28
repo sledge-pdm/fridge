@@ -1,9 +1,10 @@
-import { Component } from 'solid-js';
-import { useActiveDoc } from '~/features/document/useDocuments';
+import { Component, createMemo } from 'solid-js';
+import { fromId } from '~/features/document/service';
+import { editorStore } from '~/stores/EditorStore';
 import { flexRow } from '~/styles/styles';
 
 const EditorBottomBar: Component = () => {
-  const { activeDoc } = useActiveDoc();
+  const activeDoc = createMemo(() => fromId(editorStore.activeDocId));
 
   return (
     <div

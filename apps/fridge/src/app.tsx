@@ -11,17 +11,13 @@ import { getCurrentWindow } from '@tauri-apps/api/window';
 import { createEffect, onCleanup, onMount } from 'solid-js';
 import MenuBar from '~/components/title_bar/MenuBar';
 import TitleBar from '~/components/title_bar/TitleBar';
-import { documentsManager } from '~/features/document/DocumentsManager';
-import { newDocument } from '~/features/document/service';
+import { addDocument, newDocument } from '~/features/document/service';
 import { loadEditorState } from '~/features/io/editor_state/load';
 import { configStore } from '~/stores/ConfigStore';
 import { flexCol } from '~/styles/styles';
 import { reportCriticalError, zoomForIntegerize } from '~/utils/WindowUtils';
 
 export default function App() {
-  // 自動復元を起動時に実行
-  loadEditorState();
-
   // グローバルエラーハンドラーを設定
   const handleGlobalError = (event: ErrorEvent) => {
     console.error('Global error caught:', event.error);
@@ -75,10 +71,14 @@ export default function App() {
       console.log('scale changed to:', scaleFactor, 'dprzoom: ', zoomForIntegerize(scaleFactor));
       await webview.setZoom(zoomForIntegerize(scaleFactor));
     });
-
     // await checkForUpdates();
 
-    documentsManager.addDocument(newDocument());
+    const result = await loadEditorState();
+    if (result.restored) {
+    } else {
+      console.warn(result.reason);
+      addDocument(newDocument(), true);
+    }
   });
 
   onMount(async () => {
