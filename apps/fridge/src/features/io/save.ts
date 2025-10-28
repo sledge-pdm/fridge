@@ -22,5 +22,6 @@ export async function saveToFile(data: string, filename: string): Promise<string
   }
 
   await writeTextFile(filePath, data);
+
   return filePath;
 }

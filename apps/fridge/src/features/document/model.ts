@@ -5,4 +5,10 @@ export interface FridgeDocument {
 
   // file association
   associatedFilePath?: string;
+
+  // contents on open
+  contentsOnOpen?: {
+    title: string;
+    content: string;
+  };
 }

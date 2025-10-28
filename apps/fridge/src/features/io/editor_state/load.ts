@@ -14,8 +14,19 @@ export async function loadEditorState(): Promise<{
     const txt = await readTextFile(path);
     const state = JSON.parse(txt) as SavedEditorState;
 
-    replaceDocuments(state.documents, state.activeId);
-    
+    replaceDocuments(
+      state.documents.map((d) => {
+        return {
+          ...d,
+          contentsOnOpen: {
+            title: d.title,
+            content: d.content,
+          },
+        };
+      }),
+      state.activeId
+    );
+
     return { restored: true };
   } catch (e) {
     console.error('failed to load editor state', e);

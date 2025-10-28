@@ -1,9 +1,9 @@
 import { css } from '@acab/ecsstatic';
 import { clsx } from '@sledge/core';
-import { Icon, MenuList } from '@sledge/ui';
+import { Icon, Light, MenuList } from '@sledge/ui';
 import { Component, createEffect, createSignal, For, onMount, Show } from 'solid-js';
 import { FridgeDocument } from '~/features/document/model';
-import { addDocument, fromId, newDocument, openDocument, removeDocument } from '~/features/document/service';
+import { addDocument, fromId, isChanged, newDocument, openDocument, removeDocument } from '~/features/document/service';
 import { showChooseFileDialog } from '~/features/io/choose';
 import { editorStore, setEditorStore } from '~/stores/EditorStore';
 import { eventBus, Events } from '~/utils/EventBus';
@@ -159,6 +159,7 @@ interface ItemProps {
 const TabItem: Component<ItemProps> = (props) => {
   const [doc, setDoc] = createSignal<FridgeDocument | undefined>(fromId(props.docId));
   const [isActive, setIsActive] = createSignal<boolean>(false);
+  const [isDocChanged, setIsDocChanged] = createSignal<boolean>(false);
 
   createEffect(() => {
     const activeId = editorStore.activeDocId;
@@ -166,7 +167,11 @@ const TabItem: Component<ItemProps> = (props) => {
   });
 
   const handleDocUpdate = (e: Events['doc:changed']) => {
-    if (e.id === props.docId) setDoc(fromId(e.id));
+    if (e.id === props.docId) {
+      const doc = fromId(e.id);
+      setDoc(doc);
+      setIsDocChanged(doc ? isChanged(doc) : false);
+    }
   };
 
   onMount(() => {
@@ -190,6 +195,7 @@ const TabItem: Component<ItemProps> = (props) => {
       }}
     >
       <p class={clsx(label, isActive() && labelSelected)}>{doc()?.title}</p>
+      <Light on={isDocChanged()} />
       <div
         id='remove_container'
         class={removeContainer}

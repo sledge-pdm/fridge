@@ -5,6 +5,7 @@ import EditorTextArea from '~/components/editor/EditorTextArea';
 import Sidebar from '~/components/side_bar/Sidebar';
 import { FridgeDocument } from '~/features/document/model';
 import { fromId, fromIndex, update } from '~/features/document/service';
+import { overwrite } from '~/features/io/save';
 import { editorStore, setEditorStore } from '~/stores/EditorStore';
 
 import '~/styles/editor.css';
@@ -21,6 +22,12 @@ export default function Editor() {
         setEditorStore('activeDocId', doc.id);
       }
     }
+
+    if (e.ctrlKey && e.key === 's') {
+      e.preventDefault();
+      const active = fromId(editorStore.activeDocId);
+      if (active) overwrite(active);
+    }
   };
 
   const [activeDoc, setActiveDoc] = createSignal<FridgeDocument | undefined>(fromId(editorStore.activeDocId));
@@ -30,7 +37,8 @@ export default function Editor() {
     setActiveDoc(fromId(activeId));
   });
   const handleDocUpdate = (e: Events['doc:changed']) => {
-    setActiveDoc(fromId(editorStore.activeDocId));
+    const doc = fromId(editorStore.activeDocId);
+    setActiveDoc(doc);
   };
 
   onMount(() => {

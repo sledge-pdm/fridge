@@ -11,6 +11,11 @@ function pathToTitle(path: string): string {
   return location?.name?.replace('.txt', '') || 'Untitled Document';
 }
 
+export function isChanged(doc: FridgeDocument) {
+  if (!doc.contentsOnOpen) return true; // pessimistic
+  return doc.title !== doc.contentsOnOpen.title || doc.content !== doc.contentsOnOpen.content;
+}
+
 export async function openDocument(path: string): Promise<FridgeDocument> {
   const content = await readFromFile(path);
   const title = pathToTitle(path);
@@ -20,6 +25,8 @@ export async function openDocument(path: string): Promise<FridgeDocument> {
     title,
     content,
     associatedFilePath: path,
+
+    contentsOnOpen: { title, content },
   };
 
   addDocument(doc);
@@ -38,6 +45,7 @@ export function newDocument(id?: string, title: string = '', content: string = '
     id,
     title,
     content,
+    contentsOnOpen: { title, content },
   };
 }
 
@@ -46,6 +54,8 @@ export function updateDocumentSearchResult(documentId: string, searchResult: Sea
     states.set(documentId, searchResult);
     return new Map(states);
   });
+
+  saveEditorState();
 }
 
 export function clearDocumentSearchResult(documentId: string) {
@@ -53,6 +63,8 @@ export function clearDocumentSearchResult(documentId: string) {
     states.delete(documentId);
     return new Map(states);
   });
+
+  saveEditorState();
 }
 
 export function fromIndex(index: number): FridgeDocument | undefined {
@@ -113,6 +125,8 @@ export function replaceDocument(id: string, doc: FridgeDocument) {
   if (index < 0) return;
 
   setEditorStore('documents', index, doc);
+
+  eventBus.emit('doc:changed', { id });
 
   saveEditorState();
 }
