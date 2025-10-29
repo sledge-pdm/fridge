@@ -80,64 +80,6 @@ export function parseHTML(node: ASTNode, docElId?: string): JSX.Element {
   }
 }
 
-// Simple shape for extracted nodes from DOM. We keep it minimal so it can be
-// adapted to the real ASTNode types elsewhere.
-export type ExtractedNode = {
-  type: string;
-  id?: string;
-  children: ExtractedNode[];
-};
-
-/**
- * Recursively walk a DOM subtree starting at `root` and extract nodes that
- * contain `data-type` (and optional `data-id`). Returns a tree of
- * `ExtractedNode` objects mirroring the DOM structure of elements that have
- * `data-type`.
- *
- * Notes:
- * - This intentionally ignores diffs and content; it's a simple extraction.
- * - Only element nodes are considered. Text nodes are ignored unless wrapped
- *   in an element with `data-type`.
- */
-export function extractNodesFromDOM(root: HTMLElement): ExtractedNode[] {
-  const out: ExtractedNode[] = [];
-
-  function walk(el: Element): ExtractedNode | null {
-    const type = el.getAttribute('data-type');
-    const id = el.getAttribute('data-id') || undefined;
-
-    // Process children first to build a children array
-    const childNodes: ExtractedNode[] = [];
-    for (let i = 0; i < el.children.length; i++) {
-      const child = el.children.item(i)!;
-      const res = walk(child);
-      if (res) childNodes.push(res);
-    }
-
-    if (type) {
-      return { type, id, children: childNodes };
-    }
-
-    // If this element doesn't have data-type, but some children did, we don't
-    // create a node for this element — we return null so callers attach only
-    // the meaningful nodes.
-    if (childNodes.length > 0) {
-      // If element itself has no type but has multiple meaningful children,
-      // return a pseudo-node that groups them under an anonymous container.
-      return { type: 'container', id: undefined, children: childNodes };
-    }
-    return null;
-  }
-
-  for (let i = 0; i < root.children.length; i++) {
-    const child = root.children.item(i)!;
-    const node = walk(child);
-    if (node) out.push(node);
-  }
-
-  return out;
-}
-
 /**
  * Parse a DOM subtree where the root element represents a document
  * (i.e. has data-type="document"). Returns a FridgeDocument instance or

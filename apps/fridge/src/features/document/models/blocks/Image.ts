@@ -1,5 +1,4 @@
 import { Block } from '~/features/document/models/blocks/Block';
-import { Inline } from '~/features/document/models/blocks/inlines/Inline';
 
 export class Image extends Block {
   readonly type = 'image';
@@ -8,9 +7,12 @@ export class Image extends Block {
     private alt?: string,
     private display?: 'block' | 'inline' | 'float-left' | 'float-right',
     private width?: number,
-    private height?: number,
-    private caption?: Inline[]
+    private height?: number
   ) {
     super();
+  }
+
+  toPlain(): string {
+    return this.src;
   }
 }
