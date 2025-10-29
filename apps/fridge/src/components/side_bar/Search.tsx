@@ -5,25 +5,14 @@ import { clearDocumentSearchResult, fromId, updateDocumentSearchResult } from '~
 import { searchDocument } from '~/features/search/Search';
 import { editorStore } from '~/stores/EditorStore';
 
-const root = css`
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 0;
-  min-height: 0;
-  overflow: auto;
-  border-right: 1px solid var(--color-border-secondary);
-`;
-
 const scrollContainer = css`
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   height: 100%;
+  min-width: 280px;
   width: 280px;
   padding: 16px 16px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  z-index: 10;
 
   &::-webkit-scrollbar {
     width: 2px;

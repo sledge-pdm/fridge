@@ -6,9 +6,8 @@ import Search from '~/components/side_bar/Search';
 const root = css`
   display: flex;
   flex-direction: column;
-  flex: 1 1 0;
-  min-height: 0;
-  overflow: auto;
+  height: 100%;
+  overflow-x: hidden;
   border-left: 1px solid var(--color-border-secondary);
 `;
 

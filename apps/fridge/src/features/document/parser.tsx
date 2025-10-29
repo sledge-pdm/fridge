@@ -1,5 +1,5 @@
 import { css } from '@acab/ecsstatic';
-import { JSX } from 'solid-js';
+import { For, JSX } from 'solid-js';
 import { ASTNode } from '~/features/document/models/ASTNode';
 import { Heading } from '~/features/document/models/blocks/Heading';
 import { Image } from '~/features/document/models/blocks/Image';
@@ -18,21 +18,21 @@ const inlineDiv = css`
   display: inline;
 `;
 
-export function parseHTML(node: ASTNode): JSX.Element {
+export function parseHTML(node: ASTNode, docElId?: string): JSX.Element {
   switch (node.type) {
     case 'document':
       const document = node as FridgeDocument;
       switch (document.mode) {
-        case 'rtl':
+        case 'ltr':
           return (
-            <div data-type={document.type} data-id={document.id} data-mode={document.mode} class={columnDiv}>
-              {document.children.map((child) => parseHTML(child))}
+            <div data-type={document.type} data-id={document.id} data-mode={document.mode} class={columnDiv} id={docElId}>
+              <For each={document.children}>{(child) => parseHTML(child)}</For>
             </div>
           );
         case 'ttb':
           return (
-            <div data-type={document.type} data-id={document.id} data-mode={document.mode} class={rowDiv}>
-              {document.children.map((child) => parseHTML(child))}
+            <div data-type={document.type} data-id={document.id} data-mode={document.mode} class={rowDiv} id={docElId}>
+              <For each={document.children}>{(child) => parseHTML(child)}</For>
             </div>
           );
       }
@@ -71,9 +71,10 @@ export function parseHTML(node: ASTNode): JSX.Element {
       return <></>; // wip
     case 'paragraph':
       const paragraph = node as Paragraph;
+      const content = paragraph.toPlain();
       return (
         <p data-type={paragraph.type} data-id={paragraph.id}>
-          {paragraph.toPlain()}
+          {content !== '' ? content : <br />}
         </p>
       );
   }
@@ -153,7 +154,7 @@ export function parseDocFromDOM(documentRoot: HTMLElement): FridgeDocument | und
   const rootType = documentRoot.getAttribute('data-type');
   if (rootType !== 'document') return undefined;
 
-  const mode = (documentRoot.getAttribute('data-mode') as 'rtl' | 'ttb') || undefined;
+  const mode = (documentRoot.getAttribute('data-mode') as 'ltr' | 'ttb') || undefined;
 
   // Create a minimal FridgeDocument. We need to provide title and content to the
   // constructor, but that constructor will push children based on the provided

@@ -62,8 +62,8 @@ export const pageRoot = css`
   background-color: var(--color-background);
 `;
 
-export const sledgeLogo = css`
-  bottom: 2px;
-  position: absolute;
-  right: 2px;
+export const pageContent = css`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 `;

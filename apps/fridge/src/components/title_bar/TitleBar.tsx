@@ -1,7 +1,9 @@
+import { css } from '@acab/ecsstatic';
 import { Icon } from '@sledge/ui';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { createMemo, createSignal, onMount, Show } from 'solid-js';
-import { fromId } from '~/features/document/service';
+import { addDocument, fromId, newDocument, openDocument } from '~/features/document/service';
+import { showChooseFileDialog } from '~/features/io/choose';
 import { editorStore } from '~/stores/EditorStore';
 import { flexRow } from '~/styles/styles';
 import {
@@ -15,6 +17,14 @@ import {
   titleBarTitleSub,
 } from '~/styles/title_bar/title_bar';
 import '~/styles/title_bar/title_bar_region.css';
+
+const controlButton = css`
+  padding: 2px;
+  height: 100%;
+  margin-left: 12px;
+  opacity: 0.5;
+  white-space: nowrap;
+`;
 
 export default function TitleBar() {
   const activeDoc = createMemo(() => fromId(editorStore.activeDocId));
@@ -59,6 +69,23 @@ export default function TitleBar() {
               </div>
             </Show>
           </div>
+          <a
+            class={controlButton}
+            onClick={async () => {
+              addDocument(newDocument(), true);
+            }}
+          >
+            + add
+          </a>
+          <a
+            class={controlButton}
+            onClick={async () => {
+              const path = await showChooseFileDialog();
+              if (path) openDocument(path);
+            }}
+          >
+            + open
+          </a>
           <div class={titleBarControls} data-tauri-drag-region-exclude>
             <Show when={isMinimizable()}>
               <div

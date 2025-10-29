@@ -19,6 +19,8 @@ export async function openDocument(docPath: string): Promise<FridgeDocument> {
   const content = await readFromFile(docPath);
   const title = pathToTitle(docPath);
 
+  console.log(title, content  );
+
   const doc: FridgeDocument = new FridgeDocument(title, content);
 
   doc.filePath = docPath;
@@ -28,7 +30,7 @@ export async function openDocument(docPath: string): Promise<FridgeDocument> {
 }
 
 export function newDocument(): FridgeDocument {
-  const doc: FridgeDocument = new FridgeDocument(undefined, '');
+  const doc: FridgeDocument = new FridgeDocument('title', 'content');
   return doc;
 }
 

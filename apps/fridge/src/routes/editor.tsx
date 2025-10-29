@@ -1,16 +1,14 @@
-import { createEffect, createSignal, onMount, Show } from 'solid-js';
+import { onMount, Show } from 'solid-js';
 import BottomBar from '~/components/bottom_bar/BottomBar';
 import EditorStartContent from '~/components/editor/EditorStartContent';
 import EditorTextArea from '~/components/editor/EditorTextArea';
 import Sidebar from '~/components/side_bar/Sidebar';
-import { FridgeDocument } from '~/features/document/models/FridgeDocument';
 import { fromId, fromIndex } from '~/features/document/service';
 import { overwrite } from '~/features/io/save';
 import { editorStore, setEditorStore } from '~/stores/EditorStore';
 
 import '~/styles/editor.css';
-import { flexCol, pageRoot } from '~/styles/styles';
-import { eventBus, Events } from '~/utils/EventBus';
+import { pageContent, pageRoot } from '~/styles/styles';
 
 export default function Editor() {
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -30,60 +28,27 @@ export default function Editor() {
     }
   };
 
-  const [activeDoc, setActiveDoc] = createSignal<FridgeDocument | undefined>(fromId(editorStore.activeDocId));
-
-  createEffect(() => {
-    const activeId = editorStore.activeDocId;
-    setActiveDoc(fromId(activeId));
-  });
-  const handleDocUpdate = (e: Events['doc:changed']) => {
-    const doc = fromId(editorStore.activeDocId);
-    setActiveDoc(doc);
-  };
-
   onMount(() => {
     window.addEventListener('keydown', handleKeyDown);
-    eventBus.on('doc:changed', handleDocUpdate);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      eventBus.off('doc:changed', handleDocUpdate);
     };
   });
 
   return (
-    <div class={pageRoot} style={{ overflow: 'hidden', 'box-sizing': 'border-box' }}>
-      <div class={flexCol} style={{ position: 'relative', 'flex-grow': 1, overflow: 'hidden', 'min-height': '0' }}>
+    <div class={pageRoot}>
+      <div class={pageContent}>
         <Show when={editorStore.activeDocId} fallback={<EditorStartContent />}>
           <div class='input_scroll'>
-            {/* <input
-              class='title_input'
-              onInput={(e) => {
-                const title = (e.target as HTMLInputElement).value;
-                if (!title.trim()) return;
-                if (editorStore.activeDocId) update(editorStore.activeDocId, { title, filePath: undefined });
-              }}
-              value={activeDoc()?.title ?? ''}
-            /> */}
-
-            {/* <EditorTextAreaOld
-              docId={() => activeDoc()?.id}
-              content={() => activeDoc()?.toPlain() ?? ''}
-              onInput={(value) => {
-                // if (editorStore.activeDocId) update(editorStore.activeDocId, { content: value });
-              }}
-            /> */}
-
-            <EditorTextArea />
+            <EditorTextArea docId={editorStore.activeDocId} />
           </div>
         </Show>
         <BottomBar />
       </div>
 
       <Show when={editorStore.sidebar}>
-        <div class={flexCol} style={{ position: 'relative', overflow: 'hidden', 'min-height': '0' }}>
-          <Sidebar />
-        </div>
+        <Sidebar />
       </Show>
     </div>
   );

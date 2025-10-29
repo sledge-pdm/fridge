@@ -3,13 +3,13 @@ import { Block } from '~/features/document/models/blocks/Block';
 import { Heading } from '~/features/document/models/blocks/Heading';
 import { Paragraph } from '~/features/document/models/blocks/Paragraph';
 
-export type WriteMode = 'rtl' | 'ttb';
+export type WriteMode = 'ltr' | 'ttb';
 
 export class FridgeDocument extends ASTNode {
   readonly type = 'document';
   children: Block[] = [];
 
-  mode: WriteMode = 'rtl';
+  mode: WriteMode = 'ltr';
 
   // file association
   filePath?: string;
@@ -26,11 +26,16 @@ export class FridgeDocument extends ASTNode {
 
     // lines = paragraph
     const lines = content.split('\n');
-    this.children = this.children.concat(
-      lines.map<Paragraph>((line) => {
-        return new Paragraph(line);
-      })
-    );
+
+    if (lines.length === 0) {
+      this.children.push(new Paragraph(''));
+    } else {
+      this.children = this.children.concat(
+        lines.map<Paragraph>((line) => {
+          return new Paragraph(line);
+        })
+      );
+    }
   }
 
   insert(index: number, block: Block) {
@@ -38,7 +43,11 @@ export class FridgeDocument extends ASTNode {
   }
 
   getTitle(): string | undefined {
-    return this.title;
+    if (this.children.length > 0) {
+      return this.children[0].toPlain();
+    } else {
+      return undefined;
+    }
   }
 
   toPlain() {
