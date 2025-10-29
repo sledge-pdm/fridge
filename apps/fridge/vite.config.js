@@ -64,6 +64,7 @@ export default defineConfig({
       '@sledge/wasm',
     ],
   },
+  publicDir: '../../assets/',
   resolve: {
     alias: {
       '~': path.join(__dirname, 'src'),

@@ -215,7 +215,7 @@ const TabItem: Component<ItemProps> = (props) => {
           display: isActive() ? 'flex' : 'none',
         }}
       >
-        <Icon src={'/icons/misc/remove_6.png'} base={6} color='var(--color-on-background)' hoverColor='var(--color-active)' />
+        <Icon src={'/icons/misc/remove.png'} base={8} color='var(--color-on-background)' hoverColor='var(--color-active)' />
       </div>
     </div>
   );

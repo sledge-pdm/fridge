@@ -15,34 +15,38 @@ const root = css`
 const spacer = css`
   flex-grow: 1;
 `;
-const sideBarIconContainer = css`
+const sideBarItemContainer = css`
   display: flex;
-  flex-direction: column;
-  margin-right: 8px;
-  padding: 4px;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
   cursor: pointer;
+
+  &:hover > * {
+    color: var(--color-active);
+  }
 `;
 
 export default function MenuBar() {
   return (
     <div class={root}>
+      <FilesTab />
+
       <div
-        class={sideBarIconContainer}
+        class={sideBarItemContainer}
         style={{
           opacity: editorStore.sidebar ? 1 : 0.75,
         }}
         onClick={() => {
-          setEditorStore('sidebar', !editorStore.sidebar);
+          if (editorStore.sidebar !== 'search') setEditorStore('sidebar', 'search');
+          else setEditorStore('sidebar', undefined);
         }}
       >
-        <Icon
-          src={editorStore.sidebar ? '/icons/misc/sidebar_collapse.png' : '/icons/misc/sidebar_open.png'}
-          base={7}
-          hoverColor='var(--color-active)'
-        />
-      </div>
+        <Icon src={'icons/misc/search.png'} base={8} hoverColor='var(--color-active)' />
 
-      <FilesTab />
+        <p>search</p>
+      </div>
     </div>
   );
 }
