@@ -5,6 +5,8 @@ import { Heading } from '~/features/document/models/blocks/Heading';
 import { Image } from '~/features/document/models/blocks/Image';
 import { Paragraph } from '~/features/document/models/blocks/Paragraph';
 import { FridgeDocument } from '~/features/document/models/FridgeDocument';
+import { SpanMarkup } from '~/features/markup/SpanMarkup';
+import { headingL1, headingL2, headingL3, headingL4, paragraphContent } from '~/styles/nodeStyles';
 
 const columnDiv = css`
   display: flex;
@@ -14,28 +16,45 @@ const rowDiv = css`
   display: flex;
   flex-direction: row;
 `;
+
 const inlineDiv = css`
   display: inline;
 `;
 
-export function parseHTML(node: ASTNode, docElId?: string): JSX.Element {
+interface ParseHTMLOption {
+  docElId: string;
+  overlay: boolean;
+  isLast?: boolean;
+}
+
+export function parseHTML(node: ASTNode, option: ParseHTMLOption): JSX.Element {
+  const { docElId, overlay, isLast = false } = option ?? {};
+
   switch (node.type) {
     case 'document':
       const document = node as FridgeDocument;
+
+      let docClass = columnDiv;
+
       switch (document.mode) {
         case 'ltr':
-          return (
-            <div data-type={document.type} data-id={document.id} data-mode={document.mode} class={columnDiv} id={docElId}>
-              <For each={document.children}>{(child) => parseHTML(child)}</For>
-            </div>
-          );
+          docClass = rowDiv;
         case 'ttb':
-          return (
-            <div data-type={document.type} data-id={document.id} data-mode={document.mode} class={rowDiv} id={docElId}>
-              <For each={document.children}>{(child) => parseHTML(child)}</For>
-            </div>
-          );
+          docClass = columnDiv;
       }
+      return (
+        <div data-type={document.type} data-id={document.id} data-mode={document.mode} class={docClass} id={docElId}>
+          <For each={document.children}>
+            {(child, i) => {
+              const isLast = document.children.length - 1 === i();
+              return parseHTML(child, {
+                ...option,
+                isLast,
+              });
+            }}
+          </For>
+        </div>
+      );
 
     // block
     case 'heading':
@@ -43,26 +62,38 @@ export function parseHTML(node: ASTNode, docElId?: string): JSX.Element {
       switch (heading.level) {
         case 1:
           return (
-            <h1 data-type={heading.type} data-id={heading.id}>
-              {heading.toPlain()}
+            <h1 data-type={heading.type} data-id={heading.id} class={headingL1}>
+              {getContent(heading.toPlain(), overlay, {
+                baseClass: headingL1,
+                newLineAfterExists: !isLast,
+              })}
             </h1>
           );
         case 2:
           return (
-            <h2 data-type={heading.type} data-id={heading.id}>
-              {heading.toPlain()}
+            <h2 data-type={heading.type} data-id={heading.id} class={headingL2}>
+              {getContent(heading.toPlain(), overlay, {
+                baseClass: headingL2,
+                newLineAfterExists: !isLast,
+              })}
             </h2>
           );
         case 3:
           return (
-            <h3 data-type={heading.type} data-id={heading.id}>
-              {heading.toPlain()}
+            <h3 data-type={heading.type} data-id={heading.id} class={headingL3}>
+              {getContent(heading.toPlain(), overlay, {
+                baseClass: headingL3,
+                newLineAfterExists: !isLast,
+              })}
             </h3>
           );
         case 4:
           return (
-            <h4 data-type={heading.type} data-id={heading.id}>
-              {heading.toPlain()}
+            <h4 data-type={heading.type} data-id={heading.id} class={headingL4}>
+              {getContent(heading.toPlain(), overlay, {
+                baseClass: headingL4,
+                newLineAfterExists: !isLast,
+              })}
             </h4>
           );
       }
@@ -71,12 +102,37 @@ export function parseHTML(node: ASTNode, docElId?: string): JSX.Element {
       return <></>; // wip
     case 'paragraph':
       const paragraph = node as Paragraph;
-      const content = paragraph.toPlain();
       return (
-        <p data-type={paragraph.type} data-id={paragraph.id}>
-          {content !== '' ? content : <br />}
+        <p data-type={paragraph.type} data-id={paragraph.id} class={paragraphContent}>
+          {getContent(paragraph.toPlain(), overlay, {
+            baseClass: paragraphContent,
+            newLineAfterExists: !isLast,
+          })}
         </p>
       );
+  }
+}
+
+const markUp = new SpanMarkup({
+  highlightSearch: true,
+  showFullSpace: true,
+  showHalfSpace: true,
+  showNewline: true,
+});
+
+interface OverlayOptions {
+  baseClass: string;
+  newLineAfterExists: boolean;
+}
+
+function getContent(text: string, overlay: boolean, overlayOptions?: OverlayOptions): JSX.Element {
+  const { baseClass = '', newLineAfterExists = false } = overlayOptions ?? {};
+
+  const content = text !== '' ? text : <br />;
+  if (overlay) {
+    return markUp.toJSX(text, baseClass) as JSX.Element; // returns JSX fragment
+  } else {
+    return content;
   }
 }
 

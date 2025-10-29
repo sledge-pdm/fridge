@@ -1,6 +1,6 @@
 import { fonts } from '@sledge/theme';
 import { Accessor, Component, createEffect, createMemo, onMount } from 'solid-js';
-import { SpanMarkup } from '~/features/markup/SpanMarkup';
+import { SpanMarkupOld } from '~/features/markup/SpanMarkupOld';
 import { SearchResult } from '~/features/search/Search';
 import { configStore } from '~/stores/ConfigStore';
 import { editorStore } from '~/stores/EditorStore';
@@ -18,7 +18,7 @@ const EditorTextAreaOld: Component<Props> = (props) => {
   let wrapperRef: HTMLDivElement | undefined;
 
   // SpanMarkup instance for overlay rendering
-  const spanMarkup = new SpanMarkup({
+  const spanMarkup = new SpanMarkupOld({
     showHalfSpace: true,
     showFullSpace: true,
     showNewline: true,

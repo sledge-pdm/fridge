@@ -1,11 +1,11 @@
 import { FoundSpan } from '../search/Search';
-import { SpanMarkup } from './SpanMarkup';
+import { SpanMarkupOld } from './SpanMarkupOld';
 
 function testSpanMarkup() {
   console.log('=== SpanMarkup Test ===');
 
   // テスト1: 基本的なテキスト処理
-  const markup1 = new SpanMarkup();
+  const markup1 = new SpanMarkupOld();
   const result1 = markup1.toHTML('Hello world');
   console.log('Test 1: Basic text');
   console.log('Input: "Hello world"');
@@ -14,7 +14,7 @@ function testSpanMarkup() {
   console.log('---');
 
   // テスト2: スペース可視化
-  const markup2 = new SpanMarkup({ showHalfSpace: true, showFullSpace: true });
+  const markup2 = new SpanMarkupOld({ showHalfSpace: true, showFullSpace: true });
   const result2 = markup2.toHTML('Hello world　test');
   console.log('Test 2: Space visualization');
   console.log('Input: "Hello world　test"');
@@ -23,7 +23,7 @@ function testSpanMarkup() {
   console.log('---');
 
   // テスト3: 改行マーカー
-  const markup3 = new SpanMarkup({ showNewline: true });
+  const markup3 = new SpanMarkupOld({ showNewline: true });
   const result3 = markup3.toHTML('Line 1\nLine 2\nLine 3');
   console.log('Test 3: Newline markers');
   console.log('Input: "Line 1\\nLine 2\\nLine 3"');
@@ -32,7 +32,7 @@ function testSpanMarkup() {
   console.log('---');
 
   // テスト4: 検索ハイライト
-  const markup4 = new SpanMarkup({ highlightSearch: true });
+  const markup4 = new SpanMarkupOld({ highlightSearch: true });
   const testText = 'Hello, beautiful world!';
   console.log('Debug: Text length:', testText.length);
   console.log('Debug: "world" position:', testText.indexOf('world'));
@@ -49,7 +49,7 @@ function testSpanMarkup() {
   console.log('---');
 
   // テスト5: 複合テスト（全オプション有効）
-  const markup5 = new SpanMarkup({
+  const markup5 = new SpanMarkupOld({
     showHalfSpace: true,
     showFullSpace: true,
     showNewline: true,
@@ -67,7 +67,7 @@ function testSpanMarkup() {
   console.log('---');
 
   // テスト6: 空文字列
-  const markup6 = new SpanMarkup();
+  const markup6 = new SpanMarkupOld();
   const result6 = markup6.toHTML('');
   console.log('Test 6: Empty string');
   console.log('Input: ""');
@@ -76,7 +76,7 @@ function testSpanMarkup() {
   console.log('---');
 
   // テスト7: HTMLエスケープ
-  const markup7 = new SpanMarkup();
+  const markup7 = new SpanMarkupOld();
   const result7 = markup7.toHTML('<script>alert("test")</script>');
   console.log('Test 7: HTML escaping');
   console.log('Input: "<script>alert(\\"test\\")</script>"');
@@ -85,7 +85,7 @@ function testSpanMarkup() {
   console.log('---');
 
   // テスト8: オプション更新
-  const markup8 = new SpanMarkup();
+  const markup8 = new SpanMarkupOld();
   const before = markup8.toHTML('Hello world');
   markup8.updateOptions({ showHalfSpace: true });
   const after = markup8.toHTML('Hello world');

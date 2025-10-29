@@ -34,9 +34,10 @@ export interface TextToken {
 }
 
 /**
+ * @deprecated use SpanMarkup
  * SpanMarkup - テキストのマークアップを柔軟に処理するクラス
  */
-export class SpanMarkup {
+export class SpanMarkupOld {
   private options: Required<MarkupOptions>;
 
   constructor(options: MarkupOptions = {}) {
@@ -258,4 +259,4 @@ export class SpanMarkup {
 /**
  * デフォルトインスタンス
  */
-export const defaultSpanMarkup = new SpanMarkup();
+export const defaultSpanMarkup = new SpanMarkupOld();

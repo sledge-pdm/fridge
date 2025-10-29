@@ -1,5 +1,6 @@
+import { clsx } from '@sledge/core';
 import { Component, createEffect } from 'solid-js';
-import { editorContentEditable } from '~/components/editor/textAreaStyles';
+import { textAreaContentBase, textAreaContentOverlay, textAreaRoot } from '~/components/editor/textAreaStyles';
 import { Paragraph } from '~/features/document/models/blocks/Paragraph';
 import { FridgeDocument } from '~/features/document/models/FridgeDocument';
 import { parseDocFromDOM, parseHTML } from '~/features/document/parser';
@@ -11,22 +12,30 @@ interface Props {
 }
 
 const DOC_EL_ID = 'editor-doc-el';
+const DOC_OVERLAY_EL_ID = 'editor-doc-overlay-el';
 
 const EditorTextArea: Component<Props> = (props) => {
   let containerRef: HTMLDivElement;
+  let overlayRef: HTMLDivElement;
+
+  const parseContentHTML = (doc?: FridgeDocument) => (doc ? parseHTML(doc, { docElId: DOC_EL_ID, overlay: false }) : null);
+  const parseOverlayHTML = (doc?: FridgeDocument) => (doc ? parseHTML(doc, { docElId: DOC_OVERLAY_EL_ID, overlay: true }) : null);
+
   const defaultDoc = fromId(props.docId);
-  const defaultContent = defaultDoc ? parseHTML(defaultDoc, DOC_EL_ID) : null;
+  const defaultContent = parseContentHTML(defaultDoc);
+  const defaultOverlayContent = parseOverlayHTML(defaultDoc);
 
   createEffect(() => {
     const doc = fromId(props.docId);
-    if (doc) containerRef.replaceChildren(parseHTML(doc, DOC_EL_ID) as Node);
+    if (doc) {
+      containerRef.replaceChildren(parseContentHTML(doc) as Node);
+      overlayRef.replaceChildren(parseOverlayHTML(doc) as Node);
+    }
   });
 
   const parseCurrent = () => {
     const docEl = document.getElementById(DOC_EL_ID);
-    console.log(docEl);
     if (!docEl) return;
-
     return parseDocFromDOM(docEl as HTMLElement);
   };
 
@@ -34,36 +43,48 @@ const EditorTextArea: Component<Props> = (props) => {
     if (!props.docId) return;
     const sel = saveSelection(containerRef);
     replaceDocument(props.docId, newDoc);
-    containerRef.replaceChildren(parseHTML(newDoc, DOC_EL_ID) as Node);
+    containerRef.replaceChildren(parseContentHTML(newDoc) as Node);
+    overlayRef.replaceChildren(parseOverlayHTML(newDoc) as Node);
     restoreSelection(containerRef, sel);
   };
 
   return (
-    <div
-      ref={(ref) => {
-        containerRef = ref;
-      }}
-      class={editorContentEditable}
-      contentEditable={true}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') {
-          // if (e.shiftKey) e.preventDefault();
-          const doc = fromId(props.docId);
-          if (props.docId && doc) {
-            if (doc) {
-              doc.children.push(new Paragraph());
-              applyDoc(doc);
+    <div class={textAreaRoot}>
+      <div
+        ref={(ref) => {
+          containerRef = ref;
+        }}
+        class={textAreaContentBase}
+        contentEditable={true}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            // if (e.shiftKey) e.preventDefault();
+            const doc = fromId(props.docId);
+            if (props.docId && doc) {
+              if (doc) {
+                doc.children.push(new Paragraph());
+                applyDoc(doc);
+              }
             }
           }
-        }
-      }}
-      onInput={(e) => {
-        const newDoc = parseCurrent();
-        console.log(newDoc);
-        if (newDoc) applyDoc(newDoc);
-      }}
-    >
-      {defaultContent}
+        }}
+        onInput={(e) => {
+          const newDoc = parseCurrent();
+          console.log(newDoc);
+          if (newDoc) applyDoc(newDoc);
+        }}
+      >
+        {defaultContent}
+      </div>
+
+      <div
+        ref={(ref) => {
+          overlayRef = ref;
+        }}
+        class={clsx(textAreaContentBase, textAreaContentOverlay)}
+      >
+        {defaultOverlayContent}
+      </div>
     </div>
   );
 };
