@@ -77,7 +77,7 @@ export default function Editor() {
         </Show>
         <EditorBottomBar />
       </div>
-      
+
       <Show when={editorStore.sidebar}>
         <div class={flexCol} style={{ position: 'relative', overflow: 'hidden', 'min-height': '0' }}>
           <Sidebar />
