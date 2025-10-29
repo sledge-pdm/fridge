@@ -65,6 +65,14 @@ const EditorTextArea: Component<Props> = (props) => {
     <div class={textAreaRoot}>
       <div
         ref={(ref) => {
+          overlayRef = ref;
+        }}
+        class={clsx(textAreaContentBase, textAreaContentOverlay)}
+      >
+        {defaultOverlayContent}
+      </div>
+      <div
+        ref={(ref) => {
           containerRef = ref;
         }}
         class={textAreaContentBase}
@@ -88,15 +96,6 @@ const EditorTextArea: Component<Props> = (props) => {
         }}
       >
         {defaultContent}
-      </div>
-
-      <div
-        ref={(ref) => {
-          overlayRef = ref;
-        }}
-        class={clsx(textAreaContentBase, textAreaContentOverlay)}
-      >
-        {defaultOverlayContent}
       </div>
     </div>
   );

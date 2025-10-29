@@ -24,6 +24,8 @@ export const textAreaContentBase = css`
   white-space: pre-wrap;
   overflow-wrap: break-word;
 
+  user-select: all;
+
   /* テキスト選択時の色 (Firefox用 ::-moz-selection も) */
   &::selection {
     background: var(--color-accent);

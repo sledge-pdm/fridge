@@ -98,7 +98,7 @@ export function parseHTML(node: ASTNode, option: ParseHTMLOption): JSX.Element {
           data-display={image.display}
           data-width={image.width}
           data-height={image.height}
-          style={{ display: image.display }}
+          style={{ display: image.display, width: `${image.width}px`, height: `${image.height}px`, opacity: overlay ? 0 : 1 }}
           src={image.src}
           width={image.width}
           height={image.height}
