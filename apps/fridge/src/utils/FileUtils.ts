@@ -10,14 +10,14 @@ export async function getFileUniqueId(path: string): Promise<string> {
   return hex.slice(0, 16);
 }
 
-export const PathToFileLocation = (fullPath: string): FileLocation | undefined => {
+export const pathToFileLocation = (fullPath: string): FileLocation | undefined => {
   fullPath = fullPath.replace(/\//g, '\\'); // Normalize path format for Windows
   const filePath = fullPath.substring(0, fullPath.lastIndexOf('\\'));
   const fileName = fullPath.split('\\').pop()?.split('\\').pop();
 
-  const rejoinedPath = join(...filePath.split('\\'));
+  const rejoinedPath = normalizeJoin(...filePath.split('\\'));
 
-  if (filePath === undefined || fileName === undefined) return undefined;
+  if (!filePath || !filePath?.trim() || !fileName || !fileName?.trim()) return undefined;
   else {
     return {
       path: rejoinedPath,
@@ -26,18 +26,38 @@ export const PathToFileLocation = (fullPath: string): FileLocation | undefined =
   }
 };
 
+export const getFileNameWithoutExtension = (fileName?: string): string => {
+  if (!fileName) return '';
+  return fileName.replace(/\.[^/.]+$/, '');
+};
+
+/**
+ * @deprecated use normalizedJoin.
+ */
 export const join = (...paths: string[]): string => {
   const currentPlatform = platform();
-
-  // platform returns a string describing the specific operating system in use.
-  // The value is set at compile time.
-  // Possible values are linux, macos, ios, freebsd, dragonfly, netbsd, openbsd, solaris, android, windows.
-
-  // https://v2.tauri.app/ja/plugin/os-info/
 
   if (currentPlatform === 'windows') {
     return paths.join('\\');
   } else {
     return paths.join('/');
   }
+};
+
+export const normalizePath = (path: string): string => {
+  let replaced = path.trim().replace(/\\/g, '/').replace(/\/+/g, '/');
+  if (!replaced.endsWith(':/') && replaced.endsWith('/')) replaced = replaced.slice(0, -1);
+  return replaced;
+};
+
+export const normalizeJoin = (...paths: string[]): string => {
+  const currentPlatform = platform();
+
+  let joined;
+  if (currentPlatform === 'windows') {
+    joined = paths.join('\\');
+  } else {
+    joined = paths.join('/');
+  }
+  return normalizePath(joined);
 };

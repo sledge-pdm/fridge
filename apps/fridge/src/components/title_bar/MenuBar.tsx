@@ -11,10 +11,18 @@ const root = css`
   padding: 0px 8px 0 20px;
   align-items: center;
   height: 28px;
+
+  width: 100%;
+
+  overflow-x: auto;
+
+  touch-action: auto;
+
+  @media screen and (max-width: 700px) {
+    height: 40px;
+  }
 `;
-const spacer = css`
-  flex-grow: 1;
-`;
+
 const sideBarIconContainer = css`
   display: flex;
   flex-direction: column;

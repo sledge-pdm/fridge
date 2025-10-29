@@ -3,19 +3,29 @@ import { MetaProvider } from '@solidjs/meta';
 import { Route, Router } from '@solidjs/router';
 import Editor from './routes/editor';
 
+import { css } from '@acab/ecsstatic';
 import { applyTheme } from '@sledge/theme';
 import '@sledge/theme/src/global.css';
 import { listen } from '@tauri-apps/api/event';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { createEffect, onCleanup, onMount } from 'solid-js';
+import { platform } from '@tauri-apps/plugin-os';
+import { createEffect, createSignal, onCleanup, onMount, Show } from 'solid-js';
 import MenuBar from '~/components/title_bar/MenuBar';
+import SPTitleBar from '~/components/title_bar/SpTitleBar';
 import TitleBar from '~/components/title_bar/TitleBar';
 import { addDocument, newDocument } from '~/features/document/service';
 import { loadEditorState } from '~/features/io/editor_state/load';
 import { configStore } from '~/stores/ConfigStore';
-import { flexCol } from '~/styles/styles';
 import { reportCriticalError, zoomForIntegerize } from '~/utils/WindowUtils';
+
+const appRoot = css`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+`;
 
 export default function App() {
   // グローバルエラーハンドラーを設定
@@ -39,13 +49,6 @@ export default function App() {
     window.removeEventListener('unhandledrejection', handleUnhandledRejection);
   });
 
-  // listenEvent('onSettingsSaved', () => {
-  //   loadGlobalSettings();
-  // });
-
-  // テーマクラスを html 要素に付与して、Portal や body 直下にもトークンが届くようにする
-  let prevThemeClass: string | undefined;
-
   const applyThemeToHtml = (osTheme?: 'dark' | 'light') => {
     if (osTheme && configStore.theme === 'os') {
       applyTheme(osTheme);
@@ -54,24 +57,38 @@ export default function App() {
     }
   };
 
-  listen('tauri://theme-changed', (e) => {
+  createEffect(() => {
+    configStore.theme;
     applyThemeToHtml();
   });
+
+  const [showTitleBar, setShowTitleBar] = createSignal(false);
 
   onMount(async () => {
     applyThemeToHtml();
 
-    const webview = getCurrentWebview();
-    const window = getCurrentWindow();
+    const currentPlatform = platform();
 
-    await webview.setZoom(zoomForIntegerize(await window.scaleFactor()));
+    if (currentPlatform === 'android') setShowTitleBar(false);
+    else {
+      setShowTitleBar(true);
 
-    window.onScaleChanged(async ({ payload }) => {
-      const { scaleFactor, size } = payload;
-      console.log('scale changed to:', scaleFactor, 'dprzoom: ', zoomForIntegerize(scaleFactor));
-      await webview.setZoom(zoomForIntegerize(scaleFactor));
-    });
-    // await checkForUpdates();
+      listen('tauri://theme-changed', (e) => {
+        applyThemeToHtml();
+      });
+
+      const webview = getCurrentWebview();
+      const window = getCurrentWindow();
+
+      await webview.setZoom(zoomForIntegerize(await window.scaleFactor()));
+
+      window.onScaleChanged(async ({ payload }) => {
+        const { scaleFactor, size } = payload;
+        console.log('scale changed to:', scaleFactor, 'dprzoom: ', zoomForIntegerize(scaleFactor));
+        await webview.setZoom(zoomForIntegerize(scaleFactor));
+      });
+      // await checkForUpdates();
+    }
 
     const result = await loadEditorState();
     if (result.restored) {
@@ -81,22 +98,22 @@ export default function App() {
     }
   });
 
-  onMount(async () => {
-    const unlisten = await listen('tauri://close-requested', async () => {});
-    onCleanup(() => {
-      unlisten();
-    });
-  });
-
-  createEffect(() => applyThemeToHtml());
+  // onMount(async () => {
+  //   const unlisten = await listen('tauri://close-requested', async () => {});
+  //   onCleanup(() => {
+  //     unlisten();
+  //   });
+  // });
 
   return (
     <Router
       root={(props) => (
         <MetaProvider>
           <title>Fridge</title>
-          <div class={flexCol} style={{ height: '100%' }}>
-            <TitleBar />
+          <div class={appRoot} style={{ height: '100%' }}>
+            <Show when={showTitleBar()} fallback={<SPTitleBar />}>
+              <TitleBar />
+            </Show>
             <MenuBar />
             <main>{props.children}</main>
             {/* <DebugViewer /> */}

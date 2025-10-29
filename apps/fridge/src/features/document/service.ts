@@ -4,11 +4,10 @@ import { readFromFile } from '~/features/io/read';
 import { SearchResult } from '~/features/search/Search';
 import { editorStore, setEditorStore } from '~/stores/EditorStore';
 import { eventBus } from '~/utils/EventBus';
-import { PathToFileLocation } from '~/utils/FileUtils';
-
+import { getFileNameWithoutExtension, pathToFileLocation } from '~/utils/FileUtils';
 function pathToTitle(path: string): string {
-  const location = PathToFileLocation(path);
-  return location?.name?.replace('.txt', '') || 'Untitled Document';
+  const location = pathToFileLocation(path);
+  return getFileNameWithoutExtension(location?.name) || 'Untitled Document';
 }
 
 export function isChanged(doc: FridgeDocument) {
@@ -16,15 +15,18 @@ export function isChanged(doc: FridgeDocument) {
   return doc.title !== doc.contentsOnOpen.title || doc.content !== doc.contentsOnOpen.content;
 }
 
-export async function openDocument(path: string): Promise<FridgeDocument> {
-  const content = await readFromFile(path);
-  const title = pathToTitle(path);
+export async function openDocument(docPath: string): Promise<FridgeDocument> {
+  console.log(docPath);
+  const content = await readFromFile(docPath);
+  console.log(content);
+  const title = pathToTitle(docPath);
+  console.log(title);
 
   const doc: FridgeDocument = {
     id: crypto.randomUUID(),
     title,
     content,
-    associatedFilePath: path,
+    associatedFilePath: docPath,
 
     contentsOnOpen: { title, content },
   };

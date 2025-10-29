@@ -10,12 +10,30 @@ export const titleBarRoot = css`
   align-items: center;
 `;
 
+export const titleBarRootSp = css`
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  position: relative;
+  pointer-events: all;
+  background-color: var(--color-background);
+  align-items: center;
+  padding: 16px 16px;
+`;
+
 export const titleBarTitleContainer = css`
   display: flex;
   flex-direction: row;
   width: 100%;
   margin-right: auto;
   padding-left: 24px;
+  align-items: center;
+`;
+export const titleBarTitleContainerSp = css`
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  overflow: hidden;
   align-items: center;
 `;
 export const titleBarTitle = css`
@@ -26,10 +44,10 @@ export const titleBarTitle = css`
 `;
 
 export const titleBarTitleSub = css`
-  width: 'fit-content';
+  width: fit-content;
   font-family: ZFB03;
   font-size: var(--text-sm);
-  white-space: 'pre';
+  white-space: pre;
   opacity: 0.5;
 `;
 export const titleBarLocation = css`

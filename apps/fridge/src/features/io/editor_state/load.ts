@@ -2,13 +2,14 @@ import { appCacheDir, join } from '@tauri-apps/api/path';
 import { exists, readTextFile } from '@tauri-apps/plugin-fs';
 import { replaceDocuments } from '~/features/document/service';
 import { EDITOR_STATE_FILENAME, SavedEditorState } from '~/features/io/editor_state/model';
+import { normalizeJoin } from '~/utils/FileUtils';
 
 export async function loadEditorState(): Promise<{
   restored: boolean;
   reason?: string;
 }> {
   try {
-    const path = await join(await appCacheDir(), EDITOR_STATE_FILENAME);
+    const path = normalizeJoin(await appCacheDir(), EDITOR_STATE_FILENAME);
     if (!(await exists(path))) return { restored: false, reason: 'no-file' };
 
     const txt = await readTextFile(path);
