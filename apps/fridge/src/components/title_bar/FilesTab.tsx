@@ -12,30 +12,14 @@ const tabRoot = css`
   display: flex;
   flex-direction: row;
   align-items: center;
-  width: 100%;
   height: 100%;
-  overflow-x: auto;
-  overflow: visible;
-  touch-action: auto;
-  &::-webkit-scrollbar {
-    height: 0px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--color-on-background);
-  }
 `;
+
 const addMenuContainer = css`
   display: flex;
   flex-direction: row;
   position: relative;
   overflow: visible;
-`;
-
-const addButton = css`
-  padding: 2px;
-  height: 100%;
-  margin-left: 12px;
-  opacity: 0.5;
 `;
 
 const divider = css`
@@ -62,45 +46,6 @@ const FilesTab: Component = () => {
           );
         }}
       </For>
-      <div class={addMenuContainer}>
-        <a
-          class={addButton}
-          onClick={() => {
-            setAddMenuShown(!addMenuShown());
-          }}
-        >
-          + add
-        </a>
-        <Show when={addMenuShown()}>
-          <MenuList
-            align='left'
-            closeByOutsideClick={true}
-            onClose={() => setAddMenuShown(false)}
-            style={{ 'margin-top': '6px', width: '120px' }}
-            options={[
-              {
-                type: 'item',
-                label: '+ new document.',
-                onSelect: async () => {
-                  addDocument(newDocument(), true);
-                  setAddMenuShown(false);
-                },
-              },
-              {
-                type: 'item',
-                label: '> open file.',
-                onSelect: async () => {
-                  const path = await showChooseFileDialog();
-                  if (path) openDocument(path);
-                  setAddMenuShown(false);
-                },
-              },
-            ]}
-          >
-            FILES.
-          </MenuList>
-        </Show>
-      </div>
     </div>
   );
 };
@@ -114,6 +59,7 @@ const tabItem = css`
   padding-left: 12px;
   padding-right: 12px;
   gap: 6px;
+  height: 100%;
 
   min-width: 100px;
   max-width: 120px;
@@ -142,6 +88,9 @@ const label = css`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  @media screen and (max-width: 700px) {
+    font-size: 8px;
+  }
 `;
 const labelSelected = css`
   color: var(--color-active);
