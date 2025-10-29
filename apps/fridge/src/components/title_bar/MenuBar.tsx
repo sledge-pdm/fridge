@@ -1,16 +1,16 @@
 import { css } from '@acab/ecsstatic';
 import { Icon } from '@sledge/ui';
-import FilesTab from '~/components/title_bar/menu_bar/FilesTab';
-import MenuBarItems from '~/components/title_bar/menu_bar/MenuBarItems';
-import { editorStore, setSideBarOpen } from '~/stores/EditorStore';
+import FilesTab from '~/components/title_bar/FilesTab';
+import { editorStore, setEditorStore } from '~/stores/EditorStore';
 
 const root = css`
   display: flex;
   flex-direction: row;
   border-bottom: 1px solid var(--color-border);
   pointer-events: all;
-  padding: 0px 16px 0 20px;
+  padding: 0px 8px 0 20px;
   align-items: center;
+  height: 28px;
 `;
 const spacer = css`
   flex-grow: 1;
@@ -28,8 +28,11 @@ export default function MenuBar() {
     <div class={root}>
       <div
         class={sideBarIconContainer}
+        style={{
+          opacity: editorStore.sidebar ? 1 : 0.75,
+        }}
         onClick={() => {
-          setSideBarOpen(!editorStore.sidebar);
+          setEditorStore('sidebar', !editorStore.sidebar);
         }}
       >
         <Icon
@@ -40,8 +43,6 @@ export default function MenuBar() {
       </div>
 
       <FilesTab />
-      <div class={spacer} />
-      <MenuBarItems />
     </div>
   );
 }

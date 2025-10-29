@@ -1,63 +1,87 @@
-import { fonts } from '@sledge/theme';
-import { Show } from 'solid-js';
-import EditorTextArea from '~/components/EditorTextArea';
-import Sidebar from '~/components/Sidebar';
-import { editorStore, getCurrentDocument, updateCurrentDocument } from '~/stores/EditorStore';
+import { createEffect, createSignal, onMount, Show } from 'solid-js';
+import EditorBottomBar from '~/components/editor/EditorBottomBar';
+import EditorStartContent from '~/components/editor/EditorStartContent';
+import EditorTextArea from '~/components/editor/EditorTextArea';
+import Sidebar from '~/components/side_bar/Sidebar';
+import { FridgeDocument } from '~/features/document/model';
+import { fromId, fromIndex, update } from '~/features/document/service';
+import { overwrite } from '~/features/io/save';
+import { editorStore, setEditorStore } from '~/stores/EditorStore';
 
 import '~/styles/editor.css';
-import { flexCol, flexRow, pageRoot } from '~/styles/styles';
+import { flexCol, pageRoot } from '~/styles/styles';
+import { eventBus, Events } from '~/utils/EventBus';
 
 export default function Editor() {
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.ctrlKey && e.key >= '0' && e.key <= '9') {
+      e.preventDefault();
+      const index = Number(e.key) - 1;
+      const doc = fromIndex(index);
+      if (doc) {
+        setEditorStore('activeDocId', doc.id);
+      }
+    }
+
+    if (e.ctrlKey && e.key === 's') {
+      e.preventDefault();
+      const active = fromId(editorStore.activeDocId);
+      if (active) overwrite(active);
+    }
+  };
+
+  const [activeDoc, setActiveDoc] = createSignal<FridgeDocument | undefined>(fromId(editorStore.activeDocId));
+
+  createEffect(() => {
+    const activeId = editorStore.activeDocId;
+    setActiveDoc(fromId(activeId));
+  });
+  const handleDocUpdate = (e: Events['doc:changed']) => {
+    const doc = fromId(editorStore.activeDocId);
+    setActiveDoc(doc);
+  };
+
+  onMount(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    eventBus.on('doc:changed', handleDocUpdate);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      eventBus.off('doc:changed', handleDocUpdate);
+    };
+  });
+
   return (
     <div class={pageRoot} style={{ overflow: 'hidden', 'box-sizing': 'border-box' }}>
       <Show when={editorStore.sidebar}>
-        <Sidebar />
+        <div class={flexCol} style={{ position: 'relative', overflow: 'hidden', 'min-height': '0' }}>
+          <Sidebar />
+        </div>
       </Show>
 
       <div class={flexCol} style={{ position: 'relative', 'flex-grow': 1, overflow: 'hidden', 'min-height': '0' }}>
-        <div class='input_scroll'>
-          <input
-            style={{
-              padding: '36px 28px 0px 28px',
-              'font-size': '24px',
-              'font-family': `${fonts.ZFB09},${fonts.PM12}`,
-              border: 'none',
-              outline: 'none',
-              width: '100%',
-              'box-sizing': 'border-box',
-              color: 'var(--color-on-background)',
-            }}
-            onInput={(e) => {
-              const title = (e.target as HTMLInputElement).value;
-              if (!title.trim()) return;
-              updateCurrentDocument({ title, associatedFilePath: undefined });
-            }}
-            value={getCurrentDocument()?.title}
-          />
-          <EditorTextArea
-            onInput={(value) => {
-              updateCurrentDocument({ content: value });
-            }}
-          />
-        </div>
+        <Show when={editorStore.activeDocId} fallback={<EditorStartContent />}>
+          <div class='input_scroll'>
+            <input
+              class='title_input'
+              onInput={(e) => {
+                const title = (e.target as HTMLInputElement).value;
+                if (!title.trim()) return;
+                if (editorStore.activeDocId) update(editorStore.activeDocId, { title, associatedFilePath: undefined });
+              }}
+              value={activeDoc()?.title ?? ''}
+            />
 
-        <div
-          class={flexRow}
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '24px',
-            'align-items': 'center',
-            padding: '0 12px',
-            'border-top': `1px solid var(--color-border)`,
-            background: 'var(--color-background)',
-          }}
-        >
-          <p>{getCurrentDocument()?.associatedFilePath || ''}</p>
-          <p style={{ 'margin-left': 'auto' }}>{getCurrentDocument()?.content.length} letters.</p>
-        </div>
+            <EditorTextArea
+              docId={() => activeDoc()?.id}
+              content={() => activeDoc()?.content ?? ''}
+              onInput={(value) => {
+                if (editorStore.activeDocId) update(editorStore.activeDocId, { content: value });
+              }}
+            />
+          </div>
+        </Show>
+        <EditorBottomBar />
       </div>
     </div>
   );

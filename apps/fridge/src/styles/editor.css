@@ -19,3 +19,14 @@
 .input_scroll::-webkit-scrollbar-thumb {
   background-color: #888;
 }
+
+.title_input {
+  padding: 32px 36px 0px 36px;
+  font-size: 24px;
+  font-family: 'ZFB09', 'PM12';
+  border: none;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--color-on-background);
+}

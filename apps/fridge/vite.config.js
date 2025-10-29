@@ -1,8 +1,7 @@
+import { ecsstatic } from '@acab/ecsstatic/vite';
 import path from 'path';
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
-import { ecsstatic } from '@acab/ecsstatic/vite';
-
 
 const host = process.env.TAURI_DEV_HOST;
 
