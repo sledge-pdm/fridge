@@ -77,12 +77,15 @@ pub async fn open_window(
         }
     };
 
-    // 2. 既存ウィンドウがあれば再利用
-    if let Some(existing) = app.get_webview_window(&label) {
-        // ウィンドウを最前面に表示
-        existing.show().map_err(|e| e.to_string())?;
-        existing.set_focus().map_err(|e| e.to_string())?;
-        return Ok(());
+    #[cfg(not(target_os = "android"))]
+    {
+        // 2. 既存ウィンドウがあれば再利用
+        if let Some(existing) = app.get_webview_window(&label) {
+            // ウィンドウを最前面に表示
+            existing.show().map_err(|e| e.to_string())?;
+            existing.set_focus().map_err(|e| e.to_string())?;
+            return Ok(());
+        }
     }
 
     // 3. 新規ビルダー作成
@@ -93,14 +96,20 @@ pub async fn open_window(
     // 各種設定（サイズや装飾など）をここで上書き
     match kind {
         SledgeWindowKind::Editor => {
+
+            #[cfg(not(target_os = "android"))]
+            {
             builder = builder
                 .title("fridge.")
                 .inner_size(1200.0, 750.0)
                 .resizable(true)
-                .accept_first_mouse(true)
                 .closable(true)
                 .maximizable(true)
                 .minimizable(true);
+            }
+
+            builder = builder
+                .accept_first_mouse(true);
         }
     }
 
@@ -116,8 +125,11 @@ pub async fn open_window(
 
     // 4. ウィンドウ生成（非表示で）
     #[allow(unused_variables)]
-    let window = builder
-        // .visible(false) // App.tsx側でshowするまでは非表示
+
+    #[cfg(not(target_os = "android"))]
+    let builder = builder.visible(false);
+        
+    let _window = builder
         .build()
         .map_err(|e| e.to_string())?;
 
@@ -126,10 +138,13 @@ pub async fn open_window(
 
 #[tauri::command]
 pub async fn show_main_window(app: AppHandle, window_label: String) -> Result<(), String> {
-    // メインウィンドウを表示
-    if let Some(window) = app.get_webview_window(&window_label) {
-        window.show().map_err(|e| e.to_string())?;
-        window.set_focus().map_err(|e| e.to_string())?;
+    #[cfg(not(target_os = "android"))]
+    {
+        // メインウィンドウを表示
+        if let Some(window) = app.get_webview_window(&window_label) {
+            window.show().map_err(|e| e.to_string())?;
+            window.set_focus().map_err(|e| e.to_string())?;
+        }
     }
 
     Ok(())

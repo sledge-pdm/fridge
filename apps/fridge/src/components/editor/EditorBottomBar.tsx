@@ -5,6 +5,13 @@ import { fromId } from '~/features/document/service';
 import { editorStore } from '~/stores/EditorStore';
 import { flexRow } from '~/styles/styles';
 
+const pathText = css`
+  margin-right: auto;
+
+  @media screen and (max-width: 700px) {
+    display: none;
+  }
+`;
 const themeToggleContainer = css`
   display: flex;
   flex-direction: column;
@@ -29,7 +36,7 @@ const EditorBottomBar: Component = () => {
         background: 'var(--color-background)',
       }}
     >
-      <p style={{ 'margin-right': 'auto' }}>{activeDoc()?.associatedFilePath || ''}</p>
+      <p class={pathText}>{activeDoc()?.associatedFilePath || ''}</p>
       <div class={themeToggleContainer}>
         <ThemeDropdown noBackground />
       </div>
