@@ -121,8 +121,8 @@ pub async fn open_window(
         builder = builder.title_bar_style(TitleBarStyle::Transparent);
     }
 
-    #[cfg(not(target_os = "android"))]
-    let builder = builder.visible(false);
+    // #[cfg(not(target_os = "android"))]
+    // let builder = builder.visible(false);
 
     let _window = builder.build().map_err(|e| e.to_string())?;
 

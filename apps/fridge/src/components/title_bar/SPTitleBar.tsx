@@ -30,7 +30,7 @@ export default function SPTitleBar() {
                 'flex-wrap': 'wrap',
               }}
             >
-              <p class={titleBarTitle}>{activeDoc()?.title ?? 'fridge.'}</p>
+              <p class={titleBarTitle}>{activeDoc()?.getTitle() ?? 'fridge.'}</p>
               {/* <p class={titleBarTitleSub}>{activeDoc()?.associatedFilePath ?? ''}</p> */}
             </div>
 

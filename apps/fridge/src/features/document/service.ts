@@ -1,54 +1,35 @@
-import { FridgeDocument } from '~/features/document/model';
+import { FridgeDocument } from '~/features/document/models/FridgeDocument';
 import { saveEditorState } from '~/features/io/editor_state/save';
 import { readFromFile } from '~/features/io/read';
 import { SearchResult } from '~/features/search/Search';
 import { editorStore, setEditorStore } from '~/stores/EditorStore';
 import { eventBus } from '~/utils/EventBus';
 import { getFileNameWithoutExtension, pathToFileLocation } from '~/utils/FileUtils';
+
 function pathToTitle(path: string): string {
   const location = pathToFileLocation(path);
   return getFileNameWithoutExtension(location?.name) || 'Untitled Document';
 }
 
 export function isChanged(doc: FridgeDocument) {
-  if (!doc.contentsOnOpen) return true; // pessimistic
-  return doc.title !== doc.contentsOnOpen.title || doc.content !== doc.contentsOnOpen.content;
+  return false; // pessimistic
 }
 
 export async function openDocument(docPath: string): Promise<FridgeDocument> {
-  console.log(docPath);
   const content = await readFromFile(docPath);
-  console.log(content);
   const title = pathToTitle(docPath);
-  console.log(title);
 
-  const doc: FridgeDocument = {
-    id: crypto.randomUUID(),
-    title,
-    content,
-    associatedFilePath: docPath,
+  const doc: FridgeDocument = new FridgeDocument(title, content);
 
-    contentsOnOpen: { title, content },
-  };
+  doc.filePath = docPath;
 
   addDocument(doc);
   return doc;
 }
 
-export function newDocument(id?: string, title: string = '', content: string = ''): FridgeDocument {
-  if (!id) {
-    id = crypto.randomUUID();
-  }
-  if (!title) {
-    title = 'Untitled Document';
-  }
-
-  return {
-    id,
-    title,
-    content,
-    contentsOnOpen: { title, content },
-  };
+export function newDocument(): FridgeDocument {
+  const doc: FridgeDocument = new FridgeDocument(undefined, '');
+  return doc;
 }
 
 export function updateDocumentSearchResult(documentId: string, searchResult: SearchResult) {
@@ -140,7 +121,7 @@ export function update(id: string, updates: Partial<FridgeDocument>) {
 
   if (!doc) return;
 
-  replaceDocument(id, { ...doc, ...updates });
+  // replaceDocument(id, { ...doc, ...updates });
 
   eventBus.emit('doc:changed', { id });
 

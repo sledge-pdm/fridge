@@ -166,9 +166,14 @@ const Search: Component = () => {
                 </p>
                 <p class={resultText}>
                   ...
-                  {activeDoc()?.content.slice(item.start - margin, item.start)}
-                  <span class={clsx(resultText, foundText)}>{activeDoc()?.content.slice(item.start, item.end)}</span>
-                  {activeDoc()?.content.slice(item.end, item.end + margin)}...
+                  {activeDoc()
+                    ?.toPlain()
+                    .slice(item.start - margin, item.start)}
+                  <span class={clsx(resultText, foundText)}>{activeDoc()?.toPlain().slice(item.start, item.end)}</span>
+                  {activeDoc()
+                    ?.toPlain()
+                    .slice(item.end, item.end + margin)}
+                  ...
                 </p>
               </div>
             );

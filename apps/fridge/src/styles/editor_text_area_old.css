@@ -1,0 +1,121 @@
+/* Wrapper */
+.editor-textarea-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  font-family: var(--editor-font-family, monospace);
+  line-height: var(--editor-line-height, 1.4);
+  font-size: var(--editor-font-size, 12px);
+}
+
+/* Hidden text layer (real input) */
+.editor-textarea {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: none;
+  border: none;
+  box-sizing: border-box;
+  padding: 20px 36px 32px 36px;
+  scroll-padding: 20px 36px 32px 36px;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: var(--editor-fg, #fff); /* 実際の文字を表示 */
+  caret-color: var(--editor-fg, #fff);
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+/* テキスト選択時の色 (Firefox用 ::-moz-selection も) */
+.editor-textarea::selection {
+  background: var(--editor-selection-bg, rgb(128 128 255 / 35%));
+  color: var(--editor-selection-fg, #000);
+}
+
+.editor-overlay {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 20px 36px 0 36px;
+  pointer-events: none;
+  color: transparent;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  user-select: none;
+}
+
+/* 選択中に overlay 側を少しフェードして視覚的衝突を軽減 */
+.editor-textarea:focus-visible + .editor-overlay,
+.editor-textarea:focus + .editor-overlay {
+  transition: opacity 80ms linear;
+}
+
+.editor-overlay .nl {
+  display: inline-block;
+  position: relative;
+  width: 0; /* does not consume layout width */
+  height: 1em;
+  overflow: visible;
+  pointer-events: none;
+  vertical-align: baseline;
+}
+
+.editor-overlay .nl::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 6px;
+  height: 1em;
+  transform: translateX(2px);
+  background: url('/icons/misc/br.png') left center / 6px 7px no-repeat;
+  opacity: 0.45;
+}
+
+.editor-overlay .hs {
+  display: inline-block;
+  vertical-align: baseline;
+  color: var(--editor-fg, #fff);
+  font-family: var(--editor-font-family, monospace);
+  line-height: var(--editor-line-height, 1.4);
+  font-size: var(--editor-font-size, 12px);
+  opacity: 0.25;
+}
+
+.editor-overlay .fs {
+  display: inline-block;
+  vertical-align: baseline;
+  color: var(--editor-fg, #fff);
+  font-family: var(--editor-font-family, monospace);
+  line-height: var(--editor-line-height, 1.4);
+  font-size: var(--editor-font-size, 12px);
+  opacity: 0.25;
+}
+
+.editor-overlay .sr {
+  display: inline-block;
+  vertical-align: baseline;
+  color: var(--editor-search-result-fg, #fff);
+  font-family: var(--editor-font-family, monospace);
+  line-height: var(--editor-line-height, 1.4);
+  font-size: var(--editor-font-size, 12px);
+  opacity: 0.25;
+}
+
+/* 検索ハイライト */
+.editor-overlay .search-highlight {
+  display: inline-block;
+  vertical-align: baseline;
+  color: var(--editor-search-highlight-fg, #000);
+  background-color: var(--editor-search-highlight-bg, #ff0);
+  font-family: var(--editor-font-family, monospace);
+  line-height: var(--editor-line-height, 1.4);
+  font-size: var(--editor-font-size, 12px);
+}

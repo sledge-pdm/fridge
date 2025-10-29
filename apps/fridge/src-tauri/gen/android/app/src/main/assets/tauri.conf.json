@@ -17,7 +17,7 @@
     "enableGTKAppId": false
   },
   "build": {
-    "devUrl": "http://192.168.151.187:5174/",
+    "devUrl": "http://172.25.17.61:5174/",
     "frontendDist": "../dist",
     "beforeDevCommand": "pnpm vite:dev",
     "beforeBuildCommand": "pnpm prettier && pnpm vite:build",

@@ -15,7 +15,6 @@ import MenuBar from '~/components/title_bar/MenuBar';
 import SPTitleBar from '~/components/title_bar/SPTitleBar';
 import TitleBar from '~/components/title_bar/TitleBar';
 import { addDocument, newDocument } from '~/features/document/service';
-import { loadEditorState } from '~/features/io/editor_state/load';
 import { configStore } from '~/stores/ConfigStore';
 import { reportCriticalError, zoomForIntegerize } from '~/utils/WindowUtils';
 
@@ -90,12 +89,13 @@ export default function App() {
       // await checkForUpdates();
     }
 
-    const result = await loadEditorState();
-    if (result.restored) {
-    } else {
-      console.warn(result.reason);
-      addDocument(newDocument(), true);
-    }
+    // const result = await loadEditorState();
+    // if (result.restored) {
+    // } else {
+    //   console.warn(result.reason);
+    //   addDocument(newDocument(), true);
+    // }
+    addDocument(newDocument(), true);
   });
 
   // onMount(async () => {

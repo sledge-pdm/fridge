@@ -2,7 +2,7 @@ import { css } from '@acab/ecsstatic';
 import { clsx } from '@sledge/core';
 import { Icon, Light } from '@sledge/ui';
 import { Component, createEffect, createSignal, For, onMount } from 'solid-js';
-import { FridgeDocument } from '~/features/document/model';
+import { FridgeDocument } from '~/features/document/models/FridgeDocument';
 import { fromId, isChanged, removeDocument } from '~/features/document/service';
 import { editorStore, setEditorStore } from '~/stores/EditorStore';
 import { eventBus, Events } from '~/utils/EventBus';
@@ -11,6 +11,7 @@ const tabRoot = css`
   display: flex;
   flex-direction: row;
   align-items: center;
+  flex-grow: 1;
   height: 100%;
 `;
 
@@ -144,7 +145,7 @@ const TabItem: Component<ItemProps> = (props) => {
         }
       }}
     >
-      <p class={clsx(label, isActive() && labelSelected)}>{doc()?.title}</p>
+      <p class={clsx(label, isActive() && labelSelected)}>{doc()?.getTitle() ?? 'untitled'}</p>
       <Light on={isDocChanged()} />
       <div
         id='remove_container'

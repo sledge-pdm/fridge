@@ -1,4 +1,4 @@
-import { FridgeDocument } from '~/features/document/model';
+import { FridgeDocument } from '~/features/document/models/FridgeDocument';
 
 export interface FoundSpan {
   start: number;
@@ -18,7 +18,7 @@ export function searchDocument(doc: FridgeDocument, query: string | RegExp): Sea
   let foundStrings;
   let count = 0;
 
-  while ((foundStrings = queryRegexp.exec(doc.content)) !== null) {
+  while ((foundStrings = queryRegexp.exec(doc.toPlain())) !== null) {
     founds.push({
       start: queryRegexp.lastIndex - foundStrings[0].length,
       end: queryRegexp.lastIndex,

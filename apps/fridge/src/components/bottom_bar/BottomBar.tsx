@@ -1,6 +1,6 @@
 import { css } from '@acab/ecsstatic';
 import { Component, createMemo } from 'solid-js';
-import ThemeDropdown from '~/components/ThemeDropdown';
+import ThemeDropdown from '~/components/bottom_bar/ThemeDropdown';
 import { fromId } from '~/features/document/service';
 import { editorStore } from '~/stores/EditorStore';
 import { flexRow } from '~/styles/styles';
@@ -18,7 +18,7 @@ const themeToggleContainer = css`
   margin-right: 8px;
 `;
 
-const EditorBottomBar: Component = () => {
+const BottomBar: Component = () => {
   const activeDoc = createMemo(() => fromId(editorStore.activeDocId));
 
   return (
@@ -36,13 +36,13 @@ const EditorBottomBar: Component = () => {
         background: 'var(--color-background)',
       }}
     >
-      <p class={pathText}>{activeDoc()?.associatedFilePath || ''}</p>
+      {/* <p class={pathText}>{activeDoc()?.filePath || ''}</p> */}
       <div class={themeToggleContainer}>
         <ThemeDropdown noBackground />
       </div>
-      <p>{activeDoc()?.content?.length} letters.</p>
+      {/* <p>{activeDoc()?.toPlain().length} letters.</p> */}
     </div>
   );
 };
 
-export default EditorBottomBar;
+export default BottomBar;

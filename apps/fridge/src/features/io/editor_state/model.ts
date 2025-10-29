@@ -1,4 +1,4 @@
-import { FridgeDocument } from '~/features/document/model';
+import { FridgeDocument } from '~/features/document/models/FridgeDocument';
 import { editorStore } from '~/stores/EditorStore';
 
 export const EDITOR_STATE_FILENAME = 'editor_state.json';

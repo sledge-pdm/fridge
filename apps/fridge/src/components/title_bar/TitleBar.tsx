@@ -54,8 +54,8 @@ export default function TitleBar() {
                   'flex-wrap': 'wrap',
                 }}
               >
-                <p class={titleBarTitle}>{activeDoc()?.title ?? 'fridge.'}</p>
-                <p class={titleBarTitleSub}>{activeDoc()?.associatedFilePath ?? ''}</p>
+                <p class={titleBarTitle}>{activeDoc()?.getTitle() ?? 'fridge.'}</p>
+                <p class={titleBarTitleSub}>{activeDoc()?.filePath ?? ''}</p>
               </div>
             </Show>
           </div>
@@ -71,9 +71,9 @@ export default function TitleBar() {
               >
                 <Icon
                   class={titleBarControlButtonImg}
-                  src={'/icons/title_bar/minimize_2.png'}
+                  src={'/icons/title_bar/minimize_10.png'}
                   color={'var(--color-on-background)'}
-                  base={12}
+                  base={10}
                   data-tauri-drag-region-exclude
                 />
               </div>
@@ -90,9 +90,9 @@ export default function TitleBar() {
               >
                 <Icon
                   class={titleBarControlButtonImg}
-                  src={isMaximized() ? '/icons/title_bar/quit_maximize_2.png' : '/icons/title_bar/maximize_2.png'}
+                  src={isMaximized() ? '/icons/title_bar/quit_maximize_10.png' : '/icons/title_bar/maximize_10.png'}
                   color={'var(--color-on-background)'}
-                  base={12}
+                  base={10}
                   data-tauri-drag-region-exclude
                 />
               </div>
@@ -109,9 +109,9 @@ export default function TitleBar() {
               >
                 <Icon
                   class={titleBarControlButtonImg}
-                  src={'/icons/title_bar/close_2.png'}
+                  src={'/icons/title_bar/close_10.png'}
                   color={'var(--color-on-background)'}
-                  base={12}
+                  base={10}
                   data-tauri-drag-region-exclude
                 />
               </div>

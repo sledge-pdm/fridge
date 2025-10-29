@@ -1,10 +1,10 @@
 import { createEffect, createSignal, onMount, Show } from 'solid-js';
-import EditorBottomBar from '~/components/editor/EditorBottomBar';
+import BottomBar from '~/components/bottom_bar/BottomBar';
 import EditorStartContent from '~/components/editor/EditorStartContent';
 import EditorTextArea from '~/components/editor/EditorTextArea';
 import Sidebar from '~/components/side_bar/Sidebar';
-import { FridgeDocument } from '~/features/document/model';
-import { fromId, fromIndex, update } from '~/features/document/service';
+import { FridgeDocument } from '~/features/document/models/FridgeDocument';
+import { fromId, fromIndex } from '~/features/document/service';
 import { overwrite } from '~/features/io/save';
 import { editorStore, setEditorStore } from '~/stores/EditorStore';
 
@@ -56,26 +56,28 @@ export default function Editor() {
       <div class={flexCol} style={{ position: 'relative', 'flex-grow': 1, overflow: 'hidden', 'min-height': '0' }}>
         <Show when={editorStore.activeDocId} fallback={<EditorStartContent />}>
           <div class='input_scroll'>
-            <input
+            {/* <input
               class='title_input'
               onInput={(e) => {
                 const title = (e.target as HTMLInputElement).value;
                 if (!title.trim()) return;
-                if (editorStore.activeDocId) update(editorStore.activeDocId, { title, associatedFilePath: undefined });
+                if (editorStore.activeDocId) update(editorStore.activeDocId, { title, filePath: undefined });
               }}
               value={activeDoc()?.title ?? ''}
-            />
+            /> */}
 
-            <EditorTextArea
+            {/* <EditorTextAreaOld
               docId={() => activeDoc()?.id}
-              content={() => activeDoc()?.content ?? ''}
+              content={() => activeDoc()?.toPlain() ?? ''}
               onInput={(value) => {
-                if (editorStore.activeDocId) update(editorStore.activeDocId, { content: value });
+                // if (editorStore.activeDocId) update(editorStore.activeDocId, { content: value });
               }}
-            />
+            /> */}
+
+            <EditorTextArea />
           </div>
         </Show>
-        <EditorBottomBar />
+        <BottomBar />
       </div>
 
       <Show when={editorStore.sidebar}>
