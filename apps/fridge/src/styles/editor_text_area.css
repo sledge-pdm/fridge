@@ -75,7 +75,7 @@
   width: 6px;
   height: 1em;
   transform: translateX(2px);
-  background: url('/icons/br.png') left center / 6px 7px no-repeat;
+  background: url('/icons/misc/br.png') left center / 6px 7px no-repeat;
   opacity: 0.45;
 }
 

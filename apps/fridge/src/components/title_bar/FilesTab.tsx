@@ -1,10 +1,9 @@
 import { css } from '@acab/ecsstatic';
 import { clsx } from '@sledge/core';
-import { Icon, Light, MenuList } from '@sledge/ui';
-import { Component, createEffect, createSignal, For, onMount, Show } from 'solid-js';
+import { Icon, Light } from '@sledge/ui';
+import { Component, createEffect, createSignal, For, onMount } from 'solid-js';
 import { FridgeDocument } from '~/features/document/model';
-import { addDocument, fromId, isChanged, newDocument, openDocument, removeDocument } from '~/features/document/service';
-import { showChooseFileDialog } from '~/features/io/choose';
+import { fromId, isChanged, removeDocument } from '~/features/document/service';
 import { editorStore, setEditorStore } from '~/stores/EditorStore';
 import { eventBus, Events } from '~/utils/EventBus';
 

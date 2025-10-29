@@ -53,12 +53,6 @@ export default function Editor() {
 
   return (
     <div class={pageRoot} style={{ overflow: 'hidden', 'box-sizing': 'border-box' }}>
-      <Show when={editorStore.sidebar}>
-        <div class={flexCol} style={{ position: 'relative', overflow: 'hidden', 'min-height': '0' }}>
-          <Sidebar />
-        </div>
-      </Show>
-
       <div class={flexCol} style={{ position: 'relative', 'flex-grow': 1, overflow: 'hidden', 'min-height': '0' }}>
         <Show when={editorStore.activeDocId} fallback={<EditorStartContent />}>
           <div class='input_scroll'>
@@ -83,6 +77,12 @@ export default function Editor() {
         </Show>
         <EditorBottomBar />
       </div>
+
+      <Show when={editorStore.sidebar}>
+        <div class={flexCol} style={{ position: 'relative', overflow: 'hidden', 'min-height': '0' }}>
+          <Sidebar />
+        </div>
+      </Show>
     </div>
   );
 }

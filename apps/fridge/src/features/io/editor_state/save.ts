@@ -1,4 +1,4 @@
-import { appCacheDir, join } from '@tauri-apps/api/path';
+import { appCacheDir } from '@tauri-apps/api/path';
 import { exists, mkdir, writeTextFile } from '@tauri-apps/plugin-fs';
 import { EDITOR_STATE_FILENAME, getCurrentEditorState } from '~/features/io/editor_state/model';
 import { normalizeJoin } from '~/utils/FileUtils';

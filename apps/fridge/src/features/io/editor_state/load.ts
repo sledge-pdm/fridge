@@ -1,4 +1,4 @@
-import { appCacheDir, join } from '@tauri-apps/api/path';
+import { appCacheDir } from '@tauri-apps/api/path';
 import { exists, readTextFile } from '@tauri-apps/plugin-fs';
 import { replaceDocuments } from '~/features/document/service';
 import { EDITOR_STATE_FILENAME, SavedEditorState } from '~/features/io/editor_state/model';

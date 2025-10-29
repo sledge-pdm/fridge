@@ -1,1 +1,72 @@
-{"$schema":"../node_modules/@tauri-apps/cli/config.schema.json","productName":"fridge","mainBinaryName":"fridge","identifier":"com.innsbluck.fridge","app":{"windows":[],"security":{"freezePrototype":false,"dangerousDisableAssetCspModification":false,"assetProtocol":{"scope":["*/**"],"enable":true},"pattern":{"use":"brownfield"},"capabilities":[]},"macOSPrivateApi":false,"withGlobalTauri":false,"enableGTKAppId":false},"build":{"devUrl":"http://192.168.151.187:5174/","frontendDist":"../dist","beforeDevCommand":"pnpm vite:dev","beforeBuildCommand":"pnpm prettier && pnpm vite:build","removeUnusedCommands":false,"additionalWatchFolders":[]},"bundle":{"active":true,"targets":"all","createUpdaterArtifacts":false,"icon":["icons/icon.ico","icons/icon.icns","icons/icon.png","icons/32x32.png","icons/64x64.png","icons/128x128.png","icons/128x128@2x.png"],"resources":["resources/**/*","icons/**/*"],"useLocalToolsDir":false,"windows":{"digestAlgorithm":null,"certificateThumbprint":null,"timestampUrl":null,"tsp":false,"webviewInstallMode":{"type":"downloadBootstrapper","silent":true},"allowDowngrades":true,"wix":null,"nsis":null,"signCommand":null},"linux":{"appimage":{"bundleMediaFramework":false,"files":{}},"deb":{"files":{}},"rpm":{"release":"1","epoch":0,"files":{}}},"macOS":{"files":{},"minimumSystemVersion":"10.13","hardenedRuntime":true,"dmg":{"windowSize":{"width":660,"height":400},"appPosition":{"x":180,"y":170},"applicationFolderPosition":{"x":480,"y":170}}},"iOS":{"minimumSystemVersion":"14.0"},"android":{"minSdkVersion":24}},"plugins":{"PreventOverflow":true}}
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "fridge",
+  "mainBinaryName": "fridge",
+  "identifier": "com.innsbluck.fridge",
+  "app": {
+    "windows": [],
+    "security": {
+      "freezePrototype": false,
+      "dangerousDisableAssetCspModification": false,
+      "assetProtocol": { "scope": ["*/**"], "enable": true },
+      "pattern": { "use": "brownfield" },
+      "capabilities": []
+    },
+    "macOSPrivateApi": false,
+    "withGlobalTauri": false,
+    "enableGTKAppId": false
+  },
+  "build": {
+    "devUrl": "http://192.168.151.187:5174/",
+    "frontendDist": "../dist",
+    "beforeDevCommand": "pnpm vite:dev",
+    "beforeBuildCommand": "pnpm prettier && pnpm vite:build",
+    "removeUnusedCommands": false,
+    "additionalWatchFolders": []
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "createUpdaterArtifacts": false,
+    "icon": [
+      "icons/icon.ico",
+      "icons/icon.icns",
+      "icons/icon.png",
+      "icons/32x32.png",
+      "icons/64x64.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png"
+    ],
+    "resources": ["resources/**/*", "icons/**/*"],
+    "useLocalToolsDir": false,
+    "windows": {
+      "digestAlgorithm": null,
+      "certificateThumbprint": null,
+      "timestampUrl": null,
+      "tsp": false,
+      "webviewInstallMode": { "type": "downloadBootstrapper", "silent": true },
+      "allowDowngrades": true,
+      "wix": null,
+      "nsis": null,
+      "signCommand": null
+    },
+    "linux": {
+      "appimage": { "bundleMediaFramework": false, "files": {} },
+      "deb": { "files": {} },
+      "rpm": { "release": "1", "epoch": 0, "files": {} }
+    },
+    "macOS": {
+      "files": {},
+      "minimumSystemVersion": "10.13",
+      "hardenedRuntime": true,
+      "dmg": {
+        "windowSize": { "width": 660, "height": 400 },
+        "appPosition": { "x": 180, "y": 170 },
+        "applicationFolderPosition": { "x": 480, "y": 170 }
+      }
+    },
+    "iOS": { "minimumSystemVersion": "14.0" },
+    "android": { "minSdkVersion": 24 }
+  },
+  "plugins": { "PreventOverflow": true }
+}
