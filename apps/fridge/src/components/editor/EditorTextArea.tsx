@@ -17,6 +17,17 @@ const DOC_OVERLAY_EL_ID = 'editor-doc-overlay-el';
 const EditorTextArea: Component<Props> = (props) => {
   let containerRef: HTMLDivElement;
   let overlayRef: HTMLDivElement;
+  let isComposing = false;
+
+  const onCompositionStart = () => {
+    isComposing = true;
+  };
+
+  const onCompositionEnd = () => {
+    isComposing = false;
+    const newDoc = parseCurrent();
+    if (newDoc) applyDoc(newDoc);
+  };
 
   const parseContentHTML = (doc?: FridgeDocument) => (doc ? parseHTML(doc, { docElId: DOC_EL_ID, overlay: false }) : null);
   const parseOverlayHTML = (doc?: FridgeDocument) => (doc ? parseHTML(doc, { docElId: DOC_OVERLAY_EL_ID, overlay: true }) : null);
@@ -28,6 +39,7 @@ const EditorTextArea: Component<Props> = (props) => {
   createEffect(() => {
     const doc = fromId(props.docId);
     if (doc) {
+      console.log(doc);
       containerRef.replaceChildren(parseContentHTML(doc) as Node);
       overlayRef.replaceChildren(parseOverlayHTML(doc) as Node);
     }
@@ -41,6 +53,7 @@ const EditorTextArea: Component<Props> = (props) => {
 
   const applyDoc = (newDoc: FridgeDocument) => {
     if (!props.docId) return;
+    console.log(newDoc);
     const sel = saveSelection(containerRef);
     replaceDocument(props.docId, newDoc);
     containerRef.replaceChildren(parseContentHTML(newDoc) as Node);
@@ -57,20 +70,20 @@ const EditorTextArea: Component<Props> = (props) => {
         class={textAreaContentBase}
         contentEditable={true}
         onKeyDown={(e) => {
+          if (isComposing) return;
           if (e.key === 'Enter') {
-            // if (e.shiftKey) e.preventDefault();
             const doc = fromId(props.docId);
             if (props.docId && doc) {
-              if (doc) {
-                doc.children.push(new Paragraph());
-                applyDoc(doc);
-              }
+              doc.children.push(new Paragraph());
+              applyDoc(doc);
             }
           }
         }}
+        onCompositionStart={onCompositionStart}
+        onCompositionEnd={onCompositionEnd}
         onInput={(e) => {
+          if (isComposing) return;
           const newDoc = parseCurrent();
-          console.log(newDoc);
           if (newDoc) applyDoc(newDoc);
         }}
       >

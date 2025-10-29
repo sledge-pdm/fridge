@@ -1,9 +1,8 @@
 import { css } from '@acab/ecsstatic';
 
 export const textAreaRoot = css`
-  width: 100%;
-  height: 100%;
   position: relative;
+  min-height: 100%;
 `;
 
 export const textAreaContentBase = css`
@@ -11,7 +10,7 @@ export const textAreaContentBase = css`
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   background: none;
   border: none;
   outline: none;
@@ -21,7 +20,7 @@ export const textAreaContentBase = css`
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
-  overflow: auto;
+  overflow: hidden;
   white-space: pre-wrap;
   overflow-wrap: break-word;
 

@@ -21,24 +21,30 @@ export class SpanMarkup {
     };
   }
 
+  getOptions() {
+    return this.options;
+  }
+
   updateOptions(options: Partial<MarkupOptions>): void {
     this.options = { ...this.options, ...options };
   }
 
   readonly spanSymbol = [' ', '　', '\n'];
 
-  getSymbolSpan(char: string, baseClass: string) {
-    if (char === ' ' && this.options.showHalfSpace) {
+  getSymbolSpan(char: string, baseClass: string, overrideOptions?: MarkupOptions) {
+    const options = overrideOptions ?? this.options;
+
+    if (char === ' ' && options.showHalfSpace) {
       return <span class={clsx(baseClass, halfSpace)}>.</span>;
-    } else if (char === '　' && this.options.showFullSpace) {
+    } else if (char === '　' && options.showFullSpace) {
       return <span class={clsx(baseClass, fullSpace)}>・</span>;
-    } else if (char === '\n' && this.options.showNewline) {
+    } else if (char === '\n' && options.showNewline) {
       return <span class={clsx(baseClass, newLine)}></span>;
     }
     return null;
   }
 
-  toJSX(text: string, baseClass: string): JSX.Element {
+  toJSX(text: string, baseClass: string, overrideOptions?: MarkupOptions): JSX.Element {
     if (!text) return <>{'\u200B'}</>; // zero-width space to keep height
 
     const texts: string[] = text.split('');
@@ -55,7 +61,7 @@ export class SpanMarkup {
           normalSpan = <span class={clsx(baseClass, normalText)}>{aggregatedNormalText}</span>;
           aggregatedNormalText = '';
         }
-        let symbolSpan = this.getSymbolSpan(ch, baseClass);
+        let symbolSpan = this.getSymbolSpan(ch, baseClass, overrideOptions);
 
         return [normalSpan, symbolSpan];
       })

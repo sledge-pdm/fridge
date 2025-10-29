@@ -5,7 +5,7 @@ import { Heading } from '~/features/document/models/blocks/Heading';
 import { Image } from '~/features/document/models/blocks/Image';
 import { Paragraph } from '~/features/document/models/blocks/Paragraph';
 import { FridgeDocument } from '~/features/document/models/FridgeDocument';
-import { SpanMarkup } from '~/features/markup/SpanMarkup';
+import { MarkupOptions, SpanMarkup } from '~/features/markup/SpanMarkup';
 import { headingL1, headingL2, headingL3, headingL4, paragraphContent } from '~/styles/nodeStyles';
 
 const columnDiv = css`
@@ -16,7 +16,6 @@ const rowDiv = css`
   display: flex;
   flex-direction: row;
 `;
-
 const inlineDiv = css`
   display: inline;
 `;
@@ -33,14 +32,14 @@ export function parseHTML(node: ASTNode, option: ParseHTMLOption): JSX.Element {
   switch (node.type) {
     case 'document':
       const document = node as FridgeDocument;
-
       let docClass = columnDiv;
-
       switch (document.mode) {
         case 'ltr':
-          docClass = rowDiv;
-        case 'ttb':
           docClass = columnDiv;
+          break;
+        case 'ttb':
+          docClass = rowDiv;
+          break;
       }
       return (
         <div data-type={document.type} data-id={document.id} data-mode={document.mode} class={docClass} id={docElId}>
@@ -59,47 +58,53 @@ export function parseHTML(node: ASTNode, option: ParseHTMLOption): JSX.Element {
     // block
     case 'heading':
       const heading = node as Heading;
+      let headingClass = headingL1;
       switch (heading.level) {
         case 1:
-          return (
-            <h1 data-type={heading.type} data-id={heading.id} class={headingL1}>
-              {getContent(heading.toPlain(), overlay, {
-                baseClass: headingL1,
-                newLineAfterExists: !isLast,
-              })}
-            </h1>
-          );
+          headingClass = headingL1;
+          break;
         case 2:
-          return (
-            <h2 data-type={heading.type} data-id={heading.id} class={headingL2}>
-              {getContent(heading.toPlain(), overlay, {
-                baseClass: headingL2,
-                newLineAfterExists: !isLast,
-              })}
-            </h2>
-          );
+          headingClass = headingL2;
+          break;
         case 3:
-          return (
-            <h3 data-type={heading.type} data-id={heading.id} class={headingL3}>
-              {getContent(heading.toPlain(), overlay, {
-                baseClass: headingL3,
-                newLineAfterExists: !isLast,
-              })}
-            </h3>
-          );
+          headingClass = headingL3;
+          break;
         case 4:
-          return (
-            <h4 data-type={heading.type} data-id={heading.id} class={headingL4}>
-              {getContent(heading.toPlain(), overlay, {
-                baseClass: headingL4,
-                newLineAfterExists: !isLast,
-              })}
-            </h4>
-          );
+          headingClass = headingL4;
+          break;
       }
+      return (
+        <p data-type={heading.type} data-id={heading.id} class={headingClass}>
+          {getContent(heading.toPlain(), overlay, {
+            baseClass: headingClass,
+            newLineAfterExists: !isLast,
+            overrideOptions: {
+              highlightSearch: false,
+              showFullSpace: false,
+              showHalfSpace: false,
+              showNewline: false,
+            },
+          })}
+        </p>
+      );
     case 'image':
       const image = node as Image;
-      return <></>; // wip
+      return (
+        <img
+          data-type={image.type}
+          data-id={image.id}
+          data-src={image.src}
+          data-alt={image.alt}
+          data-display={image.display}
+          data-width={image.width}
+          data-height={image.height}
+          style={{ display: image.display }}
+          src={image.src}
+          width={image.width}
+          height={image.height}
+          alt={image.alt}
+        />
+      );
     case 'paragraph':
       const paragraph = node as Paragraph;
       return (
@@ -123,14 +128,16 @@ const markUp = new SpanMarkup({
 interface OverlayOptions {
   baseClass: string;
   newLineAfterExists: boolean;
+
+  overrideOptions?: MarkupOptions;
 }
 
 function getContent(text: string, overlay: boolean, overlayOptions?: OverlayOptions): JSX.Element {
-  const { baseClass = '', newLineAfterExists = false } = overlayOptions ?? {};
+  const { baseClass = '', newLineAfterExists = false, overrideOptions } = overlayOptions ?? {};
 
   const content = text !== '' ? text : <br />;
   if (overlay) {
-    return markUp.toJSX(text, baseClass) as JSX.Element; // returns JSX fragment
+    return markUp.toJSX(text, baseClass, overrideOptions) as JSX.Element; // returns JSX fragment
   } else {
     return content;
   }
@@ -200,8 +207,30 @@ export function parseDocFromDOM(documentRoot: HTMLElement): FridgeDocument | und
       children.push(para);
       continue;
     }
+    if (type === 'image') {
+      // Support <img> elements or custom elements with data-* attributes.
+      const imgEl = el as HTMLImageElement;
+      const src = (el.getAttribute('data-src') || imgEl.getAttribute('src') || '') as string;
+      const altAttr = el.getAttribute('data-alt');
+      const alt = altAttr !== null ? altAttr : imgEl.alt || undefined;
 
-    // other types (image, etc.) are ignored for now
+      // display may be provided as data-display or via style.display
+      let display = (el.getAttribute('data-display') as Image['display']) || undefined;
+      if (!display && imgEl && imgEl.style) display = (imgEl.style.display as Image['display']) || undefined;
+
+      // width/height: prefer data-* attrs, fall back to element attributes
+      const widthAttr = el.getAttribute('data-width') || imgEl.getAttribute('width');
+      const heightAttr = el.getAttribute('data-height') || imgEl.getAttribute('height');
+      const width = widthAttr ? Number(widthAttr) : undefined;
+      const height = heightAttr ? Number(heightAttr) : undefined;
+
+      const image = new Image(src, alt, display, width, height);
+      applyId(image, el);
+      children.push(image);
+      continue;
+    }
+
+    // other types are ignored for now
   }
 
   doc.children = children;

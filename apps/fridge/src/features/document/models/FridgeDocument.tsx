@@ -1,6 +1,7 @@
 import { ASTNode } from '~/features/document/models/ASTNode';
 import { Block } from '~/features/document/models/blocks/Block';
 import { Heading } from '~/features/document/models/blocks/Heading';
+import { Image } from '~/features/document/models/blocks/Image';
 import { Paragraph } from '~/features/document/models/blocks/Paragraph';
 
 export type WriteMode = 'ltr' | 'ttb';
@@ -36,6 +37,9 @@ export class FridgeDocument extends ASTNode {
         })
       );
     }
+
+    this.children.push(new Image('/0827sledge_black.png', 'sledge', 'inline', 120, 75));
+    this.children.push(new Paragraph('wow thats an image...'));
   }
 
   insert(index: number, block: Block) {

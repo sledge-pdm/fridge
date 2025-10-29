@@ -19,8 +19,6 @@ export async function openDocument(docPath: string): Promise<FridgeDocument> {
   const content = await readFromFile(docPath);
   const title = pathToTitle(docPath);
 
-  console.log(title, content  );
-
   const doc: FridgeDocument = new FridgeDocument(title, content);
 
   doc.filePath = docPath;
