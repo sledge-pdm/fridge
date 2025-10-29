@@ -19,5 +19,6 @@
     },
     "types": ["vite/client"],
     "rootDirs": ["src"]
-  }
+  },
+  "exclude": ["src-tauri/*"]
 }

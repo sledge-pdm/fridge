@@ -12,7 +12,7 @@ import { getCurrentWindow } from '@tauri-apps/api/window';
 import { platform } from '@tauri-apps/plugin-os';
 import { createEffect, createSignal, onCleanup, onMount, Show } from 'solid-js';
 import MenuBar from '~/components/title_bar/MenuBar';
-import SPTitleBar from '~/components/title_bar/SpTitleBar';
+import SPTitleBar from '~/components/title_bar/SPTitleBar';
 import TitleBar from '~/components/title_bar/TitleBar';
 import { addDocument, newDocument } from '~/features/document/service';
 import { loadEditorState } from '~/features/io/editor_state/load';
