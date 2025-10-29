@@ -96,20 +96,18 @@ pub async fn open_window(
     // 各種設定（サイズや装飾など）をここで上書き
     match kind {
         SledgeWindowKind::Editor => {
-
             #[cfg(not(target_os = "android"))]
             {
-            builder = builder
-                .title("fridge.")
-                .inner_size(1200.0, 750.0)
-                .resizable(true)
-                .closable(true)
-                .maximizable(true)
-                .minimizable(true);
+                builder = builder
+                    .title("fridge.")
+                    .inner_size(1200.0, 750.0)
+                    .resizable(true)
+                    .closable(true)
+                    .maximizable(true)
+                    .minimizable(true);
             }
 
-            builder = builder
-                .accept_first_mouse(true);
+            builder = builder.accept_first_mouse(true);
         }
     }
 
@@ -123,20 +121,16 @@ pub async fn open_window(
         builder = builder.title_bar_style(TitleBarStyle::Transparent);
     }
 
-    // 4. ウィンドウ生成（非表示で）
-    #[allow(unused_variables)]
-
     #[cfg(not(target_os = "android"))]
     let builder = builder.visible(false);
-        
-    let _window = builder
-        .build()
-        .map_err(|e| e.to_string())?;
+
+    let _window = builder.build().map_err(|e| e.to_string())?;
 
     Ok(())
 }
 
 #[tauri::command]
+#[allow(unused_variables)]
 pub async fn show_main_window(app: AppHandle, window_label: String) -> Result<(), String> {
     #[cfg(not(target_os = "android"))]
     {
