@@ -135,11 +135,10 @@ interface OverlayOptions {
 function getContent(text: string, overlay: boolean, overlayOptions?: OverlayOptions): JSX.Element {
   const { baseClass = '', newLineAfterExists = false, overrideOptions } = overlayOptions ?? {};
 
-  const content = text !== '' ? text : <br />;
   if (overlay) {
     return markUp.toJSX(text, baseClass, overrideOptions) as JSX.Element; // returns JSX fragment
   } else {
-    return content;
+    return text;
   }
 }
 

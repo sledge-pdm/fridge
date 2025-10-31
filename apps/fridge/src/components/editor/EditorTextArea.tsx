@@ -214,9 +214,7 @@ const EditorTextArea: Component<Props> = (props) => {
             endNodeId = node.id;
             const lines = data.split('\n');
             const paragraphs = lines.map((line) => {
-              // Preserve truly empty lines as empty string so parser/render will emit <br />
-              const text = line === '' ? '' : line;
-              return new Paragraph(text);
+              return new Paragraph(line);
             });
             doc.insertAfter(endNodeId, paragraphs);
             const lastP = paragraphs[paragraphs.length - 1];

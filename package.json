@@ -4,21 +4,24 @@
   "scripts": {
     "dev": "pnpm -F fridge dev",
     "build": "pnpm -F fridge build",
-    "test": "vitest run",
-    "test:ui": "vitest",
     "prettier": "prettier --write . --config .prettierrc",
     "cargo:format": "cd apps/fridge/src-tauri && cargo fmt",
     "format": "pnpm prettier && pnpm cargo:format",
-    "tsc": "pnpm -r exec tsc --noEmit --skipLibCheck"
+    "tsc": "pnpm -r exec tsc --noEmit --skipLibCheck",
+    "test": "vitest --config=vitest.config.ts",
+    "test:browser": "vitest --config=vitest.browser.config.ts"
   },
   "devDependencies": {
+    "@solidjs/testing-library": "^0.8.10",
+    "@vitest/browser-playwright": "^4.0.5",
     "dotenv": "^17.2.1",
     "prettier": "^3.6.2",
     "prettier-plugin-organize-imports": "^4.2.0",
     "stylelint": "^16.23.1",
     "stylelint-config-standard": "^39.0.0",
     "stylelint-order": "^7.0.0",
-    "vitest": "^4.0.4"
+    "vite-plugin-solid": "^2.11.8",
+    "vitest": "^4.0.5"
   },
   "dependencies": {
     "mitt": "^3.0.1"
