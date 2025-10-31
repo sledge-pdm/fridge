@@ -189,13 +189,15 @@ const EditorTextArea: Component<Props> = (props) => {
           }
         }}
         onPaste={(e) => {
+          const data = e.clipboardData?.getData('text');
+          if (!data) return;
+          if (!data?.includes('\n')) return;
+
           e.preventDefault();
+
           const doc = fromId(props.docId);
           const docEl = getDocElement();
           if (!doc || !docEl) return;
-
-          const data = e.clipboardData?.getData('text');
-          if (!data) return;
           const pos = currentSelectPosition(docEl);
           if (pos) {
             let endNodeId = '';
