@@ -4,26 +4,34 @@ import { getCurrentWindow } from '@tauri-apps/api/window';
 import { createMemo, createSignal, onMount, Show } from 'solid-js';
 import { addDocument, fromId, newDocument, openDocument } from '~/features/document/service';
 import { showChooseFileDialog } from '~/features/io/choose';
+import { saveToFile } from '~/features/io/save';
 import { editorStore } from '~/stores/EditorStore';
-import { flexRow } from '~/styles/styles';
 import {
   titleBarControlButtonContainer,
   titleBarControlButtonImg,
   titleBarControlCloseButtonContainer,
   titleBarControls,
   titleBarRoot,
-  titleBarTitle,
   titleBarTitleContainer,
-  titleBarTitleSub,
 } from '~/styles/title_bar/title_bar';
 import '~/styles/title_bar/title_bar_region.css';
+
+const controlButtonContainer = css`
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  margin-left: 28px;
+  gap: 16px;
+`;
 
 const controlButton = css`
   padding: 2px;
   height: 100%;
-  margin-left: 12px;
-  opacity: 0.5;
+  opacity: 0.75;
+  font-family: ZFB09;
   white-space: nowrap;
+  pointer-events: all;
+  cursor: pointer;
 `;
 
 export default function TitleBar() {
@@ -54,8 +62,39 @@ export default function TitleBar() {
     <header>
       <Show when={!isDecorated()}>
         <nav class={titleBarRoot} data-tauri-drag-region>
+          <div class={controlButtonContainer}>
+            <a
+              class={controlButton}
+              onClick={async () => {
+                addDocument(newDocument(), true);
+              }}
+              data-tauri-drag-region-exclude
+            >
+              add
+            </a>
+            <a
+              class={controlButton}
+              onClick={async () => {
+                const path = await showChooseFileDialog();
+                if (path) openDocument(path);
+              }}
+              data-tauri-drag-region-exclude
+            >
+              open
+            </a>
+            <a
+              class={controlButton}
+              onClick={async () => {
+                const activeDoc = fromId(editorStore.activeDocId);
+                if (activeDoc) saveToFile(activeDoc.toPlain(), activeDoc.getTitle() ?? 'untitled document');
+              }}
+              data-tauri-drag-region-exclude
+            >
+              save
+            </a>
+          </div>
           <div class={titleBarTitleContainer}>
-            <Show when={location.pathname.startsWith('/editor')} fallback={<p class={titleBarTitle}>{windowTitle()}</p>}>
+            {/* <Show when={location.pathname.startsWith('/editor')} fallback={<p class={titleBarTitle}>{windowTitle()}</p>}>
               <div
                 class={flexRow}
                 style={{
@@ -67,25 +106,9 @@ export default function TitleBar() {
                 <p class={titleBarTitle}>{activeDoc()?.getTitle() ?? 'fridge.'}</p>
                 <p class={titleBarTitleSub}>{activeDoc()?.filePath ?? ''}</p>
               </div>
-            </Show>
+            </Show> */}
           </div>
-          <a
-            class={controlButton}
-            onClick={async () => {
-              addDocument(newDocument(), true);
-            }}
-          >
-            + add
-          </a>
-          <a
-            class={controlButton}
-            onClick={async () => {
-              const path = await showChooseFileDialog();
-              if (path) openDocument(path);
-            }}
-          >
-            + open
-          </a>
+
           <div class={titleBarControls} data-tauri-drag-region-exclude>
             <Show when={isMinimizable()}>
               <div

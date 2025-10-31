@@ -15,7 +15,8 @@ const pathText = css`
 const themeToggleContainer = css`
   display: flex;
   flex-direction: column;
-  margin-right: 8px;
+  margin-left: auto;
+  /* margin-right: 8px; */
 `;
 
 const BottomBar: Component = () => {
@@ -31,7 +32,7 @@ const BottomBar: Component = () => {
         right: 0,
         height: '24px',
         'align-items': 'center',
-        padding: '0 12px',
+        padding: '0 4px',
         'border-top': `1px solid var(--color-border-secondary)`,
         background: 'var(--color-background)',
       }}

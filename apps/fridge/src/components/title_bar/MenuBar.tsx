@@ -10,7 +10,7 @@ const root = css`
   pointer-events: all;
   padding: 0px 8px 0 20px;
   align-items: center;
-  height: 28px;
+  height: 32px;
 
   width: 100%;
 

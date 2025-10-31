@@ -1,11 +1,18 @@
 import { clsx } from '@sledge/core';
 import { Component, createEffect } from 'solid-js';
 import { textAreaContentBase, textAreaContentOverlay, textAreaRoot } from '~/components/editor/textAreaStyles';
+import { Heading } from '~/features/document/models/blocks/Heading';
 import { Paragraph } from '~/features/document/models/blocks/Paragraph';
 import { FridgeDocument } from '~/features/document/models/FridgeDocument';
 import { parseDocFromDOM, parseHTML } from '~/features/document/parser';
 import { fromId, replaceDocument } from '~/features/document/service';
-import { restoreSelection, saveSelection } from '~/utils/SelectionUtils';
+import {
+  getCurrentSerializedSelection,
+  locateRange,
+  NodePosition,
+  restoreSelectionMapped,
+  SerializedSelection,
+} from '~/features/selection/SelectionMapper';
 
 interface Props {
   docId: string | undefined;
@@ -14,6 +21,10 @@ interface Props {
 const DOC_EL_ID = 'editor-doc-el';
 const DOC_OVERLAY_EL_ID = 'editor-doc-overlay-el';
 
+export const getDocElement = () => document.getElementById(DOC_EL_ID) as HTMLElement | null;
+export const getOverlayElement = () => document.getElementById(DOC_OVERLAY_EL_ID) as HTMLElement | null;
+
+// KEEP THIS WYSIWYG!
 const EditorTextArea: Component<Props> = (props) => {
   let containerRef: HTMLDivElement;
   let overlayRef: HTMLDivElement;
@@ -39,7 +50,6 @@ const EditorTextArea: Component<Props> = (props) => {
   createEffect(() => {
     const doc = fromId(props.docId);
     if (doc) {
-      console.log(doc);
       containerRef.replaceChildren(parseContentHTML(doc) as Node);
       overlayRef.replaceChildren(parseOverlayHTML(doc) as Node);
     }
@@ -51,14 +61,33 @@ const EditorTextArea: Component<Props> = (props) => {
     return parseDocFromDOM(docEl as HTMLElement);
   };
 
-  const applyDoc = (newDoc: FridgeDocument) => {
+  const applyDoc = (newDoc: FridgeDocument, overridePosition?: NodePosition) => {
     if (!props.docId) return;
-    console.log(newDoc);
-    const sel = saveSelection(containerRef);
+    const docEl = getDocElement();
+    if (!docEl) return;
+
+    let savedSel: SerializedSelection | null = overridePosition
+      ? { start: overridePosition, end: overridePosition }
+      : getCurrentSerializedSelection(docEl);
+
     replaceDocument(props.docId, newDoc);
     containerRef.replaceChildren(parseContentHTML(newDoc) as Node);
     overlayRef.replaceChildren(parseOverlayHTML(newDoc) as Node);
-    restoreSelection(containerRef, sel);
+
+    const newDocEl = getDocElement();
+    if (!newDocEl) return;
+
+    if (savedSel) {
+      restoreSelectionMapped(newDocEl, savedSel);
+    }
+  };
+
+  const currentSelectPosition = (docEl: HTMLElement): NodePosition | null => {
+    const range = window.getSelection()?.getRangeAt(0);
+    if (range) {
+      return locateRange(docEl, range);
+    }
+    return null;
   };
 
   return (
@@ -79,12 +108,115 @@ const EditorTextArea: Component<Props> = (props) => {
         contentEditable={true}
         onKeyDown={(e) => {
           if (isComposing) return;
-          if (e.key === 'Enter') {
-            const doc = fromId(props.docId);
+          const doc = fromId(props.docId);
+          const docEl = getDocElement();
+          if (!doc || !docEl) return;
+
+          const pos = currentSelectPosition(docEl);
+          if (pos) {
+            const node = doc.findNode(pos.nodeId);
+            if (!node) return;
+
+            console.log(`Entered ${e.key} in the [${pos.offset}] of ${node?.type}(${node?.toPlain()} / ${node?.id}).`);
+
+            // paragraph: leave before, add new line as paragraph with after
+            if (node.type === 'paragraph') {
+              if (e.key === 'Enter') {
+                // TODO: add behaviour when shift/ctrl pressed
+                e.preventDefault();
+                let endNodeId = node.id;
+                const currentSel = getCurrentSerializedSelection(docEl);
+                if (currentSel) {
+                  doc.deleteInSelection(currentSel);
+                  endNodeId = currentSel.end.nodeId;
+                }
+                let pNode = doc.findNode(node.id) as Paragraph | null;
+                if (!pNode) return;
+                const text = pNode.toPlain();
+                const beforeText = text.slice(0, pos.offset);
+                const afterText = text.slice(pos.offset);
+                // replace current line with beforeText
+                doc.replace(pNode.id, new Paragraph(beforeText));
+                // insert new line with beforeText
+                const newLine = new Paragraph(afterText);
+                doc.insertAfter(pNode.id, newLine);
+                // move selection to the first pos of new line
+                applyDoc(doc, {
+                  nodeId: newLine.id,
+                  offset: 0,
+                });
+              }
+            }
+
+            // heading: leave before, add new line as paragraph with after
+            if (node.type === 'heading') {
+              if (e.key === 'Enter') {
+                // TODO: add behaviour when shift/ctrl pressed
+                e.preventDefault();
+                let endNodeId = node.id;
+                const currentSel = getCurrentSerializedSelection(docEl);
+                if (currentSel) {
+                  doc.deleteInSelection(currentSel);
+                  endNodeId = currentSel.end.nodeId;
+                }
+                let hNode = doc.findNode(node.id) as Heading | null;
+                if (!hNode) return;
+                const text = hNode.toPlain();
+                const beforeText = text.slice(0, pos.offset);
+                const afterText = text.slice(pos.offset);
+                // replace current line with beforeText
+                doc.replace(hNode.id, new Heading(beforeText, hNode.level));
+                // insert new line with beforeText
+                const newLine = new Paragraph(afterText);
+                doc.insertAfter(hNode.id, newLine);
+                // move selection to the first pos of new line
+                applyDoc(doc, {
+                  nodeId: newLine.id,
+                  offset: 0,
+                });
+              }
+            }
+          }
+
+          // if doc is empty, insert heading
+          if (!doc?.toPlain()) {
+            e.preventDefault();
             if (props.docId && doc) {
+              doc.children.push(new Heading('', 1));
               doc.children.push(new Paragraph());
               applyDoc(doc);
             }
+          }
+        }}
+        onPaste={(e) => {
+          e.preventDefault();
+          const doc = fromId(props.docId);
+          const docEl = getDocElement();
+          if (!doc || !docEl) return;
+
+          const data = e.clipboardData?.getData('text');
+          if (!data) return;
+          const pos = currentSelectPosition(docEl);
+          if (pos) {
+            let endNodeId = '';
+            const currentSel = getCurrentSerializedSelection(docEl);
+            if (currentSel) {
+              doc.deleteInSelection(currentSel);
+              endNodeId = currentSel.end.nodeId;
+            }
+            const node = doc.findNode(pos.nodeId);
+            if (!node) return;
+            endNodeId = node.id;
+            const lines = data.split('\n');
+            const paragraphs = lines.map((line, i) => {
+              return new Paragraph(line);
+            });
+            doc.insertAfter(endNodeId, paragraphs);
+            const lastP = paragraphs[paragraphs.length - 1];
+            applyDoc(doc, {
+              nodeId: lastP.id,
+              offset: lastP.toPlain().length,
+            });
           }
         }}
         onCompositionStart={onCompositionStart}

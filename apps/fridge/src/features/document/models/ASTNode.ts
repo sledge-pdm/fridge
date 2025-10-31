@@ -15,4 +15,6 @@ export abstract class ASTNode {
   toString(): string {
     return this.toPlain();
   }
+
+  abstract findNode(nodeId: string): ASTNode | null;
 }

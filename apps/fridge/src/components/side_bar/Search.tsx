@@ -29,9 +29,10 @@ const scrollContainer = css`
 `;
 const searchLabel = css`
   margin-top: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
   margin-left: 2px;
-  color: var(--color-muted);
+  font-family: ZFB03B;
+  opacity: 0.25;
 `;
 const searchInput = css`
   font-family: PM12;
@@ -63,9 +64,7 @@ const resultItem = css`
 const resultLabel = css`
   font-size: 10px;
   font-family: PM10;
-  margin-top: 4px;
   white-space: pre;
-  margin-left: 6px;
 `;
 const resultText = css`
   width: 100%;
@@ -139,7 +138,7 @@ const Search: Component = () => {
 
       <div class={resultList}>
         <Show when={editorStore.searchStates.get(activeDoc()?.id || '')?.query}>
-          <p class={resultLabel}>search result of "{editorStore.searchStates.get(activeDoc()?.id || '')?.query?.toString()}"</p>
+          <p class={resultLabel}>search result for "{editorStore.searchStates.get(activeDoc()?.id || '')?.query?.toString()}"</p>
         </Show>
         <For each={editorStore.searchStates.get(activeDoc()?.id || '')?.founds} fallback={<p class={noResultText}>no result</p>}>
           {(item, i) => {

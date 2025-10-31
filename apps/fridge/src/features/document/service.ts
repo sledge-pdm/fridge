@@ -11,6 +11,10 @@ function pathToTitle(path: string): string {
   return getFileNameWithoutExtension(location?.name) || 'Untitled Document';
 }
 
+export function findNodeElementById(root: HTMLElement, nodeId: string): HTMLElement | null {
+  return root.querySelector(`[data-node-id="${nodeId}"]`);
+}
+
 export function isChanged(doc: FridgeDocument) {
   return false; // pessimistic
 }

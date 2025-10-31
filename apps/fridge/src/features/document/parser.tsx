@@ -42,7 +42,7 @@ export function parseHTML(node: ASTNode, option: ParseHTMLOption): JSX.Element {
           break;
       }
       return (
-        <div data-type={document.type} data-id={document.id} data-mode={document.mode} class={docClass} id={docElId}>
+        <div data-type={document.type} data-node-id={document.id} data-mode={document.mode} class={docClass} id={docElId}>
           <For each={document.children}>
             {(child, i) => {
               const isLast = document.children.length - 1 === i();
@@ -74,7 +74,7 @@ export function parseHTML(node: ASTNode, option: ParseHTMLOption): JSX.Element {
           break;
       }
       return (
-        <p data-type={heading.type} data-id={heading.id} class={headingClass}>
+        <p data-type={heading.type} data-node-id={heading.id} class={headingClass}>
           {getContent(heading.toPlain(), overlay, {
             baseClass: headingClass,
             newLineAfterExists: !isLast,
@@ -92,7 +92,7 @@ export function parseHTML(node: ASTNode, option: ParseHTMLOption): JSX.Element {
       return (
         <img
           data-type={image.type}
-          data-id={image.id}
+          data-node-id={image.id}
           data-src={image.src}
           data-alt={image.alt}
           data-display={image.display}
@@ -108,7 +108,7 @@ export function parseHTML(node: ASTNode, option: ParseHTMLOption): JSX.Element {
     case 'paragraph':
       const paragraph = node as Paragraph;
       return (
-        <p data-type={paragraph.type} data-id={paragraph.id} class={paragraphContent}>
+        <p data-type={paragraph.type} data-node-id={paragraph.id} class={paragraphContent}>
           {getContent(paragraph.toPlain(), overlay, {
             baseClass: paragraphContent,
             newLineAfterExists: !isLast,
@@ -152,7 +152,7 @@ function getContent(text: string, overlay: boolean, overlayOptions?: OverlayOpti
  * - Reads `data-mode` on the root to set the document mode (if present).
  * - For each child element with data-type 'heading', 'paragraph', 'text',
  *   creates corresponding AST nodes and appends them to the document.
- * - If the DOM provides data-id attributes, they override the generated ids
+ * - If the DOM provides data-node-id attributes, they override the generated ids
  *   on the created AST nodes.
  */
 export function parseDocFromDOM(documentRoot: HTMLElement): FridgeDocument | undefined {
@@ -168,9 +168,9 @@ export function parseDocFromDOM(documentRoot: HTMLElement): FridgeDocument | und
   const doc = new FridgeDocument(undefined, '');
   if (mode) doc.mode = mode;
 
-  // Helper to set id on an ASTNode-like object if data-id present
+  // Helper to set id on an ASTNode-like object if data-node-id present
   function applyId(node: any, el: Element) {
-    const did = el.getAttribute('data-id');
+    const did = el.getAttribute('data-node-id');
     if (did) node.id = did;
   }
 
@@ -200,7 +200,7 @@ export function parseDocFromDOM(documentRoot: HTMLElement): FridgeDocument | und
       const text = el.textContent || '';
       const para = new Paragraph(text);
       applyId(para, el);
-      // If paragraph element has an inner element with data-id for the text,
+      // If paragraph element has an inner element with data-node-id for the text,
       // apply that id to the inline node as well.
       const innerTextEl = el.querySelector('[data-type="text"]');
       if (innerTextEl) applyId(para, innerTextEl);
@@ -235,7 +235,7 @@ export function parseDocFromDOM(documentRoot: HTMLElement): FridgeDocument | und
 
   doc.children = children;
   // override id of document if provided
-  const rootId = documentRoot.getAttribute('data-id');
+  const rootId = documentRoot.getAttribute('data-node-id');
   if (rootId) doc.id = rootId;
 
   return doc;
