@@ -189,9 +189,12 @@ const EditorTextArea: Component<Props> = (props) => {
           }
         }}
         onPaste={(e) => {
-          const data = e.clipboardData?.getData('text');
-          if (!data) return;
-          if (!data?.includes('\n')) return;
+          const raw = e.clipboardData?.getData('text');
+          if (!raw) return;
+
+          // Normalize CRLF and lone CR so empty lines become empty strings when splitting.
+          const data = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+          if (!data.includes('\n')) return;
 
           e.preventDefault();
 
@@ -210,8 +213,10 @@ const EditorTextArea: Component<Props> = (props) => {
             if (!node) return;
             endNodeId = node.id;
             const lines = data.split('\n');
-            const paragraphs = lines.map((line, i) => {
-              return new Paragraph(line);
+            const paragraphs = lines.map((line) => {
+              // Preserve truly empty lines as empty string so parser/render will emit <br />
+              const text = line === '' ? '' : line;
+              return new Paragraph(text);
             });
             doc.insertAfter(endNodeId, paragraphs);
             const lastP = paragraphs[paragraphs.length - 1];

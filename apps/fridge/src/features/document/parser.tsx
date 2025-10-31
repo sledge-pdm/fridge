@@ -187,7 +187,9 @@ export function parseDocFromDOM(documentRoot: HTMLElement): FridgeDocument | und
       const lvlAttr = el.getAttribute('data-level');
       const level = lvlAttr ? (Number(lvlAttr) as 1 | 2 | 3 | 4) : 1;
       // text content: prefer innerText of the heading element
-      const text = el.textContent || '';
+      // Normalize CR/LF and remove lone CR so textContent preserves empty lines as empty string
+      const rawHeadingText = el.textContent || '';
+      const text = rawHeadingText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
       const heading = new Heading(text, level);
       applyId(heading, el);
       children.push(heading);
@@ -197,7 +199,9 @@ export function parseDocFromDOM(documentRoot: HTMLElement): FridgeDocument | und
     if (type === 'paragraph') {
       // Collect inline text children; simple strategy: take the concatenated
       // textContent of this paragraph element.
-      const text = el.textContent || '';
+      // Normalize CR/LF and remove lone CR so empty paragraphs remain empty strings
+      const rawParaText = el.textContent || '';
+      const text = rawParaText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
       const para = new Paragraph(text);
       applyId(para, el);
       // If paragraph element has an inner element with data-node-id for the text,
