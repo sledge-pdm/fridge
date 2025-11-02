@@ -4,6 +4,7 @@ import { Component, createEffect, createMemo, createSignal, For, onMount, Show }
 import { clearDocumentSearchResult, fromId, updateDocumentSearchResult } from '~/features/document/service';
 import { searchDocument } from '~/features/search/Search';
 import { editorStore } from '~/stores/EditorStore';
+import { eventBus } from '~/utils/EventBus';
 
 const scrollContainer = css`
   display: flex;
@@ -116,8 +117,12 @@ const Search: Component = () => {
         placeholder='search...'
         autocomplete='off'
         onInput={(e) => {
+          const query = e.currentTarget.value;
+
+          if (query !== lastQuery()) {
+            eventBus.emit('doc:requestSearch', { query });
+          }
           const doc = fromId(editorStore.activeDocId);
-          const query = e.currentTarget.value.trim();
 
           if (doc) {
             if (query && query !== lastQuery()) {

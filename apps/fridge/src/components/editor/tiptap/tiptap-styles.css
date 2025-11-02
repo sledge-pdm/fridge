@@ -2,14 +2,22 @@
   --invisible-opacity: 0.6;
 }
 
-.tiptap-invisible-character--half-space::before {
-  content: '.';
-  opacity: var(--invisible-opacity);
+.tiptap-invisible-character--half-space {
+  font-family: inherit;
+
+  &::before {
+    content: '.';
+    opacity: var(--invisible-opacity);
+  }
 }
 
-.tiptap-invisible-character--full-space::before {
-  content: '・';
-  opacity: var(--invisible-opacity);
+.tiptap-invisible-character--full-space {
+  font-family: inherit;
+
+  &::before {
+    content: '・';
+    opacity: var(--invisible-opacity);
+  }
 }
 
 .tiptap-invisible-character--carriage-return {
@@ -41,4 +49,18 @@
     pointer-events: none;
     user-select: none;
   }
+}
+
+/* 検索ハイライト用のスタイル */
+.search-highlight {
+  background-color: #ff0;
+  color: #000;
+  padding: 0;
+  border-radius: 2px;
+  box-decoration-break: clone;
+}
+
+.search-highlight.current {
+  background-color: #ff0;
+  color: #000;
 }

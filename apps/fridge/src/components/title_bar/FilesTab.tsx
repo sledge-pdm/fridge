@@ -10,6 +10,7 @@ import { eventBus, Events } from '~/utils/EventBus';
 const tabRoot = css`
   display: flex;
   flex-direction: row;
+  align-items: center;
   height: 100%;
 `;
 

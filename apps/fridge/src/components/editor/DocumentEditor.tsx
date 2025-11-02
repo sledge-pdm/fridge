@@ -1,4 +1,5 @@
 import { css } from '@acab/ecsstatic';
+import { Range } from '@tiptap/core';
 import Document from '@tiptap/extension-document';
 import InvisibleCharacters from '@tiptap/extension-invisible-characters';
 import Paragraph from '@tiptap/extension-paragraph';
@@ -9,10 +10,10 @@ import { createTiptapEditor } from 'solid-tiptap';
 import { paragraphContent } from '~/components/editor/nodeStyles';
 import FullSpaceCharacter from '~/components/editor/tiptap/FullSpaceCharacter';
 import HalfSpaceCharacter from '~/components/editor/tiptap/HalfSpaceCharacter';
+import SearchHighlight from '~/components/editor/tiptap/SearchHighlight';
 import { fromId } from '~/features/document/service';
-import { FoundSpan } from '~/features/search/Search';
 import { editorStore } from '~/stores/EditorStore';
-import { eventBus } from '~/utils/EventBus';
+import { eventBus, Events } from '~/utils/EventBus';
 import './tiptap/tiptap-styles.css';
 
 const scrollContent = css`
@@ -73,19 +74,48 @@ const DocumentEditor: Component<Props> = (props) => {
       }),
       Text,
       InvisibleCharacters.configure({ builders: [new HalfSpaceCharacter(), new FullSpaceCharacter()] }),
+      SearchHighlight,
     ],
     injectCSS: true,
-    onUpdate: (e) => {
-      eventBus.emit('doc:changed', {
-        id: props.docId,
-      });
-    },
   }));
+
+  const search = (e: Events['doc:requestSearch']) => {
+    const query = e.query;
+    const currentEditor = editor();
+    if (!currentEditor) return;
+
+    const queryRegexp: RegExp = typeof query === 'string' ? new RegExp(query, 'g') : query;
+    let founds: Range[] = [];
+    let foundStrings;
+    let count = 0;
+    while ((foundStrings = queryRegexp.exec(currentEditor.getText())) !== null) {
+      founds.push({
+        from: queryRegexp.lastIndex - foundStrings[0].length + 1,
+        to: queryRegexp.lastIndex + 1,
+      });
+      count++;
+      if (count > 1000) {
+        console.log('too many results (>1000). abort.');
+        break;
+      }
+    }
+
+    if (founds.length > 0) {
+      // 既存のハイライトをクリア
+      currentEditor.commands.clearSearchHighlights();
+      currentEditor.commands.setSearchHighlights(founds);
+    } else {
+      // 検索結果がない場合はハイライトをクリア
+      currentEditor.commands.clearSearchHighlights();
+    }
+  };
 
   onMount(() => {
     eventBus.on('doc:changed', update);
+    eventBus.on('doc:requestSearch', search);
     return () => {
       eventBus.off('doc:changed', update);
+      eventBus.off('doc:requestSearch', search);
     };
   });
 
@@ -95,21 +125,10 @@ const DocumentEditor: Component<Props> = (props) => {
     update();
   });
 
-  createEffect(() => {
-    const searchStates = editorStore.searchStates;
-    const result = searchStates.get(props.docId);
-    if (result) {
-      console.log(result);
-      result.founds.forEach((found: FoundSpan) => {
-        // found: found range (start-end) in entire content string
-      });
-    }
-  });
-
   const update = () => {
     const doc = fromId(props.docId);
     if (!doc) return;
-    const content = doc.getContent().replace('/\r\n/g', '\n');
+    const content = doc.getContent().replace(/\r\n/g, '\n');
     const paragraphs = content.split('\n').map((line) => {
       if (line && line !== '') {
         return {
@@ -117,7 +136,7 @@ const DocumentEditor: Component<Props> = (props) => {
           content: [
             {
               type: 'text',
-              text: line + '\r',
+              text: line,
             },
           ],
         };
@@ -127,10 +146,15 @@ const DocumentEditor: Component<Props> = (props) => {
         };
       }
     });
-    editor()?.commands.setContent({
-      type: 'doc',
-      content: paragraphs,
-    });
+    editor()?.commands.setContent(
+      {
+        type: 'doc',
+        content: paragraphs,
+      },
+      {
+        parseOptions: { preserveWhitespace: 'full' },
+      }
+    );
   };
 
   return <div class={scrollContent} ref={ref} />;
