@@ -1,30 +1,37 @@
+import { css } from '@acab/ecsstatic';
 import { Icon } from '@sledge/ui';
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { createMemo, createSignal, onMount, Show } from 'solid-js';
-import { fromId } from '~/features/document/service';
+import { createSignal, onMount, Show } from 'solid-js';
+import TitleBarMenuItem from '~/components/title_bar/TitleBarMenuItem';
+import { addDocument, newDocument, openDocument } from '~/features/document/service';
+import { showChooseFileDialog } from '~/features/io/open';
+import { saveDocument } from '~/features/io/save';
 import { editorStore } from '~/stores/EditorStore';
-import { flexRow } from '~/styles/styles';
 import {
   titleBarControlButtonContainer,
   titleBarControlButtonImg,
   titleBarControlCloseButtonContainer,
   titleBarControls,
   titleBarRoot,
-  titleBarTitle,
   titleBarTitleContainer,
-  titleBarTitleSub,
 } from '~/styles/title_bar/title_bar';
 import '~/styles/title_bar/title_bar_region.css';
 
-export default function TitleBar() {
-  const activeDoc = createMemo(() => fromId(editorStore.activeDocId));
+const menuItemsContainer = css`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100%;
+  margin-left: 24px;
+  gap: 16px;
+`;
 
+export default function TitleBar() {
   const [isMaximizable, setIsMaximizable] = createSignal(false);
   const [isMinimizable, setIsMinimizable] = createSignal(false);
   const [isClosable, setIsClosable] = createSignal(false);
   const [isMaximized, setMaximized] = createSignal(false);
   const [isDecorated, setIsDecorated] = createSignal(true);
-  const [windowTitle, setWindowTitle] = createSignal('');
 
   onMount(async () => {
     const window = getCurrentWindow();
@@ -33,7 +40,6 @@ export default function TitleBar() {
     setIsClosable(await window.isClosable());
     setMaximized(await window.isMaximized());
     setIsDecorated(await window.isDecorated());
-    setWindowTitle(await window.title());
   });
 
   getCurrentWindow().onResized(async () => {
@@ -44,8 +50,37 @@ export default function TitleBar() {
     <header>
       <Show when={!isDecorated()}>
         <nav class={titleBarRoot} data-tauri-drag-region>
+          <div class={menuItemsContainer} data-tauri-drag-region-exclude>
+            <TitleBarMenuItem
+              label='File.'
+              menu={[
+                {
+                  type: 'item',
+                  label: 'new document',
+                  onSelect: () => {
+                    addDocument(newDocument(), true);
+                  },
+                },
+                {
+                  type: 'item',
+                  label: 'open document',
+                  onSelect: async () => {
+                    const path = await showChooseFileDialog();
+                    if (path) openDocument(path);
+                  },
+                },
+                {
+                  type: 'item',
+                  label: 'save document',
+                  onSelect: () => {
+                    if (editorStore.activeDocId) saveDocument(editorStore.activeDocId);
+                  },
+                },
+              ]}
+            />
+          </div>
           <div class={titleBarTitleContainer}>
-            <Show when={location.pathname.startsWith('/editor')} fallback={<p class={titleBarTitle}>{windowTitle()}</p>}>
+            {/* <Show when={location.pathname.startsWith('/editor')} fallback={<p class={titleBarTitle}>{windowTitle()}</p>}>
               <div
                 class={flexRow}
                 style={{
@@ -54,11 +89,12 @@ export default function TitleBar() {
                   'flex-wrap': 'wrap',
                 }}
               >
-                <p class={titleBarTitle}>{activeDoc()?.title ?? 'fridge.'}</p>
-                <p class={titleBarTitleSub}>{activeDoc()?.associatedFilePath ?? ''}</p>
+                <p class={titleBarTitle}>{activeDoc()?.getTitle() ?? 'fridge.'}</p>
+                <p class={titleBarTitleSub}>{activeDoc()?.filePath ?? ''}</p>
               </div>
-            </Show>
+            </Show> */}
           </div>
+
           <div class={titleBarControls} data-tauri-drag-region-exclude>
             <Show when={isMinimizable()}>
               <div
@@ -71,9 +107,9 @@ export default function TitleBar() {
               >
                 <Icon
                   class={titleBarControlButtonImg}
-                  src={'/icons/title_bar/minimize_2.png'}
+                  src={'/icons/title_bar/minimize_10.png'}
                   color={'var(--color-on-background)'}
-                  base={12}
+                  base={10}
                   data-tauri-drag-region-exclude
                 />
               </div>
@@ -90,9 +126,9 @@ export default function TitleBar() {
               >
                 <Icon
                   class={titleBarControlButtonImg}
-                  src={isMaximized() ? '/icons/title_bar/quit_maximize_2.png' : '/icons/title_bar/maximize_2.png'}
+                  src={isMaximized() ? '/icons/title_bar/quit_maximize_10.png' : '/icons/title_bar/maximize_10.png'}
                   color={'var(--color-on-background)'}
-                  base={12}
+                  base={10}
                   data-tauri-drag-region-exclude
                 />
               </div>
@@ -109,9 +145,9 @@ export default function TitleBar() {
               >
                 <Icon
                   class={titleBarControlButtonImg}
-                  src={'/icons/title_bar/close_2.png'}
+                  src={'/icons/title_bar/close_10.png'}
                   color={'var(--color-on-background)'}
-                  base={12}
+                  base={10}
                   data-tauri-drag-region-exclude
                 />
               </div>

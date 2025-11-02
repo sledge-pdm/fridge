@@ -1,8 +1,6 @@
 import { css } from '@acab/ecsstatic';
-import { Component, createMemo } from 'solid-js';
-import ThemeDropdown from '~/components/ThemeDropdown';
-import { fromId } from '~/features/document/service';
-import { editorStore } from '~/stores/EditorStore';
+import { Component } from 'solid-js';
+import ThemeDropdown from '~/components/bottom_bar/ThemeDropdown';
 import { flexRow } from '~/styles/styles';
 
 const pathText = css`
@@ -15,34 +13,28 @@ const pathText = css`
 const themeToggleContainer = css`
   display: flex;
   flex-direction: column;
-  margin-right: 8px;
+  margin-left: auto;
+  /* margin-right: 8px; */
 `;
 
-const EditorBottomBar: Component = () => {
-  const activeDoc = createMemo(() => fromId(editorStore.activeDocId));
-
+const BottomBar: Component = () => {
   return (
     <div
       class={flexRow}
       style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
+        width: '100%',
         height: '24px',
         'align-items': 'center',
-        padding: '0 12px',
+        padding: '0 4px',
         'border-top': `1px solid var(--color-border-secondary)`,
         background: 'var(--color-background)',
       }}
     >
-      <p class={pathText}>{activeDoc()?.associatedFilePath || ''}</p>
       <div class={themeToggleContainer}>
         <ThemeDropdown noBackground />
       </div>
-      <p>{activeDoc()?.content?.length} letters.</p>
     </div>
   );
 };
 
-export default EditorBottomBar;
+export default BottomBar;

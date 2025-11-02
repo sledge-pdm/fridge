@@ -1,7 +1,7 @@
 import { css } from '@acab/ecsstatic';
 import { createMemo, Show } from 'solid-js';
 import { addDocument, fromId, newDocument, openDocument } from '~/features/document/service';
-import { showChooseFileDialog } from '~/features/io/choose';
+import { showChooseFileDialog } from '~/features/io/open';
 import { editorStore } from '~/stores/EditorStore';
 import { flexRow } from '~/styles/styles';
 import { titleBarRootSp, titleBarTitle, titleBarTitleContainerSp } from '~/styles/title_bar/title_bar';
@@ -30,7 +30,7 @@ export default function SPTitleBar() {
                 'flex-wrap': 'wrap',
               }}
             >
-              <p class={titleBarTitle}>{activeDoc()?.title ?? 'fridge.'}</p>
+              <p class={titleBarTitle}>{activeDoc()?.getTitle() ?? 'fridge.'}</p>
               {/* <p class={titleBarTitleSub}>{activeDoc()?.associatedFilePath ?? ''}</p> */}
             </div>
 

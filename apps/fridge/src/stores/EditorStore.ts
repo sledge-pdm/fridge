@@ -1,6 +1,6 @@
 import { createStore } from 'solid-js/store';
 import { SidebarContents } from '~/components/side_bar/Sidebar';
-import { FridgeDocument } from '~/features/document/model';
+import { FridgeDocument } from '~/features/document/FridgeDocument';
 import { SearchResult } from '~/features/search/Search';
 
 export interface EditorStore {

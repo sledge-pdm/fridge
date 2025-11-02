@@ -1,4 +1,4 @@
-import { FridgeDocument } from '~/features/document/model';
+import { FridgeDocument } from '~/features/document/FridgeDocument';
 
 export interface FoundSpan {
   start: number;
@@ -14,18 +14,19 @@ export interface SearchResult {
 export function searchDocument(doc: FridgeDocument, query: string | RegExp): SearchResult {
   const queryRegexp: RegExp = typeof query === 'string' ? new RegExp(query, 'g') : query;
 
+  const content = doc.getContent();
+
   let founds: FoundSpan[] = [];
   let foundStrings;
   let count = 0;
-
-  while ((foundStrings = queryRegexp.exec(doc.content)) !== null) {
+  while ((foundStrings = queryRegexp.exec(content)) !== null) {
     founds.push({
       start: queryRegexp.lastIndex - foundStrings[0].length,
       end: queryRegexp.lastIndex,
     });
     count++;
-    if (count > 100) {
-      console.log('too many results (>100). abort.');
+    if (count > 1000) {
+      console.log('too many results (>1000). abort.');
       break;
     }
   }

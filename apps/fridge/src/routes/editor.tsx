@@ -1,16 +1,37 @@
-import { createEffect, createSignal, onMount, Show } from 'solid-js';
-import EditorBottomBar from '~/components/editor/EditorBottomBar';
-import EditorStartContent from '~/components/editor/EditorStartContent';
-import EditorTextArea from '~/components/editor/EditorTextArea';
+import { css } from '@acab/ecsstatic';
+import { platform } from '@tauri-apps/plugin-os';
+import { createSignal, onMount, Show } from 'solid-js';
+import BottomBar from '~/components/bottom_bar/BottomBar';
+import DocumentEditor from '~/components/editor/DocumentEditor';
+import EditorStartContent from '~/components/editor/Start';
 import Sidebar from '~/components/side_bar/Sidebar';
-import { FridgeDocument } from '~/features/document/model';
-import { fromId, fromIndex, update } from '~/features/document/service';
-import { overwrite } from '~/features/io/save';
+import MenuBar from '~/components/title_bar/MenuBar';
+import SPTitleBar from '~/components/title_bar/SPTitleBar';
+import TitleBar from '~/components/title_bar/TitleBar';
+import { fromIndex } from '~/features/document/service';
+import { saveDocument } from '~/features/io/save';
 import { editorStore, setEditorStore } from '~/stores/EditorStore';
 
-import '~/styles/editor.css';
-import { flexCol, pageRoot } from '~/styles/styles';
-import { eventBus, Events } from '~/utils/EventBus';
+const root = css`
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--color-background);
+`;
+
+const titlebar = css`
+  display: flex;
+  flex-direction: column;
+`;
+
+const pageContent = css`
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  flex-grow: 1;
+`;
 
 export default function Editor() {
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -19,70 +40,54 @@ export default function Editor() {
       const index = Number(e.key) - 1;
       const doc = fromIndex(index);
       if (doc) {
-        setEditorStore('activeDocId', doc.id);
+        setEditorStore('activeDocId', doc.getId());
       }
     }
 
     if (e.ctrlKey && e.key === 's') {
       e.preventDefault();
-      const active = fromId(editorStore.activeDocId);
-      if (active) overwrite(active);
+      if (editorStore.activeDocId) saveDocument(editorStore.activeDocId);
     }
-  };
-
-  const [activeDoc, setActiveDoc] = createSignal<FridgeDocument | undefined>(fromId(editorStore.activeDocId));
-
-  createEffect(() => {
-    const activeId = editorStore.activeDocId;
-    setActiveDoc(fromId(activeId));
-  });
-  const handleDocUpdate = (e: Events['doc:changed']) => {
-    const doc = fromId(editorStore.activeDocId);
-    setActiveDoc(doc);
   };
 
   onMount(() => {
     window.addEventListener('keydown', handleKeyDown);
-    eventBus.on('doc:changed', handleDocUpdate);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      eventBus.off('doc:changed', handleDocUpdate);
     };
   });
 
-  return (
-    <div class={pageRoot} style={{ overflow: 'hidden', 'box-sizing': 'border-box' }}>
-      <div class={flexCol} style={{ position: 'relative', 'flex-grow': 1, overflow: 'hidden', 'min-height': '0' }}>
-        <Show when={editorStore.activeDocId} fallback={<EditorStartContent />}>
-          <div class='input_scroll'>
-            <input
-              class='title_input'
-              onInput={(e) => {
-                const title = (e.target as HTMLInputElement).value;
-                if (!title.trim()) return;
-                if (editorStore.activeDocId) update(editorStore.activeDocId, { title, associatedFilePath: undefined });
-              }}
-              value={activeDoc()?.title ?? ''}
-            />
+  const [showTitleBar, setShowTitleBar] = createSignal(false);
 
-            <EditorTextArea
-              docId={() => activeDoc()?.id}
-              content={() => activeDoc()?.content ?? ''}
-              onInput={(value) => {
-                if (editorStore.activeDocId) update(editorStore.activeDocId, { content: value });
-              }}
-            />
-          </div>
+  onMount(async () => {
+    const currentPlatform = platform();
+    if (currentPlatform === 'android') setShowTitleBar(false);
+    else {
+      setShowTitleBar(true);
+    }
+  });
+
+  return (
+    <div class={root}>
+      <div class={titlebar}>
+        <Show when={showTitleBar()} fallback={<SPTitleBar />}>
+          <TitleBar />
         </Show>
-        <EditorBottomBar />
+        <MenuBar />
       </div>
 
-      <Show when={editorStore.sidebar}>
-        <div class={flexCol} style={{ position: 'relative', overflow: 'hidden', 'min-height': '0' }}>
+      <div class={pageContent}>
+        <Show when={editorStore.activeDocId} fallback={<EditorStartContent />}>
+          <DocumentEditor docId={editorStore.activeDocId!} />
+        </Show>
+
+        <Show when={editorStore.sidebar}>
           <Sidebar />
-        </div>
-      </Show>
+        </Show>
+      </div>
+
+      <BottomBar />
     </div>
   );
 }

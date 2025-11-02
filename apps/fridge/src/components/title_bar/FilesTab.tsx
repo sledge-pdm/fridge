@@ -1,9 +1,9 @@
 import { css } from '@acab/ecsstatic';
 import { clsx } from '@sledge/core';
 import { Icon, Light } from '@sledge/ui';
-import { Component, createEffect, createSignal, For, onMount } from 'solid-js';
-import { FridgeDocument } from '~/features/document/model';
-import { fromId, isChanged, removeDocument } from '~/features/document/service';
+import { Component, createSignal, For, onMount, Show } from 'solid-js';
+import { FridgeDocument } from '~/features/document/FridgeDocument';
+import { fromId, removeDocument } from '~/features/document/service';
 import { editorStore, setEditorStore } from '~/stores/EditorStore';
 import { eventBus, Events } from '~/utils/EventBus';
 
@@ -12,13 +12,6 @@ const tabRoot = css`
   flex-direction: row;
   align-items: center;
   height: 100%;
-`;
-
-const addMenuContainer = css`
-  display: flex;
-  flex-direction: row;
-  position: relative;
-  overflow: visible;
 `;
 
 const divider = css`
@@ -31,15 +24,13 @@ const divider = css`
 `;
 
 const FilesTab: Component = () => {
-  const [addMenuShown, setAddMenuShown] = createSignal(false);
-
   return (
     <div class={tabRoot}>
       <For each={editorStore.documents}>
         {(item, i) => {
           return (
             <>
-              <TabItem docId={item.id} />
+              <TabItem docId={item.getId()} />
               <div class={divider} />
             </>
           );
@@ -50,18 +41,15 @@ const FilesTab: Component = () => {
 };
 
 const tabItem = css`
+  position: relative;
   display: flex;
   flex-direction: row;
-
   align-items: center;
+  width: 140px;
   height: 100%;
   padding-left: 12px;
   padding-right: 12px;
   gap: 6px;
-  height: 100%;
-
-  min-width: 100px;
-  max-width: 120px;
   overflow: hidden;
 
   box-sizing: border-box;
@@ -72,14 +60,22 @@ const tabItem = css`
   }
 
   &:hover > #remove_container {
-    display: flex !important;
+    opacity: 0.5;
   }
 `;
 const tabItemSelected = css`
   max-width: unset;
   color: var(--color-active);
-  border-bottom: 2px solid var(--color-active);
   cursor: auto;
+`;
+const tabItemSelectedBorder = css`
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-active);
+  pointer-events: none;
 `;
 const label = css`
   color: var(--color-on-background);
@@ -87,6 +83,8 @@ const label = css`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: ZFB09;
+  flex-grow: 1;
   @media screen and (max-width: 700px) {
     font-size: 8px;
   }
@@ -96,10 +94,10 @@ const labelSelected = css`
   opacity: 1;
 `;
 const removeContainer = css`
-  display: none;
   cursor: pointer;
   padding: 2px;
   pointer-events: all;
+  opacity: 0;
 `;
 
 interface ItemProps {
@@ -108,19 +106,15 @@ interface ItemProps {
 
 const TabItem: Component<ItemProps> = (props) => {
   const [doc, setDoc] = createSignal<FridgeDocument | undefined>(fromId(props.docId));
-  const [isActive, setIsActive] = createSignal<boolean>(false);
   const [isDocChanged, setIsDocChanged] = createSignal<boolean>(false);
-
-  createEffect(() => {
-    const activeId = editorStore.activeDocId;
-    setIsActive(props.docId === activeId);
-  });
 
   const handleDocUpdate = (e: Events['doc:changed']) => {
     if (e.id === props.docId) {
       const doc = fromId(e.id);
-      setDoc(doc);
-      setIsDocChanged(doc ? isChanged(doc) : false);
+      if (doc) {
+        setDoc(doc);
+        setIsDocChanged(doc.isChangedFromLastLoad());
+      }
     }
   };
 
@@ -134,17 +128,17 @@ const TabItem: Component<ItemProps> = (props) => {
 
   return (
     <div
-      class={clsx(tabItem, isActive() && tabItemSelected)}
+      class={clsx(tabItem, props.docId === editorStore.activeDocId && tabItemSelected)}
       onPointerDown={(e) => {
         if (e.button === 1) {
-          const id = doc()?.id;
+          const id = doc()?.getId();
           if (id) removeDocument(id);
         } else {
-          setEditorStore('activeDocId', doc()?.id);
+          setEditorStore('activeDocId', doc()?.getId());
         }
       }}
     >
-      <p class={clsx(label, isActive() && labelSelected)}>{doc()?.title}</p>
+      <p class={clsx(label, props.docId === editorStore.activeDocId && labelSelected)}>{doc()?.getTitle() ?? 'untitled'}</p>
       <Light on={isDocChanged()} />
       <div
         id='remove_container'
@@ -154,17 +148,20 @@ const TabItem: Component<ItemProps> = (props) => {
           e.stopPropagation();
           e.stopImmediatePropagation();
 
-          const currentId = doc()?.id;
+          const currentId = doc()?.getId();
           if (currentId) {
             removeDocument(currentId);
           }
         }}
         style={{
-          display: isActive() ? 'flex' : 'none',
+          opacity: props.docId === editorStore.activeDocId ? 0.5 : undefined,
         }}
       >
         <Icon src={'/icons/misc/remove.png'} base={8} color='var(--color-on-background)' hoverColor='var(--color-active)' />
       </div>
+      <Show when={props.docId === editorStore.activeDocId}>
+        <div class={tabItemSelectedBorder} />
+      </Show>
     </div>
   );
 };

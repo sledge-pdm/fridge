@@ -4,26 +4,15 @@ import { Component, createEffect, createMemo, createSignal, For, onMount, Show }
 import { clearDocumentSearchResult, fromId, updateDocumentSearchResult } from '~/features/document/service';
 import { searchDocument } from '~/features/search/Search';
 import { editorStore } from '~/stores/EditorStore';
-
-const root = css`
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 0;
-  min-height: 0;
-  overflow: auto;
-  border-right: 1px solid var(--color-border-secondary);
-`;
+import { eventBus } from '~/utils/EventBus';
 
 const scrollContainer = css`
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
   height: 100%;
-  width: 280px;
-  padding: 16px 16px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  z-index: 10;
+  min-width: 260px;
+  width: 260px;
+  padding: 12px;
 
   &::-webkit-scrollbar {
     width: 2px;
@@ -39,10 +28,10 @@ const scrollContainer = css`
   }
 `;
 const searchLabel = css`
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
   margin-left: 2px;
-  color: var(--color-muted);
+  font-family: ZFB03B;
+  opacity: 0.25;
 `;
 const searchInput = css`
   font-family: PM12;
@@ -74,9 +63,7 @@ const resultItem = css`
 const resultLabel = css`
   font-size: 10px;
   font-family: PM10;
-  margin-top: 4px;
   white-space: pre;
-  margin-left: 6px;
 `;
 const resultText = css`
   width: 100%;
@@ -109,7 +96,7 @@ const Search: Component = () => {
     const active = fromId(activeId);
     if (!active) return;
     // load saved state if available
-    const state = searchStates.get(active.id);
+    const state = searchStates.get(active.getId());
 
     if (state) {
       const query = state.query?.toString();
@@ -130,18 +117,22 @@ const Search: Component = () => {
         placeholder='search...'
         autocomplete='off'
         onInput={(e) => {
+          const query = e.currentTarget.value;
+
+          if (query !== lastQuery()) {
+            eventBus.emit('doc:requestSearch', { query });
+          }
           const doc = fromId(editorStore.activeDocId);
-          const query = e.currentTarget.value.trim();
 
           if (doc) {
             if (query && query !== lastQuery()) {
               // 検索実行
               const result = searchDocument(doc, query);
               setLastQuery(query);
-              updateDocumentSearchResult(doc.id, result);
+              updateDocumentSearchResult(doc.getId(), result);
             } else if (!query) {
               // 空文字の場合は検索結果をクリア
-              clearDocumentSearchResult(doc.id);
+              clearDocumentSearchResult(doc.getId());
               setLastQuery(undefined);
             }
           }
@@ -149,10 +140,10 @@ const Search: Component = () => {
       />
 
       <div class={resultList}>
-        <Show when={editorStore.searchStates.get(activeDoc()?.id || '')?.query}>
-          <p class={resultLabel}>search result of "{editorStore.searchStates.get(activeDoc()?.id || '')?.query?.toString()}"</p>
+        <Show when={editorStore.searchStates.get(activeDoc()?.getId() || '')?.query}>
+          <p class={resultLabel}>search result for "{editorStore.searchStates.get(activeDoc()?.getId() || '')?.query?.toString()}"</p>
         </Show>
-        <For each={editorStore.searchStates.get(activeDoc()?.id || '')?.founds} fallback={<p class={noResultText}>no result</p>}>
+        <For each={editorStore.searchStates.get(activeDoc()?.getId() || '')?.founds} fallback={<p class={noResultText}>no result</p>}>
           {(item, i) => {
             // not concerning query length itself (might be too long e.g. "...XXXXXtoomuchlongquerytoshowinthesidebarXXXXX...")
             // there shouldn't be too much calculation here, so just put overflow:hidden and text-overflow: ellipsis, to make it
@@ -166,9 +157,14 @@ const Search: Component = () => {
                 </p>
                 <p class={resultText}>
                   ...
-                  {activeDoc()?.content.slice(item.start - margin, item.start)}
-                  <span class={clsx(resultText, foundText)}>{activeDoc()?.content.slice(item.start, item.end)}</span>
-                  {activeDoc()?.content.slice(item.end, item.end + margin)}...
+                  {activeDoc()
+                    ?.getContent()
+                    .slice(item.start - margin, item.start)}
+                  <span class={clsx(resultText, foundText)}>{activeDoc()?.getContent().slice(item.start, item.end)}</span>
+                  {activeDoc()
+                    ?.getContent()
+                    .slice(item.end, item.end + margin)}
+                  ...
                 </p>
               </div>
             );

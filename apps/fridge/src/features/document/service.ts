@@ -1,54 +1,29 @@
-import { FridgeDocument } from '~/features/document/model';
+import { FridgeDocument } from '~/features/document/FridgeDocument';
 import { saveEditorState } from '~/features/io/editor_state/save';
 import { readFromFile } from '~/features/io/read';
 import { SearchResult } from '~/features/search/Search';
 import { editorStore, setEditorStore } from '~/stores/EditorStore';
 import { eventBus } from '~/utils/EventBus';
 import { getFileNameWithoutExtension, pathToFileLocation } from '~/utils/FileUtils';
+
 function pathToTitle(path: string): string {
   const location = pathToFileLocation(path);
   return getFileNameWithoutExtension(location?.name) || 'Untitled Document';
 }
 
-export function isChanged(doc: FridgeDocument) {
-  if (!doc.contentsOnOpen) return true; // pessimistic
-  return doc.title !== doc.contentsOnOpen.title || doc.content !== doc.contentsOnOpen.content;
-}
-
 export async function openDocument(docPath: string): Promise<FridgeDocument> {
-  console.log(docPath);
   const content = await readFromFile(docPath);
-  console.log(content);
   const title = pathToTitle(docPath);
-  console.log(title);
 
-  const doc: FridgeDocument = {
-    id: crypto.randomUUID(),
-    title,
-    content,
-    associatedFilePath: docPath,
-
-    contentsOnOpen: { title, content },
-  };
+  const doc: FridgeDocument = new FridgeDocument(title, content, docPath);
 
   addDocument(doc);
   return doc;
 }
 
-export function newDocument(id?: string, title: string = '', content: string = ''): FridgeDocument {
-  if (!id) {
-    id = crypto.randomUUID();
-  }
-  if (!title) {
-    title = 'Untitled Document';
-  }
-
-  return {
-    id,
-    title,
-    content,
-    contentsOnOpen: { title, content },
-  };
+export function newDocument(): FridgeDocument {
+  const doc: FridgeDocument = new FridgeDocument('title', 'content');
+  return doc;
 }
 
 export function updateDocumentSearchResult(documentId: string, searchResult: SearchResult) {
@@ -69,23 +44,34 @@ export function clearDocumentSearchResult(documentId: string) {
   saveEditorState();
 }
 
+export function refreshContentOnLoad(docId: string) {
+  const doc = fromId(docId);
+  if (doc) setEditorStore('documents', IndexOf(doc.getId()), 'setContentOnLoad', doc.getContent());
+}
+
 export function fromIndex(index: number): FridgeDocument | undefined {
   if (index < 0 || editorStore.documents.length <= index) return undefined;
   else return editorStore.documents[index];
 }
 
 export function IndexOf(id?: string): number {
-  return editorStore.documents.findIndex((d) => d.id === id);
+  return editorStore.documents.findIndex((d) => d.getId() === id);
 }
 
 export function fromId(id?: string): FridgeDocument | undefined {
   if (!id) return;
-  return editorStore.documents.find((d) => d.id === id);
+  return editorStore.documents.find((d) => d.getId() === id);
 }
 
 export function replaceDocuments(docs: FridgeDocument[], activeId?: string) {
+  console.log(docs);
+
   setEditorStore('documents', docs.slice());
-  setEditorStore('activeDocId', activeId ?? docs[0].id);
+  setEditorStore('activeDocId', activeId ?? docs[0].getId());
+
+  docs.forEach((d) => {
+    eventBus.emit('doc:changed', { id: d.getId() });
+  });
 
   saveEditorState();
 }
@@ -94,7 +80,7 @@ export function addDocument(doc: FridgeDocument, setActive: boolean = true) {
   setEditorStore('documents', (docs) => {
     return [...docs, doc];
   });
-  if (setActive) setEditorStore('activeDocId', doc.id);
+  if (setActive) setEditorStore('activeDocId', doc.getId());
 
   saveEditorState();
 }
@@ -104,45 +90,20 @@ export function removeDocument(id: string): number | undefined {
   const removingDoc = fromId(id);
   if (!removingDoc) return;
 
-  const removingIndex = IndexOf(removingDoc.id);
+  const removingIndex = IndexOf(removingDoc.getId());
   setEditorStore('documents', (docs) => {
-    return [...docs.filter((doc) => doc.id !== id)];
+    return [...docs.filter((doc) => doc.getId() !== id)];
   });
 
   const nextIndex = Math.min(removingIndex + 1, editorStore.documents.length - 1);
   if (0 <= nextIndex) {
     const nextDoc = fromIndex(nextIndex);
-    setEditorStore('activeDocId', nextDoc?.id);
+    setEditorStore('activeDocId', nextDoc?.getId());
   }
 
   if (editorStore.documents.length === 0) {
     setEditorStore('activeDocId', undefined);
   }
-
-  saveEditorState();
-}
-
-export function replaceDocument(id: string, doc: FridgeDocument) {
-  const index = IndexOf(id);
-  if (index < 0) return;
-
-  setEditorStore('documents', index, doc);
-
-  eventBus.emit('doc:changed', { id });
-
-  saveEditorState();
-}
-
-export function update(id: string, updates: Partial<FridgeDocument>) {
-  if (!id) return;
-  const index = IndexOf(id);
-  const doc = fromIndex(index);
-
-  if (!doc) return;
-
-  replaceDocument(id, { ...doc, ...updates });
-
-  eventBus.emit('doc:changed', { id });
 
   saveEditorState();
 }
