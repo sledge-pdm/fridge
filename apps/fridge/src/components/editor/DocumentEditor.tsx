@@ -6,13 +6,14 @@ import Text from '@tiptap/extension-text';
 import { UndoRedo } from '@tiptap/extensions';
 import { Component, createEffect, onMount } from 'solid-js';
 import { createTiptapEditor } from 'solid-tiptap';
-import FullSpaceCharacter from '~/components/editor/invisible_characters/FullSpaceCharacter';
-import HalfSpaceCharacter from '~/components/editor/invisible_characters/HalfSpaceCharacter';
 import { paragraphContent } from '~/components/editor/nodeStyles';
+import FullSpaceCharacter from '~/components/editor/tiptap/FullSpaceCharacter';
+import HalfSpaceCharacter from '~/components/editor/tiptap/HalfSpaceCharacter';
 import { fromId } from '~/features/document/service';
+import { FoundSpan } from '~/features/search/Search';
 import { editorStore } from '~/stores/EditorStore';
 import { eventBus } from '~/utils/EventBus';
-import './tiptap-styles.css';
+import './tiptap/tiptap-styles.css';
 
 const scrollContent = css`
   overflow-y: auto;
@@ -37,8 +38,8 @@ export const editorContent = css`
   min-height: 100%;
   height: auto;
   outline: none;
-  padding: 20px;
-  scroll-padding: 20px;
+  padding: 16px 28px;
+  scroll-padding: 16px 28px;
   overflow: hidden;
 
   /* テキスト選択時の色 (Firefox用 ::-moz-selection も) */
@@ -92,6 +93,17 @@ const DocumentEditor: Component<Props> = (props) => {
     props.docId;
     editorStore.activeDocId;
     update();
+  });
+
+  createEffect(() => {
+    const searchStates = editorStore.searchStates;
+    const result = searchStates.get(props.docId);
+    if (result) {
+      console.log(result);
+      result.founds.forEach((found: FoundSpan) => {
+        // found: found range (start-end) in entire content string
+      });
+    }
   });
 
   const update = () => {

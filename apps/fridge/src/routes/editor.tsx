@@ -3,7 +3,7 @@ import { platform } from '@tauri-apps/plugin-os';
 import { createSignal, onMount, Show } from 'solid-js';
 import BottomBar from '~/components/bottom_bar/BottomBar';
 import DocumentEditor from '~/components/editor/DocumentEditor';
-import EditorStartContent from '~/components/editor/EditorStartContent';
+import EditorStartContent from '~/components/editor/Start';
 import Sidebar from '~/components/side_bar/Sidebar';
 import MenuBar from '~/components/title_bar/MenuBar';
 import SPTitleBar from '~/components/title_bar/SPTitleBar';
