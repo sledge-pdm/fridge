@@ -11,14 +11,18 @@ export default defineConfig({
     globals: true,
     env: dotenv.config({ path: '.env.vitest' }).parsed,
     setupFiles: [path.resolve(__dirname, 'vitest.setup.ts')],
-    include: ['apps/fridge/test/browser/**/*.test.ts', 'apps/sledge/fridge/test/browser/**/*.test.tsx'],
+    include: ['apps/fridge/test/**/*.test.ts', 'apps/sledge/fridge/test/**/*.test.tsx'],
     exclude: ['**/dist/**', '**/node_modules/**', '**/target/**'],
     browser: {
       enabled: true,
       provider: playwright(),
       // https://vitest.dev/guide/browser/playwright
-      instances: [{ browser: 'chromium' }, { browser: 'webkit' }],
+      instances: [{ browser: 'chromium' } /** { browser: 'webkit' } */],
+      headless: true, // CI等ではtrue推奨
     },
+  },
+  optimizeDeps: {
+    include: ['@acab/ecsstatic'],
   },
   ssr: { resolve: { conditions: ['browser'] } },
   resolve: {

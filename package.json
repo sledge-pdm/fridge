@@ -8,20 +8,21 @@
     "cargo:format": "cd apps/fridge/src-tauri && cargo fmt",
     "format": "pnpm prettier && pnpm cargo:format",
     "tsc": "pnpm -r exec tsc --noEmit --skipLibCheck",
-    "test": "vitest --config=vitest.config.ts",
-    "test:browser": "vitest --config=vitest.browser.config.ts"
+    "test": "vitest run --config=vitest.browser.config.ts"
   },
   "devDependencies": {
+    "@acab/ecsstatic": "0.9.0",
     "@solidjs/testing-library": "^0.8.10",
-    "@vitest/browser-playwright": "^4.0.5",
+    "@vitest/browser-playwright": "^4.0.6",
     "dotenv": "^17.2.1",
     "prettier": "^3.6.2",
     "prettier-plugin-organize-imports": "^4.2.0",
+    "solid-js": "^1.9.9",
     "stylelint": "^16.23.1",
     "stylelint-config-standard": "^39.0.0",
     "stylelint-order": "^7.0.0",
     "vite-plugin-solid": "^2.11.8",
-    "vitest": "^4.0.5"
+    "vitest": "^4.0.6"
   },
   "dependencies": {
     "mitt": "^3.0.1"

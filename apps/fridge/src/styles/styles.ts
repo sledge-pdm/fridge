@@ -51,19 +51,3 @@ export const accentedButton = css`
     pointer-events: none;
   }
 `;
-
-export const pageRoot = css`
-  display: flex;
-  flex-direction: row;
-  height: 100%;
-  width: 100%;
-  user-select: none;
-  overflow: hidden;
-  background-color: var(--color-background);
-`;
-
-export const pageContent = css`
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-`;

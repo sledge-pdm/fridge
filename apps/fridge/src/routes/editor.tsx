@@ -1,14 +1,37 @@
-import { onMount, Show } from 'solid-js';
+import { css } from '@acab/ecsstatic';
+import { platform } from '@tauri-apps/plugin-os';
+import { createSignal, onMount, Show } from 'solid-js';
 import BottomBar from '~/components/bottom_bar/BottomBar';
+import DocumentEditor from '~/components/editor/DocumentEditor';
 import EditorStartContent from '~/components/editor/EditorStartContent';
-import EditorTextArea from '~/components/editor/EditorTextArea';
 import Sidebar from '~/components/side_bar/Sidebar';
-import { fromId, fromIndex } from '~/features/document/service';
-import { overwrite } from '~/features/io/save';
+import MenuBar from '~/components/title_bar/MenuBar';
+import SPTitleBar from '~/components/title_bar/SPTitleBar';
+import TitleBar from '~/components/title_bar/TitleBar';
+import { fromIndex } from '~/features/document/service';
+import { saveDocument } from '~/features/io/save';
 import { editorStore, setEditorStore } from '~/stores/EditorStore';
 
-import '~/styles/editor.css';
-import { pageContent, pageRoot } from '~/styles/styles';
+const root = css`
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--color-background);
+`;
+
+const titlebar = css`
+  display: flex;
+  flex-direction: column;
+`;
+
+const pageContent = css`
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  flex-grow: 1;
+`;
 
 export default function Editor() {
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -17,14 +40,13 @@ export default function Editor() {
       const index = Number(e.key) - 1;
       const doc = fromIndex(index);
       if (doc) {
-        setEditorStore('activeDocId', doc.id);
+        setEditorStore('activeDocId', doc.getId());
       }
     }
 
     if (e.ctrlKey && e.key === 's') {
       e.preventDefault();
-      const active = fromId(editorStore.activeDocId);
-      if (active) overwrite(active);
+      if (editorStore.activeDocId) saveDocument(editorStore.activeDocId);
     }
   };
 
@@ -36,20 +58,36 @@ export default function Editor() {
     };
   });
 
+  const [showTitleBar, setShowTitleBar] = createSignal(false);
+
+  onMount(async () => {
+    const currentPlatform = platform();
+    if (currentPlatform === 'android') setShowTitleBar(false);
+    else {
+      setShowTitleBar(true);
+    }
+  });
+
   return (
-    <div class={pageRoot}>
-      <div class={pageContent}>
-        <Show when={editorStore.activeDocId} fallback={<EditorStartContent />}>
-          <div class='input_scroll'>
-            <EditorTextArea docId={editorStore.activeDocId} />
-          </div>
+    <div class={root}>
+      <div class={titlebar}>
+        <Show when={showTitleBar()} fallback={<SPTitleBar />}>
+          <TitleBar />
         </Show>
-        <BottomBar />
+        <MenuBar />
       </div>
 
-      <Show when={editorStore.sidebar}>
-        <Sidebar />
-      </Show>
+      <div class={pageContent}>
+        <Show when={editorStore.activeDocId} fallback={<EditorStartContent />}>
+          <DocumentEditor docId={editorStore.activeDocId!} />
+        </Show>
+
+        <Show when={editorStore.sidebar}>
+          <Sidebar />
+        </Show>
+      </div>
+
+      <BottomBar />
     </div>
   );
 }

@@ -8,11 +8,10 @@ import { editorStore } from '~/stores/EditorStore';
 const scrollContainer = css`
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
   height: 100%;
-  min-width: 280px;
-  width: 280px;
-  padding: 16px 16px;
+  min-width: 260px;
+  width: 260px;
+  padding: 12px;
 
   &::-webkit-scrollbar {
     width: 2px;
@@ -28,7 +27,6 @@ const scrollContainer = css`
   }
 `;
 const searchLabel = css`
-  margin-top: 8px;
   margin-bottom: 2px;
   margin-left: 2px;
   font-family: ZFB03B;
@@ -97,7 +95,7 @@ const Search: Component = () => {
     const active = fromId(activeId);
     if (!active) return;
     // load saved state if available
-    const state = searchStates.get(active.id);
+    const state = searchStates.get(active.getId());
 
     if (state) {
       const query = state.query?.toString();
@@ -126,10 +124,10 @@ const Search: Component = () => {
               // 検索実行
               const result = searchDocument(doc, query);
               setLastQuery(query);
-              updateDocumentSearchResult(doc.id, result);
+              updateDocumentSearchResult(doc.getId(), result);
             } else if (!query) {
               // 空文字の場合は検索結果をクリア
-              clearDocumentSearchResult(doc.id);
+              clearDocumentSearchResult(doc.getId());
               setLastQuery(undefined);
             }
           }
@@ -137,10 +135,10 @@ const Search: Component = () => {
       />
 
       <div class={resultList}>
-        <Show when={editorStore.searchStates.get(activeDoc()?.id || '')?.query}>
-          <p class={resultLabel}>search result for "{editorStore.searchStates.get(activeDoc()?.id || '')?.query?.toString()}"</p>
+        <Show when={editorStore.searchStates.get(activeDoc()?.getId() || '')?.query}>
+          <p class={resultLabel}>search result for "{editorStore.searchStates.get(activeDoc()?.getId() || '')?.query?.toString()}"</p>
         </Show>
-        <For each={editorStore.searchStates.get(activeDoc()?.id || '')?.founds} fallback={<p class={noResultText}>no result</p>}>
+        <For each={editorStore.searchStates.get(activeDoc()?.getId() || '')?.founds} fallback={<p class={noResultText}>no result</p>}>
           {(item, i) => {
             // not concerning query length itself (might be too long e.g. "...XXXXXtoomuchlongquerytoshowinthesidebarXXXXX...")
             // there shouldn't be too much calculation here, so just put overflow:hidden and text-overflow: ellipsis, to make it
@@ -155,11 +153,11 @@ const Search: Component = () => {
                 <p class={resultText}>
                   ...
                   {activeDoc()
-                    ?.toPlain()
+                    ?.getContent()
                     .slice(item.start - margin, item.start)}
-                  <span class={clsx(resultText, foundText)}>{activeDoc()?.toPlain().slice(item.start, item.end)}</span>
+                  <span class={clsx(resultText, foundText)}>{activeDoc()?.getContent().slice(item.start, item.end)}</span>
                   {activeDoc()
-                    ?.toPlain()
+                    ?.getContent()
                     .slice(item.end, item.end + margin)}
                   ...
                 </p>

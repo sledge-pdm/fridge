@@ -1,7 +1,7 @@
 import { css } from '@acab/ecsstatic';
 import { Component, createMemo, createSignal, onMount } from 'solid-js';
 import { addDocument, fromId, newDocument, openDocument } from '~/features/document/service';
-import { showChooseFileDialog } from '~/features/io/choose';
+import { showChooseFileDialog } from '~/features/io/open';
 import { editorStore } from '~/stores/EditorStore';
 
 const nothingContainer = css`
@@ -13,11 +13,13 @@ const nothingContainer = css`
   overflow: auto;
   box-sizing: border-box;
 `;
+
 const nothingTitle = css`
   font-size: 42px;
   font-family: ZFB31;
   margin-bottom: 16px;
 `;
+
 const nothingText = css`
   font-size: 16px;
   margin-bottom: 12px;
@@ -59,7 +61,7 @@ const EditorStartContent: Component = () => {
           addDocument(newDocument());
         }}
       >
-        {activeDoc()?.id}
+        {activeDoc()?.getId()}
         &gt; new document.
       </a>
       <a

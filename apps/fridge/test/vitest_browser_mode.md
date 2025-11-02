@@ -30,17 +30,17 @@ export default defineConfig({
 - `page`: DOM要素の取得や画面操作用のロケータAPI
 
 ### userEventの主なメソッド
-| 操作               | メソッド例                                                                       | 備考                                   |
-| ------------------ | -------------------------------------------------------------------------------- | -------------------------------------- |
-| クリック           | `await userEvent.click(el)`                                                      | 単/複/三連クリックも可                 |
-| 入力               | `await userEvent.type(el, 'abc')`<br>`await userEvent.fill(el, 'abc')`           | typeはキーイベント、fillは値直接セット |
-| キーボード         | `await userEvent.keyboard('{Enter}')`                                            | IMEや修飾キーも対応                    |
-| タブ移動           | `await userEvent.tab()`                                                          | Shift+Tabも可                          |
-| 選択肢選択         | `await userEvent.selectOptions(el, 'val')`                                       | select要素用                           |
-| ホバー             | `await userEvent.hover(el)`<br>`await userEvent.unhover(el)`                     |                                        |
-| DnD                | `await userEvent.dragAndDrop(src, dst)`                                          | draggable属性必須                      |
-| クリア             | `await userEvent.clear(el)`                                                      | 入力欄の内容消去                       |
-| コピー/カット/貼付 | `await userEvent.copy()`<br>`await userEvent.cut()`<br>`await userEvent.paste()` | 選択状態必須                           |
+| 操作 | メソッド例 | 備考 |
+|---|---|---|
+| クリック | `await userEvent.click(el)` | 単/複/三連クリックも可 |
+| 入力 | `await userEvent.type(el, 'abc')`<br>`await userEvent.fill(el, 'abc')` | typeはキーイベント、fillは値直接セット |
+| キーボード | `await userEvent.keyboard('{Enter}')` | IMEや修飾キーも対応 |
+| タブ移動 | `await userEvent.tab()` | Shift+Tabも可 |
+| 選択肢選択 | `await userEvent.selectOptions(el, 'val')` | select要素用 |
+| ホバー | `await userEvent.hover(el)`<br>`await userEvent.unhover(el)` | |
+| DnD | `await userEvent.dragAndDrop(src, dst)` | draggable属性必須 |
+| クリア | `await userEvent.clear(el)` | 入力欄の内容消去 |
+| コピー/カット/貼付 | `await userEvent.copy()`<br>`await userEvent.cut()`<br>`await userEvent.paste()` | 選択状態必須 |
 
 ### pageの主なメソッド
 - `page.getByRole`, `page.getByLabelText`, `page.getByText` などで要素取得

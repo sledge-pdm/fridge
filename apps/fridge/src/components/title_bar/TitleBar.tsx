@@ -1,11 +1,12 @@
 import { css } from '@acab/ecsstatic';
 import { Icon } from '@sledge/ui';
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { createMemo, createSignal, onMount, Show } from 'solid-js';
-import { addDocument, fromId, newDocument, openDocument } from '~/features/document/service';
-import { showChooseFileDialog } from '~/features/io/choose';
-import { saveToFile } from '~/features/io/save';
-import { editorStore } from '~/stores/EditorStore';
+import { createSignal, onMount, Show } from 'solid-js';
+import TitleBarMenuItem from '~/components/title_bar/TitleBarMenuItem';
+import { addDocument, newDocument, openDocument } from '~/features/document/service';
+import { showChooseFileDialog } from '~/features/io/open';
+import { saveDocument } from '~/features/io/save';
+import { editorStore, setEditorStore } from '~/stores/EditorStore';
 import {
   titleBarControlButtonContainer,
   titleBarControlButtonImg,
@@ -16,33 +17,21 @@ import {
 } from '~/styles/title_bar/title_bar';
 import '~/styles/title_bar/title_bar_region.css';
 
-const controlButtonContainer = css`
+const menuItemsContainer = css`
   display: flex;
   flex-direction: row;
+  align-items: center;
   height: 100%;
-  margin-left: 28px;
+  margin-left: 24px;
   gap: 16px;
 `;
 
-const controlButton = css`
-  padding: 2px;
-  height: 100%;
-  opacity: 0.75;
-  font-family: ZFB09;
-  white-space: nowrap;
-  pointer-events: all;
-  cursor: pointer;
-`;
-
 export default function TitleBar() {
-  const activeDoc = createMemo(() => fromId(editorStore.activeDocId));
-
   const [isMaximizable, setIsMaximizable] = createSignal(false);
   const [isMinimizable, setIsMinimizable] = createSignal(false);
   const [isClosable, setIsClosable] = createSignal(false);
   const [isMaximized, setMaximized] = createSignal(false);
   const [isDecorated, setIsDecorated] = createSignal(true);
-  const [windowTitle, setWindowTitle] = createSignal('');
 
   onMount(async () => {
     const window = getCurrentWindow();
@@ -51,7 +40,6 @@ export default function TitleBar() {
     setIsClosable(await window.isClosable());
     setMaximized(await window.isMaximized());
     setIsDecorated(await window.isDecorated());
-    setWindowTitle(await window.title());
   });
 
   getCurrentWindow().onResized(async () => {
@@ -62,36 +50,34 @@ export default function TitleBar() {
     <header>
       <Show when={!isDecorated()}>
         <nav class={titleBarRoot} data-tauri-drag-region>
-          <div class={controlButtonContainer}>
-            <a
-              class={controlButton}
-              onClick={async () => {
-                addDocument(newDocument(), true);
-              }}
-              data-tauri-drag-region-exclude
-            >
-              add
-            </a>
-            <a
-              class={controlButton}
-              onClick={async () => {
-                const path = await showChooseFileDialog();
-                if (path) openDocument(path);
-              }}
-              data-tauri-drag-region-exclude
-            >
-              open
-            </a>
-            <a
-              class={controlButton}
-              onClick={async () => {
-                const activeDoc = fromId(editorStore.activeDocId);
-                if (activeDoc) saveToFile(activeDoc.toPlain(), activeDoc.getTitle() ?? 'untitled document');
-              }}
-              data-tauri-drag-region-exclude
-            >
-              save
-            </a>
+          <div class={menuItemsContainer} data-tauri-drag-region-exclude>
+            <TitleBarMenuItem
+              label='File.'
+              menu={[
+                {
+                  type: 'item',
+                  label: 'new document',
+                  onSelect: () => {
+                    addDocument(newDocument(), true);
+                  },
+                },
+                {
+                  type: 'item',
+                  label: 'open document',
+                  onSelect: async () => {
+                    const path = await showChooseFileDialog();
+                    if (path) openDocument(path);
+                  },
+                },
+                {
+                  type: 'item',
+                  label: 'save document',
+                  onSelect: () => {
+                    if (editorStore.activeDocId) saveDocument(editorStore.activeDocId);
+                  },
+                },
+              ]}
+            />
           </div>
           <div class={titleBarTitleContainer}>
             {/* <Show when={location.pathname.startsWith('/editor')} fallback={<p class={titleBarTitle}>{windowTitle()}</p>}>

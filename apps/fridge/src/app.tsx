@@ -3,28 +3,18 @@ import { MetaProvider } from '@solidjs/meta';
 import { Route, Router } from '@solidjs/router';
 import Editor from './routes/editor';
 
-import { css } from '@acab/ecsstatic';
 import { applyTheme } from '@sledge/theme';
 import '@sledge/theme/src/global.css';
 import { listen } from '@tauri-apps/api/event';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { platform } from '@tauri-apps/plugin-os';
-import { createEffect, createSignal, onCleanup, onMount, Show } from 'solid-js';
-import MenuBar from '~/components/title_bar/MenuBar';
-import SPTitleBar from '~/components/title_bar/SPTitleBar';
-import TitleBar from '~/components/title_bar/TitleBar';
+import { createEffect, onCleanup, onMount } from 'solid-js';
 import { addDocument, newDocument } from '~/features/document/service';
+import { loadEditorState } from '~/features/io/editor_state/load';
+import { saveEditorState } from '~/features/io/editor_state/save';
 import { configStore } from '~/stores/ConfigStore';
 import { reportCriticalError, zoomForIntegerize } from '~/utils/WindowUtils';
-
-const appRoot = css`
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-`;
 
 export default function App() {
   // グローバルエラーハンドラーを設定
@@ -61,17 +51,12 @@ export default function App() {
     applyThemeToHtml();
   });
 
-  const [showTitleBar, setShowTitleBar] = createSignal(false);
-
   onMount(async () => {
     applyThemeToHtml();
 
     const currentPlatform = platform();
 
-    if (currentPlatform === 'android') setShowTitleBar(false);
-    else {
-      setShowTitleBar(true);
-
+    if (currentPlatform !== 'android') {
       listen('tauri://theme-changed', (e) => {
         applyThemeToHtml();
       });
@@ -86,38 +71,27 @@ export default function App() {
         console.log('scale changed to:', scaleFactor, 'dprzoom: ', zoomForIntegerize(scaleFactor));
         await webview.setZoom(zoomForIntegerize(scaleFactor));
       });
-      // await checkForUpdates();
+
+      window.onCloseRequested(async (e) => {
+        await saveEditorState();
+      });
     }
 
-    // const result = await loadEditorState();
-    // if (result.restored) {
-    // } else {
-    //   console.warn(result.reason);
-    //   addDocument(newDocument(), true);
-    // }
-    addDocument(newDocument(), true);
+    const result = await loadEditorState();
+    
+    if (result.restored) {
+    } else {
+      console.warn(result.reason);
+      addDocument(newDocument(), true);
+    }
   });
-
-  // onMount(async () => {
-  //   const unlisten = await listen('tauri://close-requested', async () => {});
-  //   onCleanup(() => {
-  //     unlisten();
-  //   });
-  // });
 
   return (
     <Router
       root={(props) => (
         <MetaProvider>
           <title>Fridge</title>
-          <div class={appRoot} style={{ height: '100%' }}>
-            <Show when={showTitleBar()} fallback={<SPTitleBar />}>
-              <TitleBar />
-            </Show>
-            <MenuBar />
-            <main>{props.children}</main>
-            {/* <DebugViewer /> */}
-          </div>
+          {props.children}
         </MetaProvider>
       )}
     >

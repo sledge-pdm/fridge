@@ -1,9 +1,0 @@
-.input_scroll {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  flex-grow: 1;
-  min-height: 0;
-  overflow: auto;
-  box-sizing: border-box;
-}

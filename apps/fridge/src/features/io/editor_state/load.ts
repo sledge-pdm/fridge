@@ -1,5 +1,6 @@
 import { appCacheDir } from '@tauri-apps/api/path';
 import { exists, readTextFile } from '@tauri-apps/plugin-fs';
+import { deserializeDocument } from '~/features/document/serialize';
 import { replaceDocuments } from '~/features/document/service';
 import { EDITOR_STATE_FILENAME, SavedEditorState } from '~/features/io/editor_state/model';
 import { normalizeJoin } from '~/utils/FileUtils';
@@ -14,8 +15,10 @@ export async function loadEditorState(): Promise<{
 
     const txt = await readTextFile(path);
     const state = JSON.parse(txt) as SavedEditorState;
-
-    replaceDocuments(state.documents, state.activeId);
+    replaceDocuments(
+      state.documents.map((serialized) => deserializeDocument(serialized)),
+      state.activeId
+    );
 
     return { restored: true };
   } catch (e) {

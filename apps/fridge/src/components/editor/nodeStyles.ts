@@ -22,7 +22,7 @@ export const headingL4 = css`
 `;
 
 export const paragraphContent = css`
-  line-height: 1.4;
+  line-height: 1.5;
   font-family: PM12;
   font-size: 12px;
 `;
