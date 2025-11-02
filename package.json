@@ -8,7 +8,8 @@
     "cargo:format": "cd apps/fridge/src-tauri && cargo fmt",
     "format": "pnpm prettier && pnpm cargo:format",
     "tsc": "pnpm -r exec tsc --noEmit --skipLibCheck",
-    "test": "vitest run --config=vitest.browser.config.ts"
+    "test": "vitest run --config=vitest.config.ts",
+    "test:browser": "vitest run --config=vitest.browser.config.ts"
   },
   "devDependencies": {
     "@acab/ecsstatic": "0.9.0",
