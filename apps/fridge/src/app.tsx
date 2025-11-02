@@ -78,7 +78,7 @@ export default function App() {
     }
 
     const result = await loadEditorState();
-    
+
     if (result.restored) {
     } else {
       console.warn(result.reason);

@@ -1,6 +1,6 @@
 import { Mark, mergeAttributes } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
-import { DecorationSet, Decoration } from '@tiptap/pm/view';
+import { DecorationSet } from '@tiptap/pm/view';
 
 export interface SearchHighlightOptions {
   multicolor: boolean;

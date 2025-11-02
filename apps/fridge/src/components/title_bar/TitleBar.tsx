@@ -6,7 +6,7 @@ import TitleBarMenuItem from '~/components/title_bar/TitleBarMenuItem';
 import { addDocument, newDocument, openDocument } from '~/features/document/service';
 import { showChooseFileDialog } from '~/features/io/open';
 import { saveDocument } from '~/features/io/save';
-import { editorStore, setEditorStore } from '~/stores/EditorStore';
+import { editorStore } from '~/stores/EditorStore';
 import {
   titleBarControlButtonContainer,
   titleBarControlButtonImg,

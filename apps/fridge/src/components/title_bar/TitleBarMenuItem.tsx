@@ -45,7 +45,7 @@ const TitleBarMenuItem: Component<Props> = (props) => {
           style={{
             'margin-top': '-4px',
             width: '120px',
-            "border-radius": '4px'
+            'border-radius': '4px',
           }}
         />
       </Show>
