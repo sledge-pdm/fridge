@@ -1,5 +1,5 @@
 import { css } from '@acab/ecsstatic';
-import { Range } from '@tiptap/core';
+import { escapeForRegEx, Range } from '@tiptap/core';
 import Document from '@tiptap/extension-document';
 import InvisibleCharacters from '@tiptap/extension-invisible-characters';
 import Paragraph from '@tiptap/extension-paragraph';
@@ -12,6 +12,8 @@ import FullSpaceCharacter from '~/components/editor/tiptap/FullSpaceCharacter';
 import HalfSpaceCharacter from '~/components/editor/tiptap/HalfSpaceCharacter';
 import SearchHighlight from '~/components/editor/tiptap/SearchHighlight';
 import { fromId } from '~/features/document/service';
+import { loadEditorState } from '~/features/io/editor_state/load';
+import { saveEditorState } from '~/features/io/editor_state/save';
 import { editorStore } from '~/stores/EditorStore';
 import { eventBus, Events } from '~/utils/EventBus';
 import './tiptap/tiptap-styles.css';
@@ -84,7 +86,7 @@ const DocumentEditor: Component<Props> = (props) => {
     const currentEditor = editor();
     if (!currentEditor) return;
 
-    const queryRegexp: RegExp = typeof query === 'string' ? new RegExp(query, 'g') : query;
+    const queryRegexp: RegExp = typeof query === 'string' ? new RegExp(escapeForRegEx(query), 'g') : query;
     let founds: Range[] = [];
     let foundStrings;
     let count = 0;
@@ -100,20 +102,29 @@ const DocumentEditor: Component<Props> = (props) => {
       }
     }
 
-    if (founds.length > 0) {
+    if (founds.length > 0 && editor()) {
       // 既存のハイライトをクリア
       currentEditor.commands.clearSearchHighlights();
       currentEditor.commands.setSearchHighlights(founds);
+      const viewportCoords = currentEditor.view.coordsAtPos(founds[0].from);
+      console.log(viewportCoords);
+      ref.scrollTo({
+        top: -ref.offsetTop + ref.scrollTop + viewportCoords.top - 56,
+        left: -ref.offsetLeft + ref.scrollLeft + viewportCoords.left + 56,
+        behavior: 'smooth',
+      });
     } else {
       // 検索結果がない場合はハイライトをクリア
       currentEditor.commands.clearSearchHighlights();
     }
   };
 
-  onMount(() => {
+  onMount(async () => {
+    await loadEditorState();
     eventBus.on('doc:changed', update);
     eventBus.on('doc:requestSearch', search);
-    return () => {
+    return async () => {
+      await saveEditorState();
       eventBus.off('doc:changed', update);
       eventBus.off('doc:requestSearch', search);
     };
