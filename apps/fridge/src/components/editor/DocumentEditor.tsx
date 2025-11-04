@@ -41,8 +41,8 @@ export const editorContent = css`
   min-height: 100%;
   height: auto;
   outline: none;
-  padding: 16px 28px;
-  scroll-padding: 16px 28px;
+  padding: 16px 20px;
+  scroll-padding: 16px 20px;
   overflow: hidden;
 
   /* テキスト選択時の色 (Firefox用 ::-moz-selection も) */

@@ -8,7 +8,8 @@ import Sidebar from '~/components/side_bar/Sidebar';
 import MenuBar from '~/components/title_bar/MenuBar';
 import SPTitleBar from '~/components/title_bar/SPTitleBar';
 import TitleBar from '~/components/title_bar/TitleBar';
-import { fromIndex } from '~/features/document/service';
+import { addDocument, fromIndex, newDocument } from '~/features/document/service';
+import { loadEditorState } from '~/features/io/editor_state/load';
 import { saveDocument } from '~/features/io/save';
 import { editorStore, setEditorStore } from '~/stores/EditorStore';
 
@@ -19,6 +20,10 @@ const root = css`
   height: 100vh;
   overflow: hidden;
   background-color: var(--color-background);
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
 `;
 
 const titlebar = css`
@@ -65,6 +70,14 @@ export default function Editor() {
     if (currentPlatform === 'android') setShowTitleBar(false);
     else {
       setShowTitleBar(true);
+    }
+
+    const result = await loadEditorState();
+
+    if (result.restored) {
+    } else {
+      console.warn(result.reason);
+      addDocument(newDocument(), true);
     }
   });
 

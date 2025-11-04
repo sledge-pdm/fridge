@@ -100,7 +100,7 @@ pub async fn open_window(
             {
                 builder = builder
                     .title("fridge.")
-                    .inner_size(800.0, 500.0)
+                    .inner_size(700.0, 550.0)
                     .resizable(true)
                     .closable(true)
                     .maximizable(true)

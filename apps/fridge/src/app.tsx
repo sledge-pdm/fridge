@@ -10,8 +10,6 @@ import { getCurrentWebview } from '@tauri-apps/api/webview';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { platform } from '@tauri-apps/plugin-os';
 import { createEffect, onCleanup, onMount } from 'solid-js';
-import { addDocument, newDocument } from '~/features/document/service';
-import { loadEditorState } from '~/features/io/editor_state/load';
 import { saveEditorState } from '~/features/io/editor_state/save';
 import { configStore } from '~/stores/ConfigStore';
 import { reportCriticalError, zoomForIntegerize } from '~/utils/WindowUtils';
@@ -75,14 +73,6 @@ export default function App() {
       window.onCloseRequested(async (e) => {
         await saveEditorState();
       });
-    }
-
-    const result = await loadEditorState();
-
-    if (result.restored) {
-    } else {
-      console.warn(result.reason);
-      addDocument(newDocument(), true);
     }
   });
 

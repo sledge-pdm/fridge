@@ -4,6 +4,8 @@
   "scripts": {
     "dev": "pnpm -F fridge dev",
     "build": "pnpm -F fridge build",
+    "dev:android": "pnpm -F fridge dev:android",
+    "build:android": "pnpm -F fridge build:android",
     "prettier": "prettier --write . --config .prettierrc",
     "cargo:format": "cd apps/fridge/src-tauri && cargo fmt",
     "format": "pnpm prettier && pnpm cargo:format",

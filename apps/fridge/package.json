@@ -7,6 +7,9 @@
     "vite:build": "vite build",
     "dev": "tauri dev",
     "build": "tauri build",
+    "dev:android": "tauri android dev",
+    "build:android": "tauri android build",
+    "build:android-sign": "powershell -ExecutionPolicy Bypass -File sign-apk.ps1",
     "debug": "nest start --debug --watch",
     "prettier": "prettier --write 'src/**/*.{ts,tsx,css,module.css}' --config ../../.prettierrc",
     "stylelint": "stylelint -c ../../.stylelintrc.json \"src/**/*.css\" --fix"
