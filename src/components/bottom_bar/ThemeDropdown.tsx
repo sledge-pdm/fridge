@@ -1,5 +1,4 @@
-import { themeOptions } from '@sledge-pdm/ui';
-import { Dropdown } from '@sledge-pdm/ui';
+import { Dropdown, themeOptions } from '@sledge-pdm/ui';
 import { Theme } from '@tauri-apps/api/window';
 import { Component } from 'solid-js';
 import { configStore, setTheme } from '~/stores/ConfigStore';

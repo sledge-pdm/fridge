@@ -2,6 +2,18 @@
   --invisible-opacity: 0.6;
 }
 
+.tiptap-br-marker {
+  display: inline-block;
+  width: 6px;
+  height: 1em;
+  transform: translate(2px, 3px);
+  background: url('/br.png') left center / 6px 7px no-repeat;
+  pointer-events: none;
+  user-select: none;
+  vertical-align: baseline;
+  opacity: var(--invisible-opacity);
+}
+
 .tiptap-invisible-character--half-space {
   font-family: inherit;
 
@@ -45,7 +57,7 @@
     width: 6px;
     height: 1em;
     transform: translate(2px, 3px);
-    background: url('/icons/misc/br.png') left center / 6px 7px no-repeat;
+    background: url('/br.png') left center / 6px 7px no-repeat;
     pointer-events: none;
     user-select: none;
   }

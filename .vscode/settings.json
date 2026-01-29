@@ -7,7 +7,5 @@
   "typescript.suggestionActions.enabled": true,
   "typescript.preferences.importModuleSpecifier": "non-relative",
 
-  "rust-analyzer.linkedProjects": ["./apps/fridge/src-tauri/Cargo.toml"],
-  "rust-analyzer.cargo.buildScripts.useRustcWrapper": true,
-  "rust-analyzer.cargo.autoreload": true
+  "rust-analyzer.linkedProjects": ["./src-tauri/Cargo.toml"]
 }

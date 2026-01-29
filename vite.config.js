@@ -37,6 +37,9 @@ export default defineConfig({
     },
   },
   publicDir: 'public',
+  optimizeDeps: {
+    exclude: ['@sledge-pdm/core', '@sledge-pdm/frasco', '@sledge-pdm/ui'],
+  },
   resolve: {
     alias: {
       '~': path.join(__dirname, 'src'),

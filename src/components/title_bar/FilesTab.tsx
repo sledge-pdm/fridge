@@ -157,7 +157,7 @@ const TabItem: Component<ItemProps> = (props) => {
           opacity: props.docId === editorStore.activeDocId ? 0.5 : undefined,
         }}
       >
-        <Icon src={'/icons/misc/remove.png'} base={8} color='var(--color-on-background)' hoverColor='var(--color-active)' />
+        <Icon src={'assets/icons/misc/remove.png'} base={8} color='var(--color-on-background)' hoverColor='var(--color-active)' />
       </div>
       <Show when={props.docId === editorStore.activeDocId}>
         <div class={tabItemSelectedBorder} />

@@ -8,6 +8,7 @@ import { UndoRedo } from '@tiptap/extensions';
 import { Component, createEffect, onMount } from 'solid-js';
 import { createTiptapEditor } from 'solid-tiptap';
 import { paragraphContent } from '~/components/editor/nodeStyles';
+import BrMarker from '~/components/editor/tiptap/BrMarker';
 import FullSpaceCharacter from '~/components/editor/tiptap/FullSpaceCharacter';
 import HalfSpaceCharacter from '~/components/editor/tiptap/HalfSpaceCharacter';
 import SearchHighlight from '~/components/editor/tiptap/SearchHighlight';
@@ -75,6 +76,7 @@ const DocumentEditor: Component<Props> = (props) => {
         },
       }),
       Text,
+      BrMarker,
       InvisibleCharacters.configure({ builders: [new HalfSpaceCharacter(), new FullSpaceCharacter()] }),
       SearchHighlight,
     ],

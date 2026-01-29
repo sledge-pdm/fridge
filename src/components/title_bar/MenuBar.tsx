@@ -87,7 +87,7 @@ export default function MenuBar() {
             else setEditorStore('sidebar', undefined);
           }}
         >
-          <Icon src={'icons/misc/search.png'} base={8} hoverColor='var(--color-active)' />
+          <Icon src={'assets/icons/misc/search.png'} base={8} hoverColor='var(--color-active)' />
 
           <p>search</p>
         </div>

@@ -13,6 +13,7 @@ import {
   titleBarControlCloseButtonContainer,
   titleBarControls,
   titleBarRoot,
+  titleBarTitle,
   titleBarTitleContainer,
 } from '~/styles/title_bar/title_bar';
 import '~/styles/title_bar/title_bar_region.css';
@@ -24,6 +25,17 @@ const menuItemsContainer = css`
   height: 100%;
   margin-left: 24px;
   gap: 16px;
+`;
+
+const divider = css`
+  display: flex;
+  flex-direction: row;
+  margin-left: 8px;
+  margin-right: 8px;
+  width: 1px;
+  height: 8px;
+  align-self: center;
+  background-color: var(--color-muted);
 `;
 
 export default function TitleBar() {
@@ -50,7 +62,24 @@ export default function TitleBar() {
     <header>
       <Show when={!isDecorated()}>
         <nav class={titleBarRoot} data-tauri-drag-region>
-          <div class={menuItemsContainer} data-tauri-drag-region-exclude>
+          <div class={titleBarTitleContainer}>
+            {/* <Show when={location.pathname.startsWith('/editor')} fallback={<p class={titleBarTitle}>fridge</p>}>
+              <div
+                class={flexRow}
+                style={{
+                  'align-items': 'baseline',
+                  gap: ' 2px 12px',
+                  'flex-wrap': 'wrap',
+                }}
+              >
+                <p class={titleBarTitle}>{fromId(editorStore.activeDocId)?.getTitle() ?? 'fridge.'}</p>
+                <p class={titleBarTitleSub}>{fromId(editorStore.activeDocId)?.getFilePath() ?? ''}</p>
+              </div>
+            </Show> */}
+
+            <p class={titleBarTitle}>fridge.</p>
+
+            <div class={divider} />
             <TitleBarMenuItem
               label='File.'
               menu={[
@@ -79,21 +108,6 @@ export default function TitleBar() {
               ]}
             />
           </div>
-          <div class={titleBarTitleContainer}>
-            {/* <Show when={location.pathname.startsWith('/editor')} fallback={<p class={titleBarTitle}>{windowTitle()}</p>}>
-              <div
-                class={flexRow}
-                style={{
-                  'align-items': 'baseline',
-                  gap: ' 2px 12px',
-                  'flex-wrap': 'wrap',
-                }}
-              >
-                <p class={titleBarTitle}>{activeDoc()?.getTitle() ?? 'fridge.'}</p>
-                <p class={titleBarTitleSub}>{activeDoc()?.filePath ?? ''}</p>
-              </div>
-            </Show> */}
-          </div>
 
           <div class={titleBarControls} data-tauri-drag-region-exclude>
             <Show when={isMinimizable()}>
@@ -107,7 +121,7 @@ export default function TitleBar() {
               >
                 <Icon
                   class={titleBarControlButtonImg}
-                  src={'/icons/title_bar/minimize_10.png'}
+                  src={'assets/icons/title_bar/minimize_10.png'}
                   color={'var(--color-on-background)'}
                   base={10}
                   data-tauri-drag-region-exclude
@@ -126,7 +140,7 @@ export default function TitleBar() {
               >
                 <Icon
                   class={titleBarControlButtonImg}
-                  src={isMaximized() ? '/icons/title_bar/quit_maximize_10.png' : '/icons/title_bar/maximize_10.png'}
+                  src={isMaximized() ? 'assets/icons/title_bar/quit_maximize_10.png' : 'assets/icons/title_bar/maximize_10.png'}
                   color={'var(--color-on-background)'}
                   base={10}
                   data-tauri-drag-region-exclude
@@ -145,7 +159,7 @@ export default function TitleBar() {
               >
                 <Icon
                   class={titleBarControlButtonImg}
-                  src={'/icons/title_bar/close_10.png'}
+                  src={'assets/icons/title_bar/close_10.png'}
                   color={'var(--color-on-background)'}
                   base={10}
                   data-tauri-drag-region-exclude

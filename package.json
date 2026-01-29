@@ -1,12 +1,16 @@
 {
+  "name": "fridge",
+  "type": "module",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "vite:dev": "vite",
     "vite:build": "vite build",
     "dev": "tauri dev",
     "build": "tauri build",
-    "debug": "nest start --debug --watch",
-    "prettier": "prettier --write 'src/**/*.{ts,tsx,css,module.css}' --config .prettierrc",
+    "lint": "eslint .",
+    "prettier": "prettier --write . --config .prettierrc",
+    "cargo:format": "cd src-tauri && cargo fmt",
+    "format": "pnpm prettier && pnpm cargo:format",
     "tsc": "pnpm -r exec tsc --noEmit --skipLibCheck",
     "test": "vitest run --config=vitest.config.ts",
     "test:browser": "vitest run --config=vitest.browser.config.ts"
@@ -57,8 +61,12 @@
     "dotenv": "^17.2.3",
     "prettier": "^3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",
-    "solid-js": "^1.9.9",
+    "vitest": "^4.0.18",
+    "vite": "^7.3.1",
+    "vite-plugin-glsl": "^1.5.5",
+    "vite-plugin-inspect": "^11.3.3",
     "vite-plugin-solid": "^2.11.10",
-    "vitest": "^4.0.18"
+    "vite-plugin-top-level-await": "^1.6.0",
+    "vite-plugin-wasm": "^3.5.0"
   }
 }

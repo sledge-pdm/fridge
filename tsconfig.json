@@ -3,19 +3,20 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "esModuleInterop": true,
-    "jsx": "preserve",
-    "jsxImportSource": "solid-js",
     "allowJs": true,
     "strict": true,
     "noEmit": true,
     "isolatedModules": true,
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "jsxImportSource": "solid-js",
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": ["src/*"]
     },
     "rootDirs": ["src"],
     "types": ["vite/client"]
   },
-  "exclude": ["src-tauri/*"]
+  "include": ["src", "test", "vitest.config.ts", "vitest-bench.config.ts"],
+  "exclude": ["src-tauri/target", "**/out/tauri-codegen-assets/**"]
 }
