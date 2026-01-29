@@ -32,16 +32,6 @@ vi.mock('@tauri-apps/plugin-fs', () => ({
   writeTextFile: vi.fn(),
 }));
 vi.mock('@tauri-apps/plugin-dialog', () => ({ confirm: vi.fn(async () => true), message: vi.fn() }));
-vi.mock('@sledge/ui', () => ({}));
-vi.mock('@sledge/theme', () => ({
-  themeOptions: [
-    { label: 'os theme', value: 'os' },
-    { label: 'light', value: 'light' },
-    { label: 'dark', value: 'dark' },
-  ],
-  applyTheme: vi.fn(),
-  watchOSTheme: vi.fn(),
-}));
 
 // ブラウザ環境でのDOM設定
 if (typeof document !== 'undefined') {

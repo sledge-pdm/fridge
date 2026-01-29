@@ -10,7 +10,7 @@ export default defineConfig({
     globals: true,
     env: dotenv.config({ path: '.env.vitest' }).parsed,
     setupFiles: [path.resolve(__dirname, 'vitest.setup.ts')],
-    include: ['apps/fridge/test/non-browser/**/*.test.ts', 'apps/sledge/fridge/test/non-browser/**/*.test.tsx'],
+    include: ['test/non-browser/**/*.test.ts', 'test/non-browser/**/*.test.tsx'],
     exclude: ['**/dist/**', '**/node_modules/**', '**/target/**'],
   },
   optimizeDeps: {
@@ -18,10 +18,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '~': path.resolve(__dirname, 'apps/fridge/src'),
-      '@sledge/core': path.resolve(__dirname, 'packages/core'),
-      '@sledge/theme': path.resolve(__dirname, 'packages/theme'),
-      '@sledge/ui': path.resolve(__dirname, 'packages/ui'),
+      '~': path.resolve(__dirname, 'asrc'),
     },
   },
 });
