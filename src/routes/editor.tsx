@@ -1,6 +1,6 @@
 import { css } from '@acab/ecsstatic';
 import { platform } from '@tauri-apps/plugin-os';
-import { createSignal, onMount, Show } from 'solid-js';
+import { createSignal, onCleanup, onMount, Show } from 'solid-js';
 import BottomBar from '~/components/bottom_bar/BottomBar';
 import DocumentEditor from '~/components/editor/DocumentEditor';
 import EditorStartContent from '~/components/editor/Start';
@@ -52,10 +52,9 @@ export default function Editor() {
 
   onMount(() => {
     window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+  });
+  onCleanup(() => {
+    window.removeEventListener('keydown', handleKeyDown);
   });
 
   const [showTitleBar, setShowTitleBar] = createSignal(false);

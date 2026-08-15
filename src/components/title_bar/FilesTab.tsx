@@ -1,7 +1,7 @@
 import { css } from '@acab/ecsstatic';
 import { clsx } from '@sledge-pdm/core';
 import { Icon, Light } from '@sledge-pdm/ui';
-import { Component, createSignal, For, onMount, Show } from 'solid-js';
+import { Component, createSignal, For, onCleanup, onMount, Show } from 'solid-js';
 import { FridgeDocument } from '~/features/document/FridgeDocument';
 import { fromId, removeDocument } from '~/features/document/service';
 import { editorStore, setEditorStore } from '~/stores/EditorStore';
@@ -107,6 +107,7 @@ interface ItemProps {
 const TabItem: Component<ItemProps> = (props) => {
   const [doc, setDoc] = createSignal<FridgeDocument | undefined>(fromId(props.docId));
   const [isDocChanged, setIsDocChanged] = createSignal<boolean>(false);
+  let subscribed = false;
 
   const handleDocUpdate = (e: Events['doc:changed']) => {
     if (e.id === props.docId) {
@@ -121,9 +122,12 @@ const TabItem: Component<ItemProps> = (props) => {
   onMount(() => {
     setDoc(fromId(props.docId));
     eventBus.on('doc:changed', handleDocUpdate);
-    return () => {
+    subscribed = true;
+  });
+  onCleanup(() => {
+    if (subscribed) {
       eventBus.off('doc:changed', handleDocUpdate);
-    };
+    }
   });
 
   return (

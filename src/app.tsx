@@ -4,7 +4,7 @@ import { Route, Router } from '@solidjs/router';
 import Editor from './routes/editor';
 
 import { applyTheme } from '@sledge-pdm/ui';
-import { listen } from '@tauri-apps/api/event';
+import { listen, UnlistenFn } from '@tauri-apps/api/event';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { platform } from '@tauri-apps/plugin-os';
@@ -52,13 +52,15 @@ export default function App() {
     applyThemeToHtml();
   });
 
+  let unlistenThemeChanged: UnlistenFn | undefined;
+
   onMount(async () => {
     applyThemeToHtml();
 
     const currentPlatform = platform();
 
     if (currentPlatform !== 'android') {
-      listen('tauri://theme-changed', (e) => {
+      unlistenThemeChanged = await listen('tauri://theme-changed', (e) => {
         applyThemeToHtml();
       });
 
@@ -85,6 +87,10 @@ export default function App() {
       console.warn(result.reason);
       addDocument(newDocument(), true);
     }
+  });
+
+  onCleanup(() => {
+    unlistenThemeChanged?.();
   });
 
   return (

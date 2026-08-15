@@ -13,7 +13,15 @@
     "format": "pnpm prettier && pnpm cargo:format",
     "tsc": "pnpm -r exec tsc --noEmit --skipLibCheck",
     "test": "vitest run --config=vitest.config.ts",
-    "test:browser": "vitest run --config=vitest.browser.config.ts"
+    "test:browser": "vitest run --config=vitest.browser.config.ts",
+    "lint-staged": "lint-staged",
+    "prepare": "simple-git-hooks"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,mjs,cjs,json,css,scss,html,yml,yaml}": "prettier --write --ignore-unknown"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
   },
   "dependencies": {
     "@jaames/iro": "^5.5.2",
@@ -59,8 +67,10 @@
     "@tauri-apps/cli": "^2.9.6",
     "@vitest/browser-playwright": "^4.0.18",
     "dotenv": "^17.2.3",
+    "lint-staged": "^15.5.0",
     "prettier": "^3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",
+    "simple-git-hooks": "^2.13.0",
     "vitest": "^4.0.18",
     "vite": "^7.3.1",
     "vite-plugin-glsl": "^1.5.5",
